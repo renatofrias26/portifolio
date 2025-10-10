@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Download, Share2 } from "lucide-react";
+import Image from "next/image";
 
 const navItems = [
   { name: "About", href: "#about" },
@@ -81,12 +82,17 @@ export function Navigation() {
             {/* Logo */}
             <a
               href="#"
-              className="text-2xl font-bold"
+              className="flex items-center"
               aria-label="Renato Frias - Home"
             >
-              <span className="bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
-                RF
-              </span>
+              <Image
+                src="/logo.png"
+                alt="Renato Frias Logo"
+                width={48}
+                height={48}
+                className="w-12 h-12 transition-transform hover:scale-110"
+                priority
+              />
             </a>
 
             {/* Desktop Navigation */}
