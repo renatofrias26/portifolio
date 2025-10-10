@@ -109,7 +109,7 @@ export function AIChatSection() {
 
         <GlassCard className="mt-16 p-0 overflow-hidden" hover={false}>
           {/* Chat Header */}
-          <div className="bg-gradient-to-r from-purple-600 to-blue-500 p-4 text-white">
+          <div className="rounded-lg bg-gradient-to-r from-purple-600 to-blue-500 p-4 text-white">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Sparkles className="w-6 h-6" aria-hidden="true" />
