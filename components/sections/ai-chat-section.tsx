@@ -27,8 +27,14 @@ export function AIChatSection() {
   const [questionCount, setQuestionCount] = useState(0);
   const [maxQuestions, setMaxQuestions] = useState(10);
   const [limitReached, setLimitReached] = useState(false);
+  const [isGitHubPages, setIsGitHubPages] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  // Detect if running on GitHub Pages
+  useEffect(() => {
+    setIsGitHubPages(window.location.hostname.includes('github.io'));
+  }, []);
 
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
@@ -108,6 +114,15 @@ export function AIChatSection() {
         />
 
         <GlassCard className="mt-16 p-0 overflow-hidden" hover={false}>
+          {/* Deployment Notice - Remove when migrating to Vercel */}
+          {isGitHubPages && (
+            <div className="bg-yellow-500/10 border-b border-yellow-500/20 p-3 text-center">
+              <p className="text-sm text-yellow-600 dark:text-yellow-400">
+                ℹ️ AI Chat is currently unavailable on GitHub Pages. Coming soon on Vercel!
+              </p>
+            </div>
+          )}
+          
           {/* Chat Header */}
           <div className="bg-gradient-to-r from-purple-600 to-blue-500 p-4 text-white">
             <div className="flex items-center justify-between">
