@@ -1,4 +1,3 @@
 export const socialLinks = {
-  linkedin: "https://linkedin.com/in/yourprofile", // TODO: Update with your LinkedIn profile
-  github: "https://github.com/yourusername", // TODO: Update with your GitHub username
+  linkedin: "https://www.linkedin.com/in/renato-frias-9a5a92179/",
 };

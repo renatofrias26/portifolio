@@ -2,8 +2,9 @@
 
 import { SectionHeading } from "../ui/section-heading";
 import { GlassCard } from "../ui/glass-card";
-import { Mail, Phone, MapPin, Github, Linkedin } from "lucide-react";
+import { Mail, Phone, MapPin, Linkedin, Download } from "lucide-react";
 import { resumeData } from "@/data/resume";
+import Image from "next/image";
 
 export function ContactSection() {
   return (
@@ -18,7 +19,24 @@ export function ContactSection() {
           centered
         />
 
-        <div className="mt-16 grid md:grid-cols-2 gap-6">
+        {/* Profile Photo */}
+        <div className="mt-12 flex justify-center">
+          <div className="relative">
+            <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-500 rounded-full blur opacity-75"></div>
+            <div className="relative">
+              <Image
+                src="/profile.png"
+                alt="Renato Frias"
+                width={160}
+                height={160}
+                className="rounded-full object-cover border-4 border-white dark:border-gray-900"
+                priority
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-12 grid md:grid-cols-2 gap-6">
           <GlassCard>
             <h3 className="text-xl font-bold mb-6 bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
               Contact Information
@@ -82,25 +100,7 @@ export function ContactSection() {
             </h3>
             <div className="space-y-4">
               <a
-                href="https://github.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors group focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded-md p-1"
-                aria-label="Visit GitHub profile"
-              >
-                <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Github className="w-5 h-5" aria-hidden="true" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    GitHub
-                  </p>
-                  <p className="font-medium">View my repositories</p>
-                </div>
-              </a>
-
-              <a
-                href="https://linkedin.com"
+                href="https://www.linkedin.com/in/renato-frias-9a5a92179/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors group focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-md p-1"
@@ -127,6 +127,19 @@ export function ContactSection() {
                   Open to new opportunities and collaborations. Feel free to
                   reach out!
                 </p>
+              </div>
+
+              {/* Download Resume Button */}
+              <div className="pt-4">
+                <a
+                  href="/resume.pdf"
+                  download
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                  aria-label="Download Resume PDF"
+                >
+                  <Download className="w-5 h-5" aria-hidden="true" />
+                  Download Resume
+                </a>
               </div>
             </div>
           </GlassCard>
