@@ -17,6 +17,7 @@ const suggestedQuestions = [
   "Tell me about your unique background",
   "What projects have you worked on recently?",
   "What's your experience with microservices?",
+  "📎 Paste a job posting URL or PDF link!",
 ];
 
 export function AIChatSection() {
@@ -81,6 +82,7 @@ export function AIChatSection() {
         content: "Sorry, I encountered an error. Please try again later.",
       };
       setMessages((prev) => [...prev, errorMessage]);
+      console.error("Chat error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -114,7 +116,7 @@ export function AIChatSection() {
                 <div>
                   <h3 className="font-bold text-lg">AI Assistant</h3>
                   <p className="text-sm opacity-90">
-                    Ask me anything about Renato's experience and skills
+                    Ask me anything about Renato&apos;s experience and skills
                   </p>
                 </div>
               </div>
@@ -253,10 +255,10 @@ export function AIChatSection() {
                 aria-live="polite"
               >
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  You've reached the question limit for this session.
+                  You&apos;ve reached the question limit for this session.
                 </p>
                 <p className="text-sm text-gray-500 dark:text-gray-500">
-                  Let's continue the conversation directly! 👇
+                  Let&apos;s continue the conversation directly! 👇
                 </p>
               </div>
             ) : (
@@ -268,7 +270,7 @@ export function AIChatSection() {
                 className="flex gap-2"
               >
                 <label htmlFor="ai-chat-input" className="sr-only">
-                  Ask a question about Renato's experience
+                  Ask a question about Renato&apos;s experience
                 </label>
                 <input
                   id="ai-chat-input"
@@ -298,7 +300,8 @@ export function AIChatSection() {
           className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6"
           id="ai-chat-description"
         >
-          Powered by AI • Responses based on my resume and experience
+          Powered by AI • Can analyze job postings from URLs and PDFs •
+          Responses based on my resume and experience
         </p>
       </div>
     </section>

@@ -116,7 +116,9 @@ export function ContactSection() {
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     LinkedIn
                   </p>
-                  <p className="font-medium">Let's connect professionally</p>
+                  <p className="font-medium">
+                    Let&apos;s connect professionally
+                  </p>
                 </div>
               </a>
 
