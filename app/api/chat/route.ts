@@ -1,7 +1,11 @@
 import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
 import { resumeData, aiContext } from "@/data/resume";
+import { socialLinks } from "@/data/social-links";
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+
+const MAX_QUESTIONS = 10;
 
 export async function POST(req: Request) {
   try {
@@ -13,6 +17,22 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
+
+    // Get or initialize question count from cookies
+    const cookieStore = await cookies();
+    const currentCount = parseInt(cookieStore.get("chat_count")?.value || "0");
+
+    // Check if user has exceeded the limit
+    if (currentCount >= MAX_QUESTIONS) {
+      return NextResponse.json({
+        message: `You've reached the maximum of ${MAX_QUESTIONS} questions per session. I'd love to continue our conversation!\n\nPlease reach out directly:\n📧 Email: ${resumeData.email}\n💼 LinkedIn: ${socialLinks.linkedin}\n\nLooking forward to connecting with you!`,
+        questionCount: currentCount,
+        maxQuestions: MAX_QUESTIONS,
+        limitReached: true,
+      });
+    }
+
+    const newCount = currentCount + 1;
 
     // Check if OpenAI API key is configured
     if (!process.env.OPENAI_API_KEY) {
@@ -90,10 +110,31 @@ ${resumeData.uniqueBackground
         },
       ],
       temperature: 0.7,
-      maxTokens: 500,
+      maxOutputTokens: 500,
     });
 
-    return NextResponse.json({ message: text });
+    // Prepare the response message
+    let responseMessage = text;
+
+    // Add warning message after 9th question (one question remaining)
+    if (newCount === MAX_QUESTIONS - 1) {
+      responseMessage += `\n\n⚠️ Note: You have 1 question remaining in this session. For extended conversations, please contact me directly at ${resumeData.email} or via LinkedIn!`;
+    }
+
+    // Set the updated count in cookies (expires in 24 hours)
+    const response = NextResponse.json({
+      message: responseMessage,
+      questionCount: newCount,
+      maxQuestions: MAX_QUESTIONS,
+    });
+
+    response.cookies.set("chat_count", newCount.toString(), {
+      maxAge: 60 * 60 * 24, // 24 hours
+      httpOnly: true,
+      sameSite: "strict",
+    });
+
+    return response;
   } catch (error) {
     console.error("Error in chat API:", error);
     return NextResponse.json(

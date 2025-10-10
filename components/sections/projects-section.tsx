@@ -66,7 +66,10 @@ export function ProjectsSection() {
             className="flex items-center justify-center min-h-[300px]"
           >
             <div className="text-center">
-              <ExternalLink className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+              <ExternalLink
+                className="w-12 h-12 mx-auto mb-4 text-gray-400"
+                aria-hidden="true"
+              />
               <h3 className="text-xl font-bold text-gray-700 dark:text-gray-300 mb-2">
                 More Projects
               </h3>
@@ -78,7 +81,7 @@ export function ProjectsSection() {
                 href="https://github.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-500 text-white rounded-full font-semibold hover:shadow-lg transition-all duration-300 hover:scale-105"
+                className="inline-block px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-500 text-white rounded-full font-semibold hover:shadow-lg transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
               >
                 View GitHub
               </a>

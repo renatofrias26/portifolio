@@ -25,6 +25,27 @@ export function Navigation() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      document.addEventListener("keydown", handleEscape);
+      // Prevent body scroll when menu is open
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "unset";
+    };
+  }, [isMobileMenuOpen]);
+
   return (
     <>
       <motion.nav
@@ -33,39 +54,47 @@ export function Navigation() {
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled ? "glass shadow-lg" : "bg-transparent"
         }`}
+        aria-label="Main navigation"
       >
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <a href="#" className="text-2xl font-bold">
+            <a
+              href="#"
+              className="text-2xl font-bold"
+              aria-label="Renato Frias - Home"
+            >
               <span className="bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
                 RF
               </span>
             </a>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-8">
+            <ul className="hidden md:flex items-center gap-8" role="list">
               {navItems.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors font-medium"
-                >
-                  {item.name}
-                </a>
+                <li key={item.name}>
+                  <a
+                    href={item.href}
+                    className="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 rounded-md px-2 py-1"
+                  >
+                    {item.name}
+                  </a>
+                </li>
               ))}
-            </div>
+            </ul>
 
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg glass"
-              aria-label="Toggle menu"
+              className="md:hidden p-2 rounded-lg glass focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-menu"
             >
               {isMobileMenuOpen ? (
-                <X className="w-6 h-6" />
+                <X className="w-6 h-6" aria-hidden="true" />
               ) : (
-                <Menu className="w-6 h-6" />
+                <Menu className="w-6 h-6" aria-hidden="true" />
               )}
             </button>
           </div>
@@ -81,25 +110,31 @@ export function Navigation() {
             exit={{ opacity: 0, x: "100%" }}
             transition={{ type: "tween" }}
             className="fixed inset-0 z-40 md:hidden"
+            id="mobile-menu"
           >
             <div
               className="absolute inset-0 bg-black/50 backdrop-blur-sm"
               onClick={() => setIsMobileMenuOpen(false)}
+              aria-hidden="true"
             />
-            <div className="absolute right-0 top-0 bottom-0 w-64 glass p-6 pt-20">
-              <div className="flex flex-col gap-4">
+            <nav
+              className="absolute right-0 top-0 bottom-0 w-64 glass p-6 pt-20"
+              aria-label="Mobile navigation"
+            >
+              <ul className="flex flex-col gap-4" role="list">
                 {navItems.map((item) => (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="text-lg font-medium text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors py-2"
-                  >
-                    {item.name}
-                  </a>
+                  <li key={item.name}>
+                    <a
+                      href={item.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="text-lg font-medium text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors py-2 block focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 rounded-md px-2"
+                    >
+                      {item.name}
+                    </a>
+                  </li>
                 ))}
-              </div>
-            </div>
+              </ul>
+            </nav>
           </motion.div>
         )}
       </AnimatePresence>

@@ -11,9 +11,12 @@ export function HeroSection() {
   };
 
   return (
-    <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
+    <section
+      className="min-h-screen flex items-center justify-center relative overflow-hidden"
+      aria-label="Hero"
+    >
       {/* Animated gradient background */}
-      <div className="absolute inset-0 -z-10">
+      <div className="absolute inset-0 -z-10" aria-hidden="true">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/30 rounded-full blur-3xl animate-pulse" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl animate-pulse delay-1000" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl animate-pulse delay-2000" />
@@ -77,20 +80,22 @@ export function HeroSection() {
           >
             <a
               href={`mailto:${resumeData.email}`}
-              className="flex items-center gap-2 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+              className="flex items-center gap-2 hover:text-purple-600 dark:hover:text-purple-400 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 rounded-md px-2 py-1"
+              aria-label={`Email: ${resumeData.email}`}
             >
-              <Mail className="w-5 h-5" />
+              <Mail className="w-5 h-5" aria-hidden="true" />
               <span>{resumeData.email}</span>
             </a>
             <a
               href={`tel:${resumeData.phone}`}
-              className="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              className="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-md px-2 py-1"
+              aria-label={`Phone: ${resumeData.phone}`}
             >
-              <Phone className="w-5 h-5" />
+              <Phone className="w-5 h-5" aria-hidden="true" />
               <span>{resumeData.phone}</span>
             </a>
             <div className="flex items-center gap-2">
-              <MapPin className="w-5 h-5" />
+              <MapPin className="w-5 h-5" aria-hidden="true" />
               <span>{resumeData.location}</span>
             </div>
           </motion.div>
@@ -104,13 +109,13 @@ export function HeroSection() {
           >
             <a
               href="#ai-chat"
-              className="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-500 text-white rounded-full font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300"
+              className="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-500 text-white rounded-full font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
             >
               Ask AI About Me
             </a>
             <a
               href="#experience"
-              className="px-8 py-4 glass rounded-full font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300"
+              className="px-8 py-4 glass rounded-full font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
             >
               View Experience
             </a>
@@ -124,14 +129,14 @@ export function HeroSection() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 1.2 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
-        aria-label="Scroll to next section"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 rounded-full p-2"
+        aria-label="Scroll to about section"
       >
         <motion.div
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 1.5, repeat: Infinity }}
         >
-          <ArrowDown className="w-8 h-8" />
+          <ArrowDown className="w-8 h-8" aria-hidden="true" />
         </motion.div>
       </motion.button>
     </section>

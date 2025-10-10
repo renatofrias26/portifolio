@@ -21,11 +21,11 @@ export function GlassCard({
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.5, delay }}
+      transition={{ duration: 0.3, delay }}
       whileHover={hover ? { scale: 1.02, y: -5 } : {}}
       className={cn(
         "glass rounded-3xl p-6 shadow-lg transition-all duration-300",
-        hover && "hover:shadow-xl cursor-pointer",
+        hover && "hover:shadow-xl",
         className,
       )}
     >

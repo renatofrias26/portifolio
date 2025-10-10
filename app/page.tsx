@@ -1,4 +1,5 @@
 import { Navigation } from "@/components/navigation";
+import { SkipToContent } from "@/components/skip-to-content";
 import { Footer } from "@/components/footer";
 import { HeroSection } from "@/components/sections/hero-section";
 import { AboutSection } from "@/components/sections/about-section";
@@ -11,8 +12,9 @@ import { ContactSection } from "@/components/sections/contact-section";
 export default function Home() {
   return (
     <>
+      <SkipToContent />
       <Navigation />
-      <main className="min-h-screen">
+      <main id="main-content" className="min-h-screen">
         <HeroSection />
         <AboutSection />
         <ExperienceSection />

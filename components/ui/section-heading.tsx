@@ -26,7 +26,7 @@ export function SectionHeading({
         <GradientText>{title}</GradientText>
       </h2>
       {subtitle && (
-        <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl">
+        <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl text-center mx-auto">
           {subtitle}
         </p>
       )}

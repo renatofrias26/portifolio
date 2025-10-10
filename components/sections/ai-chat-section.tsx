@@ -23,10 +23,17 @@ export function AIChatSection() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [questionCount, setQuestionCount] = useState(0);
+  const [maxQuestions, setMaxQuestions] = useState(10);
+  const [limitReached, setLimitReached] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
   };
 
   useEffect(() => {
@@ -35,7 +42,7 @@ export function AIChatSection() {
 
   const handleSend = async (question?: string) => {
     const messageText = question || input;
-    if (!messageText.trim() || isLoading) return;
+    if (!messageText.trim() || isLoading || limitReached) return;
 
     const userMessage: Message = { role: "user", content: messageText };
     setMessages((prev) => [...prev, userMessage]);
@@ -57,6 +64,17 @@ export function AIChatSection() {
         content: data.message,
       };
       setMessages((prev) => [...prev, assistantMessage]);
+
+      // Update question count and limit status
+      if (data.questionCount !== undefined) {
+        setQuestionCount(data.questionCount);
+      }
+      if (data.maxQuestions !== undefined) {
+        setMaxQuestions(data.maxQuestions);
+      }
+      if (data.limitReached) {
+        setLimitReached(true);
+      }
     } catch (error) {
       const errorMessage: Message = {
         role: "assistant",
@@ -90,22 +108,46 @@ export function AIChatSection() {
         <GlassCard className="mt-16 p-0 overflow-hidden" hover={false}>
           {/* Chat Header */}
           <div className="bg-gradient-to-r from-purple-600 to-blue-500 p-4 text-white">
-            <div className="flex items-center gap-3">
-              <Sparkles className="w-6 h-6" />
-              <div>
-                <h3 className="font-bold text-lg">AI Assistant</h3>
-                <p className="text-sm opacity-90">
-                  Ask me anything about Renato's experience and skills
-                </p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Sparkles className="w-6 h-6" aria-hidden="true" />
+                <div>
+                  <h3 className="font-bold text-lg">AI Assistant</h3>
+                  <p className="text-sm opacity-90">
+                    Ask me anything about Renato's experience and skills
+                  </p>
+                </div>
               </div>
+              {questionCount > 0 && (
+                <div
+                  className="text-right"
+                  aria-live="polite"
+                  aria-atomic="true"
+                >
+                  <p className="text-sm font-semibold">
+                    {questionCount}/{maxQuestions}
+                  </p>
+                  <p className="text-xs opacity-75">questions</p>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Messages Area */}
-          <div className="h-[400px] overflow-y-auto p-6 space-y-4">
-            {messages.length === 0 && (
+          <div
+            ref={chatContainerRef}
+            className="h-[400px] overflow-y-auto p-6 space-y-4"
+            role="log"
+            aria-live="polite"
+            aria-atomic="false"
+            aria-label="Chat messages"
+          >
+            {messages.length === 0 && !limitReached && (
               <div className="text-center py-8">
-                <Sparkles className="w-12 h-12 mx-auto mb-4 text-purple-500" />
+                <Sparkles
+                  className="w-12 h-12 mx-auto mb-4 text-purple-500"
+                  aria-hidden="true"
+                />
                 <p className="text-gray-600 dark:text-gray-400 mb-6">
                   Start a conversation! Try one of these questions:
                 </p>
@@ -114,7 +156,9 @@ export function AIChatSection() {
                     <button
                       key={index}
                       onClick={() => handleSend(question)}
-                      className="block w-full text-left px-4 py-3 rounded-2xl bg-white/50 dark:bg-gray-800/50 hover:bg-white/80 dark:hover:bg-gray-800/80 transition-all duration-300 text-sm text-gray-700 dark:text-gray-300 hover:scale-105"
+                      disabled={limitReached}
+                      className="block w-full text-left px-4 py-3 rounded-2xl bg-white/50 dark:bg-gray-800/50 hover:bg-white/80 dark:hover:bg-gray-800/80 transition-all duration-300 text-sm text-gray-700 dark:text-gray-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                      aria-label={`Ask question: ${question}`}
                     >
                       {question}
                     </button>
@@ -136,7 +180,10 @@ export function AIChatSection() {
                   }`}
                 >
                   {message.role === "assistant" && (
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 flex items-center justify-center flex-shrink-0">
+                    <div
+                      className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 flex items-center justify-center flex-shrink-0"
+                      aria-hidden="true"
+                    >
                       <Bot className="w-5 h-5 text-white" />
                     </div>
                   )}
@@ -146,13 +193,22 @@ export function AIChatSection() {
                         ? "bg-gradient-to-r from-purple-600 to-blue-500 text-white"
                         : "glass"
                     }`}
+                    role={message.role === "assistant" ? "article" : undefined}
+                    aria-label={
+                      message.role === "assistant"
+                        ? "AI response"
+                        : "Your message"
+                    }
                   >
                     <p className="text-sm leading-relaxed whitespace-pre-wrap">
                       {message.content}
                     </p>
                   </div>
                   {message.role === "user" && (
-                    <div className="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+                    <div
+                      className="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center flex-shrink-0"
+                      aria-hidden="true"
+                    >
                       <User className="w-5 h-5 text-gray-600 dark:text-gray-300" />
                     </div>
                   )}
@@ -165,8 +221,14 @@ export function AIChatSection() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="flex gap-3"
+                role="status"
+                aria-live="polite"
+                aria-label="AI is typing"
               >
-                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 flex items-center justify-center">
+                <div
+                  className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 flex items-center justify-center"
+                  aria-hidden="true"
+                >
                   <Bot className="w-5 h-5 text-white" />
                 </div>
                 <div className="glass px-4 py-3 rounded-2xl">
@@ -184,28 +246,58 @@ export function AIChatSection() {
 
           {/* Input Area */}
           <div className="border-t border-gray-200 dark:border-gray-700 p-4">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Ask about my experience, skills, or anything else..."
-                className="flex-1 px-4 py-3 rounded-2xl glass border-none focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-800 dark:text-gray-200"
-                disabled={isLoading}
-              />
-              <button
-                onClick={() => handleSend()}
-                disabled={!input.trim() || isLoading}
-                className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-500 text-white rounded-2xl font-semibold hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105"
+            {limitReached ? (
+              <div
+                className="text-center py-4"
+                role="status"
+                aria-live="polite"
               >
-                <Send className="w-5 h-5" />
-              </button>
-            </div>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  You've reached the question limit for this session.
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-500">
+                  Let's continue the conversation directly! 👇
+                </p>
+              </div>
+            ) : (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSend();
+                }}
+                className="flex gap-2"
+              >
+                <label htmlFor="ai-chat-input" className="sr-only">
+                  Ask a question about Renato's experience
+                </label>
+                <input
+                  id="ai-chat-input"
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="Ask about my experience, skills, or anything else..."
+                  className="flex-1 px-4 py-3 rounded-2xl glass border-none focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-800 dark:text-gray-200"
+                  disabled={isLoading}
+                  aria-describedby="ai-chat-description"
+                />
+                <button
+                  type="submit"
+                  disabled={!input.trim() || isLoading}
+                  className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-500 text-white rounded-2xl font-semibold hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                  aria-label="Send message"
+                >
+                  <Send className="w-5 h-5" aria-hidden="true" />
+                </button>
+              </form>
+            )}
           </div>
         </GlassCard>
 
-        <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
+        <p
+          className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6"
+          id="ai-chat-description"
+        >
           Powered by AI • Responses based on my resume and experience
         </p>
       </div>
