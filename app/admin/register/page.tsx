@@ -57,7 +57,9 @@ export default function RegisterPage() {
       });
 
       if (signInResult?.error) {
-        setError("Registration successful, but auto-login failed. Please login manually.");
+        setError(
+          "Registration successful, but auto-login failed. Please login manually.",
+        );
         router.push("/admin/login");
       } else {
         router.push("/admin/dashboard");
@@ -110,7 +112,10 @@ export default function RegisterPage() {
                 type="text"
                 value={formData.username}
                 onChange={(e) =>
-                  setFormData({ ...formData, username: e.target.value.toLowerCase() })
+                  setFormData({
+                    ...formData,
+                    username: e.target.value.toLowerCase(),
+                  })
                 }
                 className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 outline-none"
                 placeholder="johndoe"

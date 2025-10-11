@@ -13,8 +13,16 @@ interface ContactInfo {
   location: string;
 }
 
+interface SocialLinks {
+  github?: string;
+  linkedin?: string;
+  twitter?: string;
+  website?: string;
+}
+
 interface ContactSectionProps {
   contact?: ContactInfo;
+  socialLinks?: SocialLinks;
   showHeading?: boolean;
   sectionId?: string;
 }
@@ -26,6 +34,7 @@ export function ContactSection({
     phone: resumeData.phone,
     location: resumeData.location,
   },
+  socialLinks,
   showHeading = true,
   sectionId = "contact",
 }: ContactSectionProps) {
@@ -123,28 +132,30 @@ export function ContactSection({
               Connect With Me
             </h3>
             <div className="space-y-4">
-              <a
-                href="https://www.linkedin.com/in/renato-frias-9a5a92179/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors group focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-md p-1"
-                aria-label="Visit LinkedIn profile"
-              >
-                <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Linkedin
-                    className="w-5 h-5 text-blue-600"
-                    aria-hidden="true"
-                  />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    LinkedIn
-                  </p>
-                  <p className="font-medium">
-                    Let&apos;s connect professionally
-                  </p>
-                </div>
-              </a>
+              {socialLinks?.linkedin && (
+                <a
+                  href={socialLinks.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors group focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-md p-1"
+                  aria-label="Visit LinkedIn profile"
+                >
+                  <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Linkedin
+                      className="w-5 h-5 text-blue-600"
+                      aria-hidden="true"
+                    />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      LinkedIn
+                    </p>
+                    <p className="font-medium">
+                      Let&apos;s connect professionally
+                    </p>
+                  </div>
+                </a>
+              )}
 
               <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
                 <p className="text-sm text-gray-600 dark:text-gray-400">

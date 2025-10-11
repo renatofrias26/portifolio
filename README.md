@@ -5,6 +5,7 @@ A modern, AI-powered portfolio platform built with Next.js that supports multipl
 ## 🌟 Features
 
 ### For Users
+
 - **Personal Portfolio URL**: Each user gets `yourdomain.com/{username}`
 - **AI Resume Parsing**: Upload PDF, AI extracts all data automatically
 - **Version Management**: Keep multiple resume versions, publish the best one
@@ -14,6 +15,7 @@ A modern, AI-powered portfolio platform built with Next.js that supports multipl
 - **Responsive**: Looks great on all devices
 
 ### For Platform Owners
+
 - **Multi-User Support**: Unlimited users, each with isolated data
 - **Secure Authentication**: NextAuth.js with password hashing
 - **Database-Driven**: PostgreSQL with Neon/Vercel

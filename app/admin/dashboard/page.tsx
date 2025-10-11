@@ -12,7 +12,9 @@ import { UserProfileCard } from "@/components/admin/user-profile-card";
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<"upload" | "versions" | "profile">("upload");
+  const [activeTab, setActiveTab] = useState<"upload" | "versions" | "profile">(
+    "upload",
+  );
   const [refreshKey, setRefreshKey] = useState(0);
 
   const handleUploadSuccess = () => {

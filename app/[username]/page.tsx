@@ -53,7 +53,21 @@ export default async function UserPortfolioPage({ params }: Props) {
     notFound();
   }
 
-  return <PortfolioPage data={portfolioData} />;
+  // Extract user customization data
+  const userCustomization = {
+    logoUrl: data.logo_url,
+    profileImageUrl: data.profile_image_url,
+    themeSettings: data.theme_settings,
+    profileData: data.profile_data,
+    pdfUrl: data.pdf_url,
+  };
+
+  return (
+    <PortfolioPage 
+      data={portfolioData} 
+      userCustomization={userCustomization}
+    />
+  );
 }
 
 // Enable ISR - revalidate every 60 seconds

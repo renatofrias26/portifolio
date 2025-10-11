@@ -14,7 +14,12 @@ const navItems = [
   { name: "Contact", href: "#contact" },
 ];
 
-export function Navigation() {
+interface NavigationProps {
+  logoUrl?: string;
+  pdfUrl?: string;
+}
+
+export function Navigation({ logoUrl, pdfUrl }: NavigationProps = {}) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -107,16 +112,27 @@ export function Navigation() {
             <a
               href="#"
               className="flex items-center"
-              aria-label="Renato Frias - Home"
+              aria-label="Home"
             >
-              <Image
-                src="/logo.png"
-                alt="Renato Frias Logo"
-                width={48}
-                height={48}
-                className="w-12 h-12 transition-transform hover:scale-110"
-                priority
-              />
+              {logoUrl ? (
+                <Image
+                  src={logoUrl}
+                  alt="Logo"
+                  width={48}
+                  height={48}
+                  className="w-12 h-12 object-contain transition-transform hover:scale-110"
+                  priority
+                />
+              ) : (
+                <Image
+                  src="/logo.png"
+                  alt="Logo"
+                  width={48}
+                  height={48}
+                  className="w-12 h-12 transition-transform hover:scale-110"
+                  priority
+                />
+              )}
             </a>
 
             {/* Desktop Navigation */}
@@ -148,7 +164,7 @@ export function Navigation() {
                   />
                 </button>
                 <a
-                  href="/resume.pdf"
+                  href={pdfUrl || "/resume.pdf"}
                   download
                   className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
                   aria-label="Download Resume PDF"
@@ -225,7 +241,7 @@ export function Navigation() {
                   <span className="font-medium">Share</span>
                 </button>
                 <a
-                  href="/resume.pdf"
+                  href={pdfUrl || "/resume.pdf"}
                   download
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"

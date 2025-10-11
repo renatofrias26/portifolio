@@ -5,6 +5,7 @@ This document describes the multi-user architecture of the portfolio application
 ## Overview
 
 The system now supports multiple users, where each user can:
+
 - Create their own account with a unique username
 - Upload and manage their own resume versions
 - Publish their portfolio at a custom URL (`/username`)
@@ -29,6 +30,7 @@ CREATE TABLE users (
 ```
 
 **Key Fields:**
+
 - `username`: Public username used for portfolio URL (e.g., `/johndoe`)
 - `profile_data`: JSONB field for additional profile information (bio, social links, etc.)
 - `is_active`: Allows soft-deletion/deactivation of user accounts
@@ -51,6 +53,7 @@ CREATE TABLE resume_data (
 ```
 
 **Key Changes:**
+
 - `user_id`: Foreign key to users table (replaces `created_by`)
 - `UNIQUE(user_id, version)`: Each user has their own version numbering (1, 2, 3...)
 - `ON DELETE CASCADE`: When a user is deleted, all their resumes are deleted
@@ -64,6 +67,7 @@ npx tsx scripts/migrate-multi-user.ts
 ```
 
 This migration script will:
+
 1. Add new columns to the users table (`username`, `profile_data`, `is_active`)
 2. Generate usernames for existing users from their email addresses
 3. Add `user_id` column to resume_data table
@@ -77,20 +81,26 @@ This migration script will:
 ### Public Routes
 
 #### `GET /api/resume?username={username}`
+
 Fetches the published resume for a specific user.
 
 **Response:**
+
 ```json
 {
   "success": true,
-  "data": { /* resume data */ },
+  "data": {
+    /* resume data */
+  },
   "version": 3,
   "pdfUrl": "https://...",
   "updatedAt": "2025-10-11T...",
   "user": {
     "name": "John Doe",
     "username": "johndoe",
-    "profile": { /* profile data */ }
+    "profile": {
+      /* profile data */
+    }
   }
 }
 ```
@@ -100,12 +110,15 @@ Fetches the published resume for a specific user.
 All admin routes require authentication and automatically filter data by the logged-in user.
 
 #### `GET /api/admin/profile`
+
 Get current user's profile information.
 
 #### `PUT /api/admin/profile`
+
 Update current user's profile.
 
 **Body:**
+
 ```json
 {
   "name": "John Doe",
@@ -118,21 +131,27 @@ Update current user's profile.
 ```
 
 #### `GET /api/admin/resume-versions?includeArchived=false`
+
 Get all resume versions for the current user.
 
 #### `POST /api/admin/upload-resume`
+
 Upload a new resume PDF (creates a new version for the current user).
 
 #### `GET /api/admin/resume-data/{id}`
+
 Get resume data for a specific version (verifies user ownership).
 
 #### `PUT /api/admin/update-resume/{id}`
+
 Update resume data for a specific version (verifies user ownership).
 
 #### `POST /api/admin/publish-version`
+
 Publish a specific resume version (verifies user ownership).
 
 **Body:**
+
 ```json
 {
   "versionId": 123
@@ -140,9 +159,11 @@ Publish a specific resume version (verifies user ownership).
 ```
 
 #### `POST /api/admin/archive-version`
+
 Archive/unarchive a resume version (verifies user ownership).
 
 **Body:**
+
 ```json
 {
   "versionId": 123,
@@ -164,15 +185,18 @@ This ensures users can only access their own data.
 ## Public Portfolio URLs
 
 Each user's published portfolio is accessible at:
+
 ```
 https://yourdomain.com/{username}
 ```
 
 For example:
+
 - `https://yourdomain.com/johndoe`
 - `https://yourdomain.com/janedoe`
 
 The route automatically:
+
 - Fetches the user's published resume
 - Returns 404 if user doesn't exist or has no published resume
 - Generates SEO-friendly metadata
@@ -181,6 +205,7 @@ The route automatically:
 ## Username Requirements
 
 Usernames must:
+
 - Be 3-30 characters long
 - Contain only lowercase letters, numbers, hyphens, and underscores
 - Be unique across all users

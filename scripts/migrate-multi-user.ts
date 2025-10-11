@@ -36,7 +36,10 @@ async function migrateToMultiUser() {
     `;
 
     for (const user of existingUsers.rows) {
-      const username = user.email.split("@")[0].toLowerCase().replace(/[^a-z0-9]/g, "");
+      const username = user.email
+        .split("@")[0]
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "");
       console.log(`Setting username for ${user.email}: ${username}`);
       await sql`
         UPDATE users

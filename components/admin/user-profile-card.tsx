@@ -32,7 +32,7 @@ export function UserProfileCard() {
     try {
       const response = await fetch("/api/admin/profile");
       const data = await response.json();
-      
+
       if (data.success) {
         setProfile(data.user);
         setFormData({
@@ -68,7 +68,7 @@ export function UserProfileCard() {
       setSuccess("Profile updated successfully!");
       setProfile(data.user);
       setEditing(false);
-      
+
       // Refresh after 2 seconds to update the URL if username changed
       setTimeout(() => {
         window.location.reload();
@@ -118,7 +118,9 @@ export function UserProfileCard() {
 
       {success && (
         <div className="mb-4 p-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-          <p className="text-sm text-green-600 dark:text-green-400">{success}</p>
+          <p className="text-sm text-green-600 dark:text-green-400">
+            {success}
+          </p>
         </div>
       )}
 
@@ -131,7 +133,9 @@ export function UserProfileCard() {
             <input
               type="text"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
             />
           </div>
@@ -143,7 +147,12 @@ export function UserProfileCard() {
             <input
               type="text"
               value={formData.username}
-              onChange={(e) => setFormData({ ...formData, username: e.target.value.toLowerCase() })}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  username: e.target.value.toLowerCase(),
+                })
+              }
               pattern="[a-z0-9_-]{3,30}"
               className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
             />
@@ -200,7 +209,9 @@ export function UserProfileCard() {
           </div>
 
           <div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Portfolio URL</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Portfolio URL
+            </p>
             <a
               href={`/${profile.username}`}
               target="_blank"
@@ -212,7 +223,9 @@ export function UserProfileCard() {
           </div>
 
           <div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Member Since</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Member Since
+            </p>
             <p className="text-gray-900 dark:text-white font-medium">
               {new Date(profile.createdAt).toLocaleDateString()}
             </p>

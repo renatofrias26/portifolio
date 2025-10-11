@@ -23,7 +23,8 @@ export async function getPublishedResume(userId: number) {
 export async function getPublishedResumeByUsername(username: string) {
   try {
     const result = await sql`
-      SELECT r.data, r.pdf_url, r.version, r.updated_at, u.name, u.username, u.profile_data
+      SELECT r.data, r.pdf_url, r.version, r.updated_at, 
+             u.name, u.username, u.profile_data, u.logo_url, u.profile_image_url, u.theme_settings
       FROM resume_data r
       JOIN users u ON r.user_id = u.id
       WHERE u.username = ${username} AND u.is_active = true AND r.is_published = true
@@ -40,7 +41,7 @@ export async function getPublishedResumeByUsername(username: string) {
 // Helper function to get all resume versions for a specific user
 export async function getAllResumeVersions(
   userId: number,
-  includeArchived: boolean = false
+  includeArchived: boolean = false,
 ) {
   try {
     const result = includeArchived
@@ -160,7 +161,10 @@ export async function archiveResumeVersion(versionId: number, userId: number) {
 }
 
 // Helper function to unarchive a specific version for a user
-export async function unarchiveResumeVersion(versionId: number, userId: number) {
+export async function unarchiveResumeVersion(
+  versionId: number,
+  userId: number,
+) {
   try {
     await sql`
       UPDATE resume_data
@@ -195,10 +199,13 @@ export async function updateResumeData(
   versionId: number,
   userId: number,
   data: any,
-  pdfUrl?: string
+  pdfUrl?: string,
 ) {
   try {
-    const updateFields: string[] = ["data = $1", "updated_at = CURRENT_TIMESTAMP"];
+    const updateFields: string[] = [
+      "data = $1",
+      "updated_at = CURRENT_TIMESTAMP",
+    ];
     const params: any[] = [JSON.stringify(data)];
 
     if (pdfUrl) {
@@ -230,7 +237,7 @@ export async function updateResumeData(
 export async function getUserById(userId: number) {
   try {
     const result = await sql`
-      SELECT id, email, name, username, profile_data, is_active, created_at
+      SELECT id, email, name, username, profile_data, logo_url, profile_image_url, theme_settings, is_active, created_at
       FROM users
       WHERE id = ${userId}
     `;
@@ -245,7 +252,7 @@ export async function getUserById(userId: number) {
 export async function getUserByUsername(username: string) {
   try {
     const result = await sql`
-      SELECT id, email, name, username, profile_data, is_active, created_at
+      SELECT id, email, name, username, profile_data, logo_url, profile_image_url, theme_settings, is_active, created_at
       FROM users
       WHERE username = ${username} AND is_active = true
     `;
@@ -263,7 +270,10 @@ export async function updateUserProfile(
     name?: string;
     username?: string;
     profile_data?: any;
-  }
+    logo_url?: string;
+    profile_image_url?: string;
+    theme_settings?: any;
+  },
 ) {
   try {
     const updateFields: string[] = ["updated_at = CURRENT_TIMESTAMP"];
@@ -284,13 +294,28 @@ export async function updateUserProfile(
       updateFields.push(`profile_data = $${params.length}`);
     }
 
+    if (updates.logo_url !== undefined) {
+      params.push(updates.logo_url);
+      updateFields.push(`logo_url = $${params.length}`);
+    }
+
+    if (updates.profile_image_url !== undefined) {
+      params.push(updates.profile_image_url);
+      updateFields.push(`profile_image_url = $${params.length}`);
+    }
+
+    if (updates.theme_settings !== undefined) {
+      params.push(JSON.stringify(updates.theme_settings));
+      updateFields.push(`theme_settings = $${params.length}`);
+    }
+
     params.push(userId);
 
     const query = `
       UPDATE users
       SET ${updateFields.join(", ")}
       WHERE id = $${params.length}
-      RETURNING id, email, name, username, profile_data
+      RETURNING id, email, name, username, profile_data, logo_url, profile_image_url, theme_settings
     `;
 
     const result = await sql.query(query, params);

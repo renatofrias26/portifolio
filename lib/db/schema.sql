@@ -6,6 +6,9 @@ CREATE TABLE IF NOT EXISTS users (
   name VARCHAR(255),
   username VARCHAR(100) UNIQUE NOT NULL, -- Public username for portfolio URL
   profile_data JSONB, -- Store additional profile info (bio, social links, etc.)
+  logo_url TEXT, -- User's logo/brand image
+  profile_image_url TEXT, -- User's profile/headshot image
+  theme_settings JSONB DEFAULT '{"primaryColor": "#3b82f6", "accentColor": "#8b5cf6"}'::jsonb,
   is_active BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

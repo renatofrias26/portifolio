@@ -8,21 +8,27 @@ export async function GET(request: Request) {
     const username = searchParams.get("username");
 
     if (!username) {
-      return NextResponse.json({
-        success: false,
-        message: "Username parameter is required",
-        data: null,
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Username parameter is required",
+          data: null,
+        },
+        { status: 400 },
+      );
     }
 
     const publishedResume = await getPublishedResumeByUsername(username);
 
     if (!publishedResume) {
-      return NextResponse.json({
-        success: false,
-        message: "No published resume found for this user",
-        data: null,
-      }, { status: 404 });
+      return NextResponse.json(
+        {
+          success: false,
+          message: "No published resume found for this user",
+          data: null,
+        },
+        { status: 404 },
+      );
     }
 
     return NextResponse.json({

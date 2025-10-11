@@ -15,10 +15,7 @@ export async function GET(request: NextRequest) {
     const user = await getUserById(userId);
 
     if (!user) {
-      return NextResponse.json(
-        { error: "User not found" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     return NextResponse.json({
@@ -29,6 +26,9 @@ export async function GET(request: NextRequest) {
         name: user.name,
         username: user.username,
         profileData: user.profile_data,
+        logoUrl: user.logo_url,
+        profileImageUrl: user.profile_image_url,
+        themeSettings: user.theme_settings,
         isActive: user.is_active,
         createdAt: user.created_at,
       },
@@ -55,7 +55,7 @@ export async function PUT(request: NextRequest) {
 
     const userId = parseInt(session.user.id);
     const body = await request.json();
-    
+
     const { name, username, profileData } = body;
 
     // Validate username format if provided
@@ -63,8 +63,9 @@ export async function PUT(request: NextRequest) {
       const usernameRegex = /^[a-z0-9_-]{3,30}$/;
       if (!usernameRegex.test(username)) {
         return NextResponse.json(
-          { 
-            error: "Username must be 3-30 characters and contain only lowercase letters, numbers, hyphens, and underscores" 
+          {
+            error:
+              "Username must be 3-30 characters and contain only lowercase letters, numbers, hyphens, and underscores",
           },
           { status: 400 },
         );
@@ -99,11 +100,14 @@ export async function PUT(request: NextRequest) {
         name: updatedUser.name,
         username: updatedUser.username,
         profileData: updatedUser.profile_data,
+        logoUrl: updatedUser.logo_url,
+        profileImageUrl: updatedUser.profile_image_url,
+        themeSettings: updatedUser.theme_settings,
       },
     });
   } catch (error) {
     console.error("Error updating user profile:", error);
-    
+
     // Check for unique constraint violation on username
     if (error instanceof Error && error.message.includes("unique")) {
       return NextResponse.json(

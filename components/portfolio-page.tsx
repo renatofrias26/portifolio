@@ -46,8 +46,29 @@ export interface PortfolioData {
   }>;
 }
 
+export interface UserCustomization {
+  logoUrl?: string;
+  profileImageUrl?: string;
+  themeSettings?: {
+    primaryColor?: string;
+    accentColor?: string;
+  };
+  profileData?: {
+    socialLinks?: {
+      github?: string;
+      linkedin?: string;
+      twitter?: string;
+      website?: string;
+    };
+    tagline?: string;
+    bio?: string;
+  };
+  pdfUrl?: string;
+}
+
 export interface PortfolioPageProps {
   data?: PortfolioData;
+  userCustomization?: UserCustomization;
   showNavigation?: boolean;
   showFooter?: boolean;
   showSkipToContent?: boolean;
@@ -60,9 +81,11 @@ export interface PortfolioPageProps {
  * This component can be used in multiple contexts:
  * 1. Live website (app/page.tsx) - uses default static data
  * 2. Admin preview - passes dynamic data from database
- * 3. Future: Different layouts based on user preferences
+ * 3. User portfolios - uses database data with customization
+ * 4. Future: Different layouts based on user preferences
  *
  * @param data - Portfolio data (defaults to static data from resume.ts)
+ * @param userCustomization - User branding and customization (logo, profile image, theme)
  * @param showNavigation - Show navigation bar (default: true)
  * @param showFooter - Show footer (default: true)
  * @param showSkipToContent - Show skip to content link (default: true)
@@ -70,6 +93,7 @@ export interface PortfolioPageProps {
  */
 export function PortfolioPage({
   data,
+  userCustomization,
   showNavigation = true,
   showFooter = true,
   showSkipToContent = true,
@@ -81,12 +105,18 @@ export function PortfolioPage({
   return (
     <>
       {showSkipToContent && <SkipToContent />}
-      {showNavigation && <Navigation />}
+      {showNavigation && (
+        <Navigation 
+          logoUrl={userCustomization?.logoUrl}
+          pdfUrl={userCustomization?.pdfUrl}
+        />
+      )}
 
       <main id="main-content" className="min-h-screen">
         {/* Hero Section */}
         <HeroSection
           personal={usePropsData ? data.personal : undefined}
+          profileImageUrl={userCustomization?.profileImageUrl}
           showScrollButton={true}
         />
 
@@ -122,6 +152,7 @@ export function PortfolioPage({
                 }
               : undefined
           }
+          socialLinks={userCustomization?.profileData?.socialLinks}
         />
       </main>
 
