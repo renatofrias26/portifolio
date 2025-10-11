@@ -56,7 +56,17 @@ export async function POST(request: NextRequest) {
     console.log("🤖 Parsing resume with AI...");
     const parsedData = await parseResume(buffer);
 
-    console.log("💾 Saving resume data to database...");
+    console.log("� Parsed data summary:");
+    console.log("  - Personal info:", parsedData.personal?.name);
+    console.log("  - Experience count:", parsedData.experience?.length);
+    console.log(
+      "  - Skills structure:",
+      typeof parsedData.skills,
+      Array.isArray(parsedData.skills) ? "array" : "object",
+    );
+    console.log("  - Skills data:", JSON.stringify(parsedData.skills, null, 2));
+
+    console.log("�💾 Saving resume data to database...");
     // Save to database (draft mode - not published yet)
     const result = await saveResumeData(
       parsedData,

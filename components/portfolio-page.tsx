@@ -33,9 +33,10 @@ export interface PortfolioData {
     institution: string;
     period: string;
   }>;
-  skills: {
-    [category: string]: string[];
-  };
+  skills: Array<{
+    category: string;
+    items: string[];
+  }>;
   projects?: Array<{
     name: string;
     description: string;

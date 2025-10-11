@@ -32,15 +32,10 @@ interface ResumeData {
     period: string;
     location?: string;
   }>;
-  skills: {
-    frontend?: string[];
-    backend?: string[];
-    testing?: string[];
-    tools?: string[];
-    ai?: string[];
-    technical?: string[];
-    soft?: string[];
-  };
+  skills: Array<{
+    category: string;
+    items: string[];
+  }>;
   projects?: Array<{
     name: string;
     description: string;

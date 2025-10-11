@@ -4,18 +4,13 @@ import { SectionHeading } from "../ui/section-heading";
 import { GlassCard } from "../ui/glass-card";
 import { resumeData } from "@/data/resume";
 
-interface Skills {
-  frontend?: string[];
-  backend?: string[];
-  testing?: string[];
-  tools?: string[];
-  ai?: string[];
-  technical?: string[];
-  soft?: string[];
+interface SkillCategory {
+  category: string;
+  items: string[];
 }
 
 interface SkillsSectionProps {
-  skills?: Skills;
+  skills?: SkillCategory[];
   showHeading?: boolean;
   sectionId?: string;
 }
@@ -25,43 +20,57 @@ export function SkillsSection({
   showHeading = true,
   sectionId = "skills",
 }: SkillsSectionProps) {
-  const skillCategories = [
-    {
-      title: "Frontend",
-      skills: skills.frontend || [],
-      gradient: "from-purple-600 to-pink-500",
-    },
-    {
-      title: "Backend",
-      skills: skills.backend || [],
-      gradient: "from-blue-600 to-cyan-500",
-    },
-    {
-      title: "AI & Innovation",
-      skills: skills.ai || [],
-      gradient: "from-teal-600 to-green-500",
-    },
-    {
-      title: "Testing",
-      skills: skills.testing || [],
-      gradient: "from-orange-600 to-red-500",
-    },
-    {
-      title: "Tools & DevOps",
-      skills: skills.tools || [],
-      gradient: "from-indigo-600 to-purple-500",
-    },
-    {
-      title: "Technical Skills",
-      skills: skills.technical || [],
-      gradient: "from-purple-600 to-blue-500",
-    },
-    {
-      title: "Soft Skills",
-      skills: skills.soft || [],
-      gradient: "from-pink-600 to-rose-500",
-    },
-  ].filter((cat) => cat.skills.length > 0); // Only show categories with skills
+  console.log("🎨 SkillsSection - Received skills:", skills);
+
+  // Map categories to display configuration
+  const getCategoryConfig = (category: string) => {
+    const categoryLower = category.toLowerCase();
+
+    const configs: Record<string, { title: string; gradient: string }> = {
+      frontend: {
+        title: "Frontend",
+        gradient: "from-purple-600 to-pink-500",
+      },
+      backend: {
+        title: "Backend",
+        gradient: "from-blue-600 to-cyan-500",
+      },
+      ai: {
+        title: "AI & Innovation",
+        gradient: "from-teal-600 to-green-500",
+      },
+      testing: {
+        title: "Testing",
+        gradient: "from-orange-600 to-red-500",
+      },
+      tools: {
+        title: "Tools & DevOps",
+        gradient: "from-indigo-600 to-purple-500",
+      },
+      technical: {
+        title: "Technical Skills",
+        gradient: "from-purple-600 to-blue-500",
+      },
+      soft: {
+        title: "Soft Skills",
+        gradient: "from-pink-600 to-rose-500",
+      },
+    };
+
+    return (
+      configs[categoryLower] || {
+        title: category,
+        gradient: "from-gray-600 to-gray-500",
+      }
+    );
+  };
+
+  const skillCategories = skills
+    .filter((cat) => cat.items && cat.items.length > 0)
+    .map((cat) => ({
+      ...getCategoryConfig(cat.category),
+      skills: cat.items,
+    }));
 
   return (
     <section id={sectionId} className="py-20 px-6">

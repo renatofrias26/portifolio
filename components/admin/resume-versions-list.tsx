@@ -10,6 +10,8 @@ import {
   Clock,
   ExternalLink,
   Loader2,
+  Archive,
+  ArchiveRestore,
 } from "lucide-react";
 import { PreviewModal } from "./preview-modal";
 import { EditModal } from "./edit-modal";
@@ -18,6 +20,7 @@ interface ResumeVersion {
   id: number;
   version: number;
   is_published: boolean;
+  is_archived?: boolean;
   created_at: string;
   updated_at: string;
   pdf_url?: string;
@@ -29,15 +32,18 @@ export function ResumeVersionsList() {
   const [error, setError] = useState<string | null>(null);
   const [previewVersionId, setPreviewVersionId] = useState<number | null>(null);
   const [editVersionId, setEditVersionId] = useState<number | null>(null);
+  const [showArchived, setShowArchived] = useState(false);
 
   useEffect(() => {
     fetchVersions();
-  }, []);
+  }, [showArchived]);
 
   const fetchVersions = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch("/api/admin/resume-versions");
+      const response = await fetch(
+        `/api/admin/resume-versions?includeArchived=${showArchived}`,
+      );
       const data = await response.json();
 
       if (response.ok) {
@@ -72,6 +78,29 @@ export function ResumeVersionsList() {
     }
   };
 
+  const handleArchive = async (
+    versionId: number,
+    action: "archive" | "unarchive",
+  ) => {
+    try {
+      const response = await fetch("/api/admin/archive-version", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ versionId, action }),
+      });
+
+      if (response.ok) {
+        // Refresh the list
+        fetchVersions();
+      } else {
+        const data = await response.json();
+        alert(data.error || `Failed to ${action} version`);
+      }
+    } catch (err) {
+      alert(`Failed to ${action} version`);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -93,99 +122,161 @@ export function ResumeVersionsList() {
       <div className="text-center py-12">
         <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
         <p className="text-gray-600 dark:text-gray-400">
-          No resume versions yet. Upload your first resume to get started!
+          {showArchived
+            ? "No archived versions found."
+            : "No resume versions yet. Upload your first resume to get started!"}
         </p>
       </div>
     );
   }
 
+  const archivedCount = versions.filter((v) => v.is_archived).length;
+  const activeCount = versions.filter((v) => !v.is_archived).length;
+
   return (
-    <div className="space-y-4">
-      {versions.map((version, index) => (
-        <motion.div
-          key={version.id}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.1 }}
-          className={`glass rounded-xl p-6 border-2 ${
-            version.is_published
-              ? "border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-900/10"
-              : "border-gray-200 dark:border-gray-700"
-          }`}
-        >
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
-                <h3 className="text-lg font-semibold">
-                  Version {version.version}
-                </h3>
-                {version.is_published && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-sm font-medium">
-                    <CheckCircle className="w-4 h-4" />
-                    Published
-                  </span>
-                )}
-                {!version.is_published && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium">
-                    <Clock className="w-4 h-4" />
-                    Draft
-                  </span>
-                )}
-              </div>
-
-              <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                <p>
-                  <strong>Created:</strong>{" "}
-                  {new Date(version.created_at).toLocaleString()}
-                </p>
-                {version.updated_at !== version.created_at && (
-                  <p>
-                    <strong>Updated:</strong>{" "}
-                    {new Date(version.updated_at).toLocaleString()}
-                  </p>
-                )}
-              </div>
-
-              {version.pdf_url && (
-                <a
-                  href={version.pdf_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-sm text-purple-600 dark:text-purple-400 hover:underline mt-2"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  View PDF
-                </a>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setPreviewVersionId(version.id)}
-                className="p-2 rounded-lg glass hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
-                title="Preview"
-              >
-                <Eye className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-              </button>
-              <button
-                onClick={() => setEditVersionId(version.id)}
-                className="p-2 rounded-lg glass hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors"
-                title="Edit"
-              >
-                <Edit className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-              </button>
-              {!version.is_published && (
-                <button
-                  onClick={() => handlePublish(version.id)}
-                  className="px-4 py-2 rounded-lg bg-gradient-to-r from-green-600 to-blue-500 text-white font-medium hover:shadow-lg transition-all"
-                >
-                  Publish
-                </button>
-              )}
-            </div>
+    <div className="space-y-6">
+      {/* Archive Toggle */}
+      <div className="flex items-center justify-between glass rounded-xl p-4">
+        <div className="flex items-center gap-3">
+          <Archive className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+          <div>
+            <p className="font-medium">Show Archived Versions</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              {showArchived
+                ? `Showing all versions (${versions.length} total)`
+                : `${activeCount} active, ${archivedCount} archived`}
+            </p>
           </div>
-        </motion.div>
-      ))}
+        </div>
+        <label className="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            checked={showArchived}
+            onChange={(e) => setShowArchived(e.target.checked)}
+            className="sr-only peer"
+          />
+          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 dark:peer-focus:ring-purple-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-purple-600"></div>
+        </label>
+      </div>
+
+      {/* Versions List */}
+      <div className="space-y-4">
+        {versions.map((version, index) => (
+          <motion.div
+            key={version.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            className={`glass rounded-xl p-6 border-2 ${
+              version.is_archived
+                ? "border-orange-300 dark:border-orange-700 bg-orange-50 dark:bg-orange-900/10 opacity-75"
+                : version.is_published
+                ? "border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-900/10"
+                : "border-gray-200 dark:border-gray-700"
+            }`}
+          >
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <h3 className="text-lg font-semibold">
+                    Version {version.version}
+                  </h3>
+                  {version.is_published && (
+                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-sm font-medium">
+                      <CheckCircle className="w-4 h-4" />
+                      Published
+                    </span>
+                  )}
+                  {version.is_archived && (
+                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 text-sm font-medium">
+                      <Archive className="w-4 h-4" />
+                      Archived
+                    </span>
+                  )}
+                  {!version.is_published && !version.is_archived && (
+                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium">
+                      <Clock className="w-4 h-4" />
+                      Draft
+                    </span>
+                  )}
+                </div>
+
+                <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                  <p>
+                    <strong>Created:</strong>{" "}
+                    {new Date(version.created_at).toLocaleString()}
+                  </p>
+                  {version.updated_at !== version.created_at && (
+                    <p>
+                      <strong>Updated:</strong>{" "}
+                      {new Date(version.updated_at).toLocaleString()}
+                    </p>
+                  )}
+                </div>
+
+                {version.pdf_url && (
+                  <a
+                    href={version.pdf_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-sm text-purple-600 dark:text-purple-400 hover:underline mt-2"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    View PDF
+                  </a>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setPreviewVersionId(version.id)}
+                  className="p-2 rounded-lg glass hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
+                  title="Preview"
+                >
+                  <Eye className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                </button>
+                <button
+                  onClick={() => setEditVersionId(version.id)}
+                  className="p-2 rounded-lg glass hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors"
+                  title="Edit"
+                >
+                  <Edit className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                </button>
+
+                {/* Archive/Unarchive Button */}
+                {!version.is_published &&
+                  (version.is_archived ? (
+                    <button
+                      onClick={() => handleArchive(version.id, "unarchive")}
+                      className="p-2 rounded-lg glass hover:bg-orange-50 dark:hover:bg-orange-900/30 transition-colors"
+                      title="Unarchive"
+                    >
+                      <ArchiveRestore className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleArchive(version.id, "archive")}
+                      className="p-2 rounded-lg glass hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                      title="Archive"
+                    >
+                      <Archive className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                    </button>
+                  ))}
+
+                {/* Publish Button */}
+                {!version.is_published && !version.is_archived && (
+                  <button
+                    onClick={() => handlePublish(version.id)}
+                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-green-600 to-blue-500 text-white font-medium hover:shadow-lg transition-all"
+                  >
+                    Publish
+                  </button>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
 
       {/* Preview Modal */}
       <PreviewModal

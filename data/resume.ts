@@ -25,27 +25,42 @@ export const resumeData = {
     },
   ],
 
-  skills: {
-    frontend: [
-      "HTML / CSS",
-      "JavaScript / TypeScript",
-      "React",
-      "Angular",
-      "RxJs / NgRx",
-      "Flutter",
-      "Single SPA (micro-frontends)",
-      "Storybook",
-    ],
-    backend: ["Node.js", "Java", "API Integration", ".NET"],
-    testing: ["Jest", "Karma Unit Tests"],
-    tools: ["pnpm", "GIT", "AWS", "Atlassian Tools", "NX Monolith"],
-    ai: [
-      "Vertex AI / Gemini",
-      "OpenAI Codex",
-      "GitHub Copilot",
-      "AI Pipeline Development",
-    ],
-  },
+  skills: [
+    {
+      category: "Frontend",
+      items: [
+        "HTML / CSS",
+        "JavaScript / TypeScript",
+        "React",
+        "Angular",
+        "RxJs / NgRx",
+        "Flutter",
+        "Single SPA (micro-frontends)",
+        "Storybook",
+      ],
+    },
+    {
+      category: "Backend",
+      items: ["Node.js", "Java", "API Integration", ".NET"],
+    },
+    {
+      category: "Testing",
+      items: ["Jest", "Karma Unit Tests"],
+    },
+    {
+      category: "Tools",
+      items: ["pnpm", "GIT", "AWS", "Atlassian Tools", "NX Monolith"],
+    },
+    {
+      category: "AI",
+      items: [
+        "Vertex AI / Gemini",
+        "OpenAI Codex",
+        "GitHub Copilot",
+        "AI Pipeline Development",
+      ],
+    },
+  ],
 
   experience: [
     {

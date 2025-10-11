@@ -25,77 +25,40 @@ export async function getResumeData() {
 export function mapResumeData(dbData: any) {
   if (!dbData) return null;
 
+  console.log("🔍 mapResumeData - Input dbData.skills:", dbData.skills);
+
+  // Skills should already be in array format from the database
+  // No need for complex mapping - just use as-is!
+  const skills = dbData.skills || [];
+
+  console.log("🔍 mapResumeData - Using skills directly:", skills);
+
   return {
-    name: dbData.personal?.name || "",
-    title: dbData.personal?.title || "",
-    location: dbData.personal?.location || "",
-    email: dbData.personal?.email || "",
-    phone: dbData.personal?.phone || "",
-    summary: dbData.personal?.summary || "",
+    personal: {
+      name: dbData.personal?.name || "",
+      title: dbData.personal?.title || "",
+      location: dbData.personal?.location || "",
+      email: dbData.personal?.email || "",
+      phone: dbData.personal?.phone || "",
+      summary: dbData.personal?.summary || "",
+    },
 
     education:
       dbData.education?.map((edu: any) => ({
         degree: edu.degree,
-        institution: edu.institution,
-        period: edu.period,
-        details: edu.details,
+        institution: edu.school || edu.institution,
+        period: edu.year || edu.period,
       })) || [],
 
-    skills: {
-      frontend:
-        dbData.skills?.technical?.filter(
-          (s: string) =>
-            s.toLowerCase().includes("react") ||
-            s.toLowerCase().includes("angular") ||
-            s.toLowerCase().includes("html") ||
-            s.toLowerCase().includes("css") ||
-            s.toLowerCase().includes("javascript") ||
-            s.toLowerCase().includes("typescript") ||
-            s.toLowerCase().includes("flutter"),
-        ) || [],
-      backend:
-        dbData.skills?.technical?.filter(
-          (s: string) =>
-            s.toLowerCase().includes("node") ||
-            s.toLowerCase().includes("java") ||
-            s.toLowerCase().includes("api") ||
-            s.toLowerCase().includes(".net"),
-        ) || [],
-      testing:
-        dbData.skills?.technical?.filter(
-          (s: string) =>
-            s.toLowerCase().includes("test") ||
-            s.toLowerCase().includes("jest") ||
-            s.toLowerCase().includes("karma"),
-        ) || [],
-      tools:
-        dbData.skills?.technical?.filter(
-          (s: string) =>
-            s.toLowerCase().includes("git") ||
-            s.toLowerCase().includes("aws") ||
-            s.toLowerCase().includes("nx") ||
-            s.toLowerCase().includes("pnpm"),
-        ) || [],
-      ai:
-        dbData.skills?.technical?.filter(
-          (s: string) =>
-            s.toLowerCase().includes("ai") ||
-            s.toLowerCase().includes("vertex") ||
-            s.toLowerCase().includes("gemini") ||
-            s.toLowerCase().includes("openai") ||
-            s.toLowerCase().includes("copilot"),
-        ) || [],
-    },
+    skills: skills,
 
     experience:
       dbData.experience?.map((exp: any) => ({
         title: exp.title,
         company: exp.company,
         period: exp.period,
-        type: "Full Time", // Default value
         highlights: exp.achievements || [],
         stack: exp.technologies || [],
-        reference: "", // Not stored in DB
       })) || [],
 
     projects:
@@ -104,10 +67,7 @@ export function mapResumeData(dbData: any) {
         description: proj.description,
         highlights: [], // Not in DB structure
         stack: proj.technologies || [],
-        type: "Personal Project", // Default value
-        url: proj.url,
+        url: proj.link || proj.url,
       })) || [],
-
-    uniqueBackground: [], // Not in DB structure
   };
 }

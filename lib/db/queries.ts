@@ -20,13 +20,20 @@ export async function getPublishedResume() {
 }
 
 // Helper function to get all resume versions
-export async function getAllResumeVersions() {
+export async function getAllResumeVersions(includeArchived: boolean = false) {
   try {
-    const result = await sql`
-      SELECT id, version, is_published, created_at, updated_at
-      FROM resume_data
-      ORDER BY version DESC
-    `;
+    const result = includeArchived
+      ? await sql`
+          SELECT id, version, is_published, is_archived, created_at, updated_at
+          FROM resume_data
+          ORDER BY version DESC
+        `
+      : await sql`
+          SELECT id, version, is_published, is_archived, created_at, updated_at
+          FROM resume_data
+          WHERE is_archived = false
+          ORDER BY version DESC
+        `;
     return result.rows;
   } catch (error) {
     console.error("Error fetching resume versions:", error);
@@ -94,6 +101,48 @@ export async function publishResumeVersion(versionId: number) {
     return true;
   } catch (error) {
     console.error("Error publishing resume version:", error);
+    throw error;
+  }
+}
+
+// Helper function to archive a specific version
+export async function archiveResumeVersion(versionId: number) {
+  try {
+    // Check if version is published
+    const versionCheck = await sql`
+      SELECT is_published FROM resume_data WHERE id = ${versionId}
+    `;
+
+    if (versionCheck.rows[0]?.is_published) {
+      throw new Error("Cannot archive a published version");
+    }
+
+    // Archive the version
+    await sql`
+      UPDATE resume_data
+      SET is_archived = true, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ${versionId}
+    `;
+
+    return true;
+  } catch (error) {
+    console.error("Error archiving resume version:", error);
+    throw error;
+  }
+}
+
+// Helper function to unarchive a specific version
+export async function unarchiveResumeVersion(versionId: number) {
+  try {
+    await sql`
+      UPDATE resume_data
+      SET is_archived = false, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ${versionId}
+    `;
+
+    return true;
+  } catch (error) {
+    console.error("Error unarchiving resume version:", error);
     throw error;
   }
 }

@@ -27,9 +27,10 @@ export interface ParsedResume {
     year: string;
     location?: string;
   }>;
-  skills: {
-    [category: string]: string[];
-  };
+  skills: Array<{
+    category: string;
+    items: string[];
+  }>;
   projects?: Array<{
     name: string;
     description: string;
@@ -92,9 +93,28 @@ The JSON should follow this exact structure:
       "location": "City, Country"
     }
   ],
-  "skills": {
-    "Category Name": ["Skill 1", "Skill 2"]
-  },
+  "skills": [
+    {
+      "category": "Frontend",
+      "items": ["React", "Angular", "HTML/CSS", "JavaScript", "TypeScript"]
+    },
+    {
+      "category": "Backend",
+      "items": ["Node.js", "Java", "Python", ".NET"]
+    },
+    {
+      "category": "Testing",
+      "items": ["Jest", "Karma", "Cypress"]
+    },
+    {
+      "category": "Tools",
+      "items": ["Git", "Docker", "AWS", "Jenkins"]
+    },
+    {
+      "category": "AI",
+      "items": ["OpenAI", "Vertex AI", "TensorFlow"]
+    }
+  ],
   "projects": [
     {
       "name": "Project Name",
@@ -107,7 +127,13 @@ The JSON should follow this exact structure:
 
 Important:
 - Extract ALL information accurately
-- Organize skills into logical categories (e.g., "Languages", "Frameworks", "Tools")
+- Return skills as an array of objects with "category" and "items" fields
+- Use these category names: "Frontend", "Backend", "Testing", "Tools", "AI" (you can add others if needed)
+- Frontend includes: UI frameworks, JavaScript libraries, HTML, CSS, and frontend technologies
+- Backend includes: Server-side languages, frameworks, databases, and APIs
+- Testing includes: Testing frameworks and methodologies
+- Tools includes: Development tools, version control, CI/CD, cloud platforms, DevOps tools
+- AI includes: AI/ML frameworks, services, and related technologies
 - Include ALL work experience and education
 - Format dates consistently
 - If a field is not found, use reasonable defaults or omit optional fields
@@ -130,9 +156,37 @@ Important:
     console.log("✅ Received response from OpenAI");
     const parsedData = JSON.parse(response) as ParsedResume;
 
+    // Log the parsed skills for debugging
+    console.log(
+      "📊 Parsed skills structure:",
+      JSON.stringify(parsedData.skills, null, 2),
+    );
+
+    // Convert skills to array format if AI returned object format
+    if (parsedData.skills && !Array.isArray(parsedData.skills)) {
+      console.log("🔄 Converting skills from object to array format");
+      const skillsArray: Array<{ category: string; items: string[] }> = [];
+      Object.entries(parsedData.skills).forEach(([category, items]) => {
+        skillsArray.push({ category, items: items as string[] });
+      });
+      parsedData.skills = skillsArray as any;
+      console.log(
+        "✅ Converted skills:",
+        JSON.stringify(parsedData.skills, null, 2),
+      );
+    }
+
     // Validate the structure
-    if (!parsedData.personal || !parsedData.experience || !parsedData.skills) {
+    if (!parsedData.personal || !parsedData.experience) {
       throw new Error("Invalid resume structure returned by AI");
+    }
+
+    // Check if skills is defined (can be empty array)
+    if (
+      !parsedData.skills ||
+      (Array.isArray(parsedData.skills) && parsedData.skills.length === 0)
+    ) {
+      console.warn("⚠️ Warning: No skills found in resume");
     }
 
     console.log("✅ Resume parsed successfully");

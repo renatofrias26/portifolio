@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { getAllResumeVersions } from "@/lib/db/queries";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     // Check authentication
     const session = await getServerSession(authOptions);
@@ -11,8 +11,12 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Get query parameter for including archived versions
+    const { searchParams } = new URL(request.url);
+    const includeArchived = searchParams.get("includeArchived") === "true";
+
     // Get all resume versions
-    const versions = await getAllResumeVersions();
+    const versions = await getAllResumeVersions(includeArchived);
 
     return NextResponse.json({
       success: true,
