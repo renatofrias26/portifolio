@@ -14,19 +14,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Renato Frias | Software Developer & AI Specialist",
+  title: "Upfolio - Upload. Share. Get hired.",
   description:
-    "Software Developer with 5+ years of experience specializing in Angular, React, and AI development. Building innovative solutions from Brisbane, Australia.",
+    "Create your professional portfolio in minutes with AI-powered resume parsing. Upload your resume, get a beautiful portfolio. Simple, powerful, effective.",
   keywords: [
-    "Software Developer",
-    "AI Development",
-    "Angular",
-    "React",
-    "Flutter",
-    "Brisbane",
-    "Full Stack Developer",
+    "AI portfolio",
+    "Resume to portfolio",
+    "Professional portfolio",
+    "Online resume",
+    "Portfolio builder",
+    "Career portfolio",
+    "AI resume parser",
+    "Portfolio platform",
   ],
-  authors: [{ name: "Renato Frias" }],
+  authors: [{ name: "Upfolio" }],
   icons: {
     icon: [
       { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
@@ -37,11 +38,19 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
-    title: "Renato Frias | Software Developer & AI Specialist",
+    title: "Upfolio - Upload. Share. Get hired.",
     description:
-      "Software Developer specializing in AI, Angular, and React development",
+      "Create your professional portfolio in minutes with AI-powered resume parsing.",
     type: "website",
-    images: ["/logo.png"],
+    siteName: "Upfolio",
+    images: ["/og-image.png"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Upfolio - Upload. Share. Get hired.",
+    description:
+      "Create your professional portfolio in minutes with AI-powered resume parsing.",
+    images: ["/og-image.png"],
   },
 };
 

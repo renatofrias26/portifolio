@@ -5,6 +5,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { GlassCard } from "@/components/ui/glass-card";
 import { GradientText } from "@/components/ui/gradient-text";
+import Image from "next/image";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -75,11 +76,31 @@ export default function RegisterPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900 flex items-center justify-center p-4">
       <GlassCard className="max-w-md w-full">
         <div className="p-8">
-          <h1 className="text-3xl font-bold mb-2 text-center">
-            <GradientText>Create Account</GradientText>
+          {/* Upfolio Logo */}
+          <div className="mb-6 flex justify-center">
+            <Image
+              src="/logo-dark.svg"
+              alt="Upfolio"
+              width={160}
+              height={64}
+              className="dark:hidden"
+              priority
+            />
+            <Image
+              src="/logo-dark.svg"
+              alt="Upfolio"
+              width={160}
+              height={64}
+              className="hidden dark:block"
+              priority
+            />
+          </div>
+
+          <h1 className="text-2xl font-bold mb-2 text-center text-gray-900 dark:text-white">
+            Join Upfolio
           </h1>
           <p className="text-gray-600 dark:text-gray-400 text-center mb-8">
-            Start building your professional portfolio
+            Upload. Share. Get hired.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">

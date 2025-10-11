@@ -1,32 +1,50 @@
-# Portfolio Platform - Multi-User Edition
+# Upfolio - Upload. Share. Get hired.
 
-A modern, AI-powered portfolio platform built with Next.js that supports multiple users. Each user can create their own account, upload resumes, and publish their portfolio at a custom URL.
+> AI-powered professional portfolio platform built with Next.js
+
+[![Next.js](https://img.shields.io/badge/Next.js-15-black)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8)](https://tailwindcss.com/)
+
+---
+
+## 🚀 What is Upfolio?
+
+**Upfolio** is a modern portfolio platform that transforms your resume into a stunning, professional portfolio in minutes. Upload your PDF resume, and our AI extracts all your information automatically. No manual data entry, no complicated setup—just beautiful portfolios that help you get hired.
+
+### The Simple Process
+
+1. **Upload** - Drop your resume PDF
+2. **Share** - Get your custom URL (yourdomain.com/yourname)
+3. **Get hired** - Impress recruiters with a modern portfolio
+
+---
 
 ## 🌟 Features
 
 ### For Users
 
-- **Personal Portfolio URL**: Each user gets `yourdomain.com/{username}`
-- **AI Resume Parsing**: Upload PDF, AI extracts all data automatically
-- **Version Management**: Keep multiple resume versions, publish the best one
-- **Profile Customization**: Manage username, name, and profile settings
-- **Glassmorphism Design**: Beautiful iOS-inspired UI with smooth animations
-- **AI Chat**: Visitors can ask questions about your experience
-- **Responsive**: Looks great on all devices
+- 🎯 **Personal Portfolio URL**: Each user gets `yourdomain.com/{username}`
+- 🤖 **AI Resume Parsing**: Upload PDF, AI extracts all data automatically
+- 📊 **Version Management**: Keep multiple resume versions, publish the best one
+- 🎨 **Profile Customization**: Manage username, name, and profile settings
+- 💎 **Glassmorphism Design**: Beautiful iOS-inspired UI with smooth animations
+- 💬 **AI Chat**: Visitors can ask questions about your experience
+- 📱 **Responsive**: Looks great on all devices
 
 ### For Platform Owners
 
-- **Multi-User Support**: Unlimited users, each with isolated data
-- **Secure Authentication**: NextAuth.js with password hashing
-- **Database-Driven**: PostgreSQL with Neon/Vercel
-- **Admin Dashboard**: Full-featured management interface
-- **Version Control**: Track all resume versions per user
-- **Analytics Ready**: Built to add usage tracking
+- 👥 **Multi-User Support**: Unlimited users, each with isolated data
+- 🔐 **Secure Authentication**: NextAuth.js with password hashing
+- 🗄️ **Database-Driven**: PostgreSQL with Neon/Vercel
+- 📈 **Admin Dashboard**: Full-featured management interface
+- 🔄 **Version Control**: Track all resume versions per user
+- 📊 **Analytics Ready**: Built to add usage tracking
 
-## 🏗️ Architecture
+## 🏗️ Technology Stack
 
 - **Frontend**: Next.js 15 (App Router), React, TypeScript
-- **Styling**: Tailwind CSS, Framer Motion
+- **Styling**: Tailwind CSS 4, Framer Motion
 - **Database**: PostgreSQL (Vercel Postgres / Neon)
 - **Authentication**: NextAuth.js v4
 - **AI**: OpenAI GPT-4 for resume parsing and chat

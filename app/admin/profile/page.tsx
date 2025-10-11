@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { LogOut, Home, ArrowLeft, Save, User } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { ImageUploader } from "@/components/admin/image-uploader";
+import Image from "next/image";
 
 interface UserProfile {
   id: number;
@@ -141,8 +142,15 @@ export default function ProfilePage() {
                 <ArrowLeft className="w-4 h-4" />
                 <span className="hidden sm:inline">Back to Dashboard</span>
               </button>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
-                Your Profile
+              <Image
+                src="/logo-icon.svg"
+                alt="Upfolio"
+                width={28}
+                height={28}
+                className="w-7 h-7"
+              />
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+                Profile Settings
               </h1>
             </div>
             <div className="flex items-center gap-4">
@@ -175,7 +183,7 @@ export default function ProfilePage() {
           className="max-w-4xl mx-auto"
         >
           <p className="text-gray-600 dark:text-gray-400 mb-8">
-            Manage your account settings and portfolio preferences
+            Manage your Upfolio account and portfolio preferences
           </p>
 
           {error && (

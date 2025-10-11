@@ -82,8 +82,12 @@ export function Navigation({
 
   const handleShare = async () => {
     const shareData = {
-      title: "Renato Frias - Portfolio",
-      text: "Check out my portfolio!",
+      title: userName
+        ? `${userName} - Upfolio`
+        : "Upfolio - Upload. Share. Get hired.",
+      text: userName
+        ? `Check out ${userName}'s portfolio on Upfolio!`
+        : "Create your professional portfolio with Upfolio",
       url: window.location.href,
     };
 

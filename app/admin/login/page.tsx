@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 export default function AdminLogin() {
   const router = useRouter();
@@ -47,8 +48,27 @@ export default function AdminLogin() {
       >
         <div className="glass rounded-2xl p-8 shadow-xl">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
-              Admin Login
+            {/* Upfolio Logo */}
+            <div className="mb-6 flex justify-center">
+              <Image
+                src="/logo-dark.svg"
+                alt="Upfolio"
+                width={160}
+                height={64}
+                className="dark:hidden"
+                priority
+              />
+              <Image
+                src="/logo-dark.svg"
+                alt="Upfolio"
+                width={160}
+                height={64}
+                className="hidden dark:block"
+                priority
+              />
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Welcome Back
             </h1>
             <p className="text-gray-600 dark:text-gray-400 mt-2">
               Sign in to manage your portfolio
