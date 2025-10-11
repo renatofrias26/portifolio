@@ -11,12 +11,14 @@ Users can now add a custom tagline that appears below their title in the hero se
 ### Profile Settings UI (`app/admin/profile/page.tsx`)
 
 **New Field: Hero Tagline**
+
 - Added a textarea input for users to enter their custom tagline
 - Shows in both edit mode and view mode
 - Optional field with helpful placeholder text
 - Displays example: "From Mechatronics Engineering to Software Development, now specializing in AI Solutions..."
 
 **Features:**
+
 - ✅ Multi-line support (textarea with 3 rows)
 - ✅ Helpful description: "This appears below your title on the hero section of your portfolio"
 - ✅ Placeholder example to guide users
@@ -28,6 +30,7 @@ Users can now add a custom tagline that appears below their title in the hero se
 ## 🔧 How It Works
 
 ### Data Flow:
+
 1. User enters tagline in Profile Settings
 2. Saved to `users.profile_data.tagline` (JSONB field)
 3. Fetched by `app/[username]/page.tsx`
@@ -36,6 +39,7 @@ Users can now add a custom tagline that appears below their title in the hero se
 6. Displayed below the user's title
 
 ### Database Structure:
+
 ```sql
 users.profile_data = {
   "tagline": "Your custom tagline here",
@@ -50,6 +54,7 @@ users.profile_data = {
 ## 🎨 User Interface
 
 ### Edit Mode:
+
 ```
 ┌─────────────────────────────────────────┐
 │ Hero Tagline (Optional)                  │
@@ -63,6 +68,7 @@ users.profile_data = {
 ```
 
 ### View Mode:
+
 ```
 ┌─────────────────────────────────────────┐
 │ Hero Tagline                             │
@@ -98,12 +104,14 @@ If no tagline is set, this section is simply hidden (clean layout).
 ## 🔗 Integration Points
 
 ### Files Modified:
+
 1. ✅ `app/admin/profile/page.tsx` - Added tagline field to profile form
 2. ✅ Already integrated with `PortfolioPage` component
 3. ✅ Already integrated with `HeroSection` component
 4. ✅ Already integrated with API route (uses `profileData`)
 
 ### API Routes:
+
 - ✅ `GET /api/admin/profile` - Returns `profileData.tagline`
 - ✅ `PUT /api/admin/profile` - Saves `profileData.tagline`
 

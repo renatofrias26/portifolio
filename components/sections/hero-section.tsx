@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { GradientText } from "../ui/gradient-text";
 import { ArrowDown, Mail, Phone, MapPin } from "lucide-react";
 import { resumeData } from "@/data/resume";
+import { Fragment } from "react";
 
 interface PersonalInfo {
   name: string;
@@ -32,6 +33,67 @@ export function HeroSection({
 }: HeroSectionProps) {
   const scrollToNext = () => {
     window.scrollTo({ top: window.innerHeight, behavior: "smooth" });
+  };
+
+  // Parse tagline to add highlights
+  // Syntax: ##text## = auto-colored highlight (cycles through purple, blue, teal)
+  const parseTagline = (text: string) => {
+    if (!text) return null;
+
+    const parts: Array<{ text: string; colorIndex?: number }> = [];
+    const colors = ["purple", "blue", "teal"] as const;
+    
+    // Regular expression to match highlight markers
+    const regex = /(\#\#([^#]+)\#\#)/g;
+    let lastIndex = 0;
+    let match;
+    let highlightCount = 0;
+
+    while ((match = regex.exec(text)) !== null) {
+      // Add text before the match
+      if (match.index > lastIndex) {
+        parts.push({ text: text.substring(lastIndex, match.index) });
+      }
+
+      // Add the highlighted text with cycling color
+      parts.push({ 
+        text: match[2], 
+        colorIndex: highlightCount % colors.length 
+      });
+      highlightCount++;
+
+      lastIndex = regex.lastIndex;
+    }
+
+    // Add remaining text
+    if (lastIndex < text.length) {
+      parts.push({ text: text.substring(lastIndex) });
+    }
+
+    // Render the parts
+    return (
+      <>
+        {parts.map((part, index) => {
+          if (part.colorIndex === undefined) {
+            return <Fragment key={index}>{part.text}</Fragment>;
+          }
+
+          const colorClasses: Record<typeof colors[number], string> = {
+            purple: "font-semibold text-purple-600 dark:text-purple-400",
+            blue: "font-semibold text-blue-600 dark:text-blue-400",
+            teal: "font-semibold text-teal-600 dark:text-teal-400",
+          };
+
+          const color = colors[part.colorIndex];
+
+          return (
+            <span key={index} className={colorClasses[color]}>
+              {part.text}
+            </span>
+          );
+        })}
+      </>
+    );
   };
 
   return (
@@ -81,7 +143,7 @@ export function HeroSection({
               transition={{ duration: 0.5, delay: 0.6 }}
               className="text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed"
             >
-              {tagline}
+              {parseTagline(tagline)}
             </motion.p>
           )}
 

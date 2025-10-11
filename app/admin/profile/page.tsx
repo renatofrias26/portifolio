@@ -246,12 +246,28 @@ export default function ProfilePage() {
                           setFormData({ ...formData, tagline: e.target.value })
                         }
                         rows={3}
-                        placeholder="E.g., From Mechatronics Engineering to Software Development, now specializing in AI Solutions. Building the future, one line of code at a time."
+                        placeholder="From ##Mechatronics Engineering## to ##Software Development##, now specializing in ##AI Solutions##"
                         className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none resize-none"
                       />
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        This appears below your title on the hero section of your portfolio
-                      </p>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 space-y-1">
+                        <p>
+                          This appears below your title on the hero section of
+                          your portfolio
+                        </p>
+                        <p className="font-medium">Add highlights with ##text## - colors auto-rotate!</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <code className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded border border-gray-300 dark:border-gray-600">
+                            ##highlight##
+                          </code>
+                          <span className="text-xs">→</span>
+                          <div className="flex gap-1">
+                            <span className="w-3 h-3 rounded-full bg-purple-500"></span>
+                            <span className="w-3 h-3 rounded-full bg-blue-500"></span>
+                            <span className="w-3 h-3 rounded-full bg-teal-500"></span>
+                            <span className="text-xs text-gray-400">...</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
                     <div className="flex gap-2 pt-4">
