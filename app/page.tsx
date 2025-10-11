@@ -24,6 +24,15 @@ export default async function Home() {
       redirect(`/${username}`);
     }
   } catch (error) {
+    // Re-throw redirect errors (they're not actual errors, it's how Next.js handles redirects)
+    if (
+      error &&
+      typeof error === "object" &&
+      "digest" in error &&
+      String(error.digest).startsWith("NEXT_REDIRECT")
+    ) {
+      throw error;
+    }
     console.error("Error fetching default user:", error);
   }
 

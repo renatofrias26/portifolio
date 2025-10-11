@@ -1,12 +1,13 @@
 "use client";
 
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { LogOut, Home, ArrowLeft, Save, User } from "lucide-react";
+import { Save, User } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { ImageUploader } from "@/components/admin/image-uploader";
+import { AdminNavbar } from "@/components/admin/admin-navbar";
 import Image from "next/image";
 
 interface UserProfile {
@@ -131,50 +132,7 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
       {/* Navigation */}
-      <nav className="glass border-b border-gray-200 dark:border-gray-700">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => router.push("/admin/dashboard")}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg glass hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span className="hidden sm:inline">Back to Dashboard</span>
-              </button>
-              <Image
-                src="/logo-icon.svg"
-                alt="Upfolio"
-                width={28}
-                height={28}
-                className="w-7 h-7"
-              />
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                Profile Settings
-              </h1>
-            </div>
-            <div className="flex items-center gap-4">
-              <a
-                href="/"
-                className="flex items-center gap-2 px-4 py-2 rounded-lg glass hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              >
-                <Home className="w-4 h-4" />
-                <span className="hidden sm:inline">Home</span>
-              </a>
-              <span className="text-sm text-gray-600 dark:text-gray-400">
-                {session.user.email}
-              </span>
-              <button
-                onClick={() => signOut({ callbackUrl: "/" })}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg glass hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-              >
-                <LogOut className="w-4 h-4" />
-                <span className="hidden sm:inline">Sign Out</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <AdminNavbar user={session.user} currentPage="profile" />
 
       <div className="container mx-auto px-6 py-12">
         <motion.div

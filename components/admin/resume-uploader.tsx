@@ -272,8 +272,8 @@ export function ResumeUploader({ onUploadSuccess }: ResumeUploaderProps = {}) {
         <ol className="text-sm text-gray-600 dark:text-gray-400 space-y-2 list-decimal list-inside">
           <li>Upload your resume PDF (max 10MB)</li>
           <li>AI automatically extracts and structures your data</li>
-          <li>Review the parsed data (coming soon)</li>
-          <li>Publish to update your live portfolio (coming soon)</li>
+          <li>Review the parsed data</li>
+          <li>Publish to update your live portfolio</li>
         </ol>
       </div>
     </div>
