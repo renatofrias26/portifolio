@@ -16,7 +16,17 @@ interface UserProfile {
   username: string;
   logoUrl?: string;
   profileImageUrl?: string;
-  profileData?: Record<string, unknown>;
+  profileData?: {
+    tagline?: string;
+    socialLinks?: {
+      github?: string;
+      linkedin?: string;
+      twitter?: string;
+      website?: string;
+    };
+    bio?: string;
+    [key: string]: unknown;
+  };
   isActive: boolean;
   createdAt: string;
 }
@@ -33,6 +43,7 @@ export default function ProfilePage() {
   const [formData, setFormData] = useState({
     name: "",
     username: "",
+    tagline: "", // Hero section tagline
   });
 
   useEffect(() => {
@@ -57,6 +68,7 @@ export default function ProfilePage() {
         setFormData({
           name: data.user.name || "",
           username: data.user.username || "",
+          tagline: data.user.profileData?.tagline || "",
         });
       } else {
         setError("Failed to load profile");
@@ -78,7 +90,13 @@ export default function ProfilePage() {
       const response = await fetch("/api/admin/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          profileData: {
+            ...profile?.profileData,
+            tagline: formData.tagline,
+          },
+        }),
       });
 
       const data = await response.json();
@@ -218,6 +236,24 @@ export default function ProfilePage() {
                       </p>
                     </div>
 
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Hero Tagline (Optional)
+                      </label>
+                      <textarea
+                        value={formData.tagline}
+                        onChange={(e) =>
+                          setFormData({ ...formData, tagline: e.target.value })
+                        }
+                        rows={3}
+                        placeholder="E.g., From Mechatronics Engineering to Software Development, now specializing in AI Solutions. Building the future, one line of code at a time."
+                        className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                      />
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        This appears below your title on the hero section of your portfolio
+                      </p>
+                    </div>
+
                     <div className="flex gap-2 pt-4">
                       <button
                         type="submit"
@@ -233,6 +269,7 @@ export default function ProfilePage() {
                           setFormData({
                             name: profile.name || "",
                             username: profile.username || "",
+                            tagline: profile.profileData?.tagline || "",
                           });
                           setError("");
                           setSuccess("");
@@ -284,6 +321,19 @@ export default function ProfilePage() {
                       >
                         /{profile.username}
                       </a>
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Hero Tagline
+                      </p>
+                      <p className="text-gray-900 dark:text-white font-medium">
+                        {(profile.profileData?.tagline as string) || (
+                          <span className="text-gray-400 dark:text-gray-500 italic">
+                            Not set
+                          </span>
+                        )}
+                      </p>
                     </div>
 
                     <div>
