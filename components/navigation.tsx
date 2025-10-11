@@ -99,7 +99,7 @@ export function Navigation({
         await navigator.clipboard.writeText(window.location.href);
         alert("Link copied to clipboard!");
       }
-    } catch (err) {
+    } catch {
       // Silently handle share errors (user cancelled, etc.)
     }
   };

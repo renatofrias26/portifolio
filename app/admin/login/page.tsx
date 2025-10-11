@@ -5,6 +5,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function AdminLogin() {
   const router = useRouter();
@@ -33,7 +34,7 @@ export default function AdminLogin() {
 
       router.push("/admin/dashboard");
       router.refresh();
-    } catch (error) {
+    } catch {
       setError("An error occurred. Please try again.");
       setIsLoading(false);
     }
@@ -131,20 +132,20 @@ export default function AdminLogin() {
 
           <div className="mt-6 text-center space-y-2">
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Don't have an account?{" "}
-              <a
+              Don&apos;t have an account?{" "}
+              <Link
                 href="/admin/register"
                 className="text-purple-600 dark:text-purple-400 hover:underline font-medium"
               >
                 Sign up
-              </a>
+              </Link>
             </p>
-            <a
+            <Link
               href="/"
               className="block text-sm text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
             >
               ← Back to Portfolio
-            </a>
+            </Link>
           </div>
         </div>
       </motion.div>

@@ -37,13 +37,13 @@ export interface ParsedResume {
     technologies: string[];
     link?: string;
   }>;
+  [key: string]: unknown;
 }
 
 export async function parseResume(pdfBuffer: Buffer): Promise<ParsedResume> {
   try {
     // Extract text from PDF
     // Use pdf-parse-fork which doesn't require workers
-    // @ts-ignore - pdf-parse-fork doesn't have type definitions
     const pdfParse = (await import("pdf-parse-fork")).default;
     const data = await pdfParse(pdfBuffer);
     const text = data.text;
@@ -156,7 +156,10 @@ Important:
       Object.entries(parsedData.skills).forEach(([category, items]) => {
         skillsArray.push({ category, items: items as string[] });
       });
-      parsedData.skills = skillsArray as any;
+      parsedData.skills = skillsArray as Array<{
+        category: string;
+        items: string[];
+      }>;
     }
 
     // Validate the structure

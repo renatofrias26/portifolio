@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Loader2 } from "lucide-react";
 import { PortfolioPage, type PortfolioData } from "@/components/portfolio-page";
@@ -34,9 +34,11 @@ interface DatabaseResumeData {
     period: string;
     location?: string;
   }>;
-  skills: {
-    [category: string]: string[];
-  };
+  skills:
+    | {
+        [category: string]: string[];
+      }
+    | Array<{ category: string; items: string[] }>;
   projects?: Array<{
     name: string;
     description: string;
@@ -54,13 +56,7 @@ export function PreviewModal({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (isOpen && versionId) {
-      fetchResumeData();
-    }
-  }, [isOpen, versionId]);
-
-  const fetchResumeData = async () => {
+  const fetchResumeData = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -72,15 +68,29 @@ export function PreviewModal({
       } else {
         setError(result.error || "Failed to load data");
       }
-    } catch (err) {
+    } catch {
       setError("Failed to fetch resume data");
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [versionId]);
+
+  useEffect(() => {
+    if (isOpen && versionId) {
+      fetchResumeData();
+    }
+  }, [isOpen, versionId, fetchResumeData]);
 
   // Transform database data to PortfolioData format
   const transformData = (dbData: DatabaseResumeData): PortfolioData => {
+    // Convert skills object to array format
+    const skillsArray = Array.isArray(dbData.skills)
+      ? dbData.skills
+      : Object.entries(dbData.skills).map(([category, items]) => ({
+          category,
+          items,
+        }));
+
     return {
       personal: dbData.personal,
       experience: dbData.experience.map((exp) => ({
@@ -95,7 +105,7 @@ export function PreviewModal({
         institution: edu.institution,
         period: edu.period,
       })),
-      skills: dbData.skills,
+      skills: skillsArray,
       projects: (dbData.projects || []).map((proj) => ({
         name: proj.name,
         description: proj.description,

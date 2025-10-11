@@ -66,7 +66,7 @@ export async function getAllResumeVersions(
 
 // Helper function to save resume data for a specific user
 export async function saveResumeData(
-  data: any,
+  data: Record<string, unknown>,
   pdfUrl: string,
   userId: number,
   isPublished: boolean = false,
@@ -198,7 +198,7 @@ export async function getResumeDataById(versionId: number, userId: number) {
 export async function updateResumeData(
   versionId: number,
   userId: number,
-  data: any,
+  data: Record<string, unknown>,
   pdfUrl?: string,
 ) {
   try {
@@ -206,7 +206,7 @@ export async function updateResumeData(
       "data = $1",
       "updated_at = CURRENT_TIMESTAMP",
     ];
-    const params: any[] = [JSON.stringify(data)];
+    const params: Array<string | number> = [JSON.stringify(data)];
 
     if (pdfUrl) {
       updateFields.push(`pdf_url = $${params.length + 1}`);
@@ -269,15 +269,15 @@ export async function updateUserProfile(
   updates: {
     name?: string;
     username?: string;
-    profile_data?: any;
+    profile_data?: Record<string, unknown>;
     logo_url?: string | null;
     profile_image_url?: string | null;
-    theme_settings?: any;
+    theme_settings?: Record<string, unknown>;
   },
 ) {
   try {
     const updateFields: string[] = ["updated_at = CURRENT_TIMESTAMP"];
-    const params: any[] = [];
+    const params: Array<string | number | Record<string, unknown> | null> = [];
 
     if (updates.name !== undefined) {
       params.push(updates.name);

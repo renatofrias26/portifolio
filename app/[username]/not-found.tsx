@@ -13,7 +13,8 @@ export default function NotFound() {
           User Not Found
         </h2>
         <p className="text-gray-600 dark:text-gray-400 mb-8">
-          The portfolio you're looking for doesn't exist or has been removed.
+          The portfolio you&apos;re looking for doesn&apos;t exist or has been
+          removed.
         </p>
         <Link
           href="/"

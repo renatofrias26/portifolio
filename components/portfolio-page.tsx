@@ -98,7 +98,6 @@ export function PortfolioPage({
   showNavigation = true,
   showFooter = true,
   showSkipToContent = true,
-  layout = "default",
 }: PortfolioPageProps) {
   // When data is not provided, sections will use their default static data
   const usePropsData = !!data;

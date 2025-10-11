@@ -25,12 +25,11 @@ async function fetchPdfContent(url: string): Promise<string> {
     }
 
     const arrayBuffer = await response.arrayBuffer();
-    const uint8Array = new Uint8Array(arrayBuffer);
+    const buffer = Buffer.from(arrayBuffer);
 
-    // Dynamic import for pdf-parse to avoid build issues
-    const { PDFParse } = await import("pdf-parse");
-    const parser = new PDFParse({ data: uint8Array });
-    const data = await parser.getText();
+    // Dynamic import for pdf-parse-fork to avoid build issues
+    const pdfParse = (await import("pdf-parse-fork")).default;
+    const data = await pdfParse(buffer);
 
     return data.text.substring(0, 4000); // Limit to 4000 chars for PDFs
   } catch (error) {

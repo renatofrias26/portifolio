@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { GradientText } from "../ui/gradient-text";
 import { ArrowDown, Mail, Phone, MapPin } from "lucide-react";
 import { resumeData } from "@/data/resume";
-import Image from "next/image";
 
 interface PersonalInfo {
   name: string;

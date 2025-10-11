@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { getUserById, updateUserProfile } from "@/lib/db/queries";
 
 // GET - Get current user profile
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
@@ -75,7 +75,7 @@ export async function PUT(request: NextRequest) {
     const updates: {
       name?: string;
       username?: string;
-      profile_data?: any;
+      profile_data?: Record<string, unknown>;
       logo_url?: string | null;
       profile_image_url?: string | null;
     } = {};

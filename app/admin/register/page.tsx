@@ -4,8 +4,8 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { GlassCard } from "@/components/ui/glass-card";
-import { GradientText } from "@/components/ui/gradient-text";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -213,12 +213,12 @@ export default function RegisterPage() {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Already have an account?{" "}
-              <a
+              <Link
                 href="/admin/login"
                 className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
               >
                 Sign in
-              </a>
+              </Link>
             </p>
           </div>
         </div>

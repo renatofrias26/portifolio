@@ -11,7 +11,7 @@ interface UploadResult {
     id: number;
     version: number;
     pdfUrl: string;
-    parsedData: any;
+    parsedData: Record<string, unknown>;
   };
   error?: string;
   details?: string;

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface AdminNavbarProps {
   user: {
@@ -125,23 +126,23 @@ export function AdminNavbar({
                         </div>
 
                         {currentPage !== "dashboard" && (
-                          <a
+                          <Link
                             href="/admin/dashboard"
                             className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                           >
                             <LayoutDashboard className="w-4 h-4" />
                             Dashboard
-                          </a>
+                          </Link>
                         )}
 
                         {currentPage !== "profile" && (
-                          <a
+                          <Link
                             href="/admin/profile"
                             className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                           >
                             <User className="w-4 h-4" />
                             Profile Settings
-                          </a>
+                          </Link>
                         )}
 
                         <button

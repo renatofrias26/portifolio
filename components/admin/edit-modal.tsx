@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Save, Loader2, Plus, Trash2 } from "lucide-react";
 
@@ -58,13 +58,7 @@ export function EditModal({
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (isOpen && versionId) {
-      fetchResumeData();
-    }
-  }, [isOpen, versionId]);
-
-  const fetchResumeData = async () => {
+  const fetchResumeData = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -76,12 +70,18 @@ export function EditModal({
       } else {
         setError(result.error || "Failed to load data");
       }
-    } catch (err) {
+    } catch {
       setError("Failed to fetch resume data");
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [versionId]);
+
+  useEffect(() => {
+    if (isOpen && versionId) {
+      fetchResumeData();
+    }
+  }, [isOpen, versionId, fetchResumeData]);
 
   const handleSave = async () => {
     if (!data || !versionId) return;
@@ -104,7 +104,7 @@ export function EditModal({
       } else {
         setError(result.error || "Failed to save changes");
       }
-    } catch (err) {
+    } catch {
       setError("Failed to save resume data");
     } finally {
       setIsSaving(false);
@@ -122,7 +122,11 @@ export function EditModal({
     });
   };
 
-  const updateExperience = (index: number, field: string, value: any) => {
+  const updateExperience = (
+    index: number,
+    field: string,
+    value: string | string[],
+  ) => {
     if (!data) return;
     const updated = [...data.experience];
     updated[index] = { ...updated[index], [field]: value };
@@ -155,7 +159,11 @@ export function EditModal({
     });
   };
 
-  const updateEducation = (index: number, field: string, value: any) => {
+  const updateEducation = (
+    index: number,
+    field: string,
+    value: string | string[],
+  ) => {
     if (!data) return;
     const updated = [...data.education];
     updated[index] = { ...updated[index], [field]: value };
@@ -206,7 +214,11 @@ export function EditModal({
     });
   };
 
-  const updateProject = (index: number, field: string, value: any) => {
+  const updateProject = (
+    index: number,
+    field: string,
+    value: string | string[],
+  ) => {
     if (!data) return;
     const updated = [...data.projects];
     updated[index] = { ...updated[index], [field]: value };

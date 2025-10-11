@@ -12,7 +12,7 @@ interface UserProfile {
   username: string;
   logoUrl?: string;
   profileImageUrl?: string;
-  profileData?: any;
+  profileData?: Record<string, unknown>;
   isActive: boolean;
   createdAt: string;
 }

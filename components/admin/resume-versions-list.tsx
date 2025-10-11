@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   FileText,
@@ -34,11 +34,7 @@ export function ResumeVersionsList() {
   const [editVersionId, setEditVersionId] = useState<number | null>(null);
   const [showArchived, setShowArchived] = useState(false);
 
-  useEffect(() => {
-    fetchVersions();
-  }, [showArchived]);
-
-  const fetchVersions = async () => {
+  const fetchVersions = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await fetch(
@@ -51,12 +47,16 @@ export function ResumeVersionsList() {
       } else {
         setError(data.error || "Failed to load versions");
       }
-    } catch (err) {
+    } catch {
       setError("Failed to load resume versions");
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [showArchived]);
+
+  useEffect(() => {
+    fetchVersions();
+  }, [showArchived, fetchVersions]);
 
   const handlePublish = async (versionId: number) => {
     try {
@@ -73,7 +73,7 @@ export function ResumeVersionsList() {
         const data = await response.json();
         alert(data.error || "Failed to publish version");
       }
-    } catch (err) {
+    } catch {
       alert("Failed to publish version");
     }
   };
@@ -96,7 +96,7 @@ export function ResumeVersionsList() {
         const data = await response.json();
         alert(data.error || `Failed to ${action} version`);
       }
-    } catch (err) {
+    } catch {
       alert(`Failed to ${action} version`);
     }
   };

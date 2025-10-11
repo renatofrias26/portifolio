@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { sql } from "@vercel/postgres";
 import Image from "next/image";
+import Link from "next/link";
 
 /**
  * Main Landing Page
@@ -64,18 +65,18 @@ export default async function Home() {
           parsing. Upload your resume, get a beautiful portfolio.
         </p>
         <div className="flex gap-4 justify-center flex-wrap">
-          <a
+          <Link
             href="/admin/register"
             className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
           >
             Get Started Free
-          </a>
-          <a
+          </Link>
+          <Link
             href="/admin/login"
             className="px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300"
           >
             Sign In
-          </a>
+          </Link>
         </div>
       </div>
     </div>

@@ -8,7 +8,6 @@ import { Save, User } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { ImageUploader } from "@/components/admin/image-uploader";
 import { AdminNavbar } from "@/components/admin/admin-navbar";
-import Image from "next/image";
 
 interface UserProfile {
   id: number;
@@ -17,7 +16,7 @@ interface UserProfile {
   username: string;
   logoUrl?: string;
   profileImageUrl?: string;
-  profileData?: any;
+  profileData?: Record<string, unknown>;
   isActive: boolean;
   createdAt: string;
 }
