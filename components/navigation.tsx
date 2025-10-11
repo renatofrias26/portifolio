@@ -17,14 +17,37 @@ const navItems = [
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      const currentScrollY = window.scrollY;
+
+      // Update background state
+      setIsScrolled(currentScrollY > 50);
+
+      // Show/hide navigation based on scroll direction (mobile only)
+      if (window.innerWidth < 768) {
+        // md breakpoint
+        if (currentScrollY < lastScrollY || currentScrollY < 50) {
+          // Scrolling up or near top
+          setIsVisible(true);
+        } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+          // Scrolling down and past threshold
+          setIsVisible(false);
+        }
+      } else {
+        // Always visible on desktop
+        setIsVisible(true);
+      }
+
+      setLastScrollY(currentScrollY);
     };
-    window.addEventListener("scroll", handleScroll);
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [lastScrollY]);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -71,7 +94,8 @@ export function Navigation() {
     <>
       <motion.nav
         initial={{ y: -100 }}
-        animate={{ y: 0 }}
+        animate={{ y: isVisible ? 0 : -100 }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled ? "glass shadow-lg" : "bg-transparent"
         }`}
