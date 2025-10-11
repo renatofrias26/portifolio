@@ -17,9 +17,14 @@ const navItems = [
 interface NavigationProps {
   logoUrl?: string;
   pdfUrl?: string;
+  userName?: string;
 }
 
-export function Navigation({ logoUrl, pdfUrl }: NavigationProps = {}) {
+export function Navigation({
+  logoUrl,
+  pdfUrl,
+  userName,
+}: NavigationProps = {}) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -109,12 +114,8 @@ export function Navigation({ logoUrl, pdfUrl }: NavigationProps = {}) {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <a
-              href="#"
-              className="flex items-center"
-              aria-label="Home"
-            >
-              {logoUrl ? (
+            <a href="#" className="flex items-center" aria-label="Home">
+              {logoUrl && logoUrl.trim() !== "" ? (
                 <Image
                   src={logoUrl}
                   alt="Logo"
@@ -124,14 +125,16 @@ export function Navigation({ logoUrl, pdfUrl }: NavigationProps = {}) {
                   priority
                 />
               ) : (
-                <Image
-                  src="/logo.png"
-                  alt="Logo"
-                  width={48}
-                  height={48}
-                  className="w-12 h-12 transition-transform hover:scale-110"
-                  priority
-                />
+                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center text-white font-bold text-xl transition-transform hover:scale-110">
+                  {userName
+                    ? userName
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .toUpperCase()
+                        .slice(0, 2)
+                    : "RF"}
+                </div>
               )}
             </a>
 

@@ -16,7 +16,6 @@ interface PersonalInfo {
 
 interface HeroSectionProps {
   personal?: PersonalInfo;
-  profileImageUrl?: string;
   showScrollButton?: boolean;
 }
 
@@ -28,7 +27,6 @@ export function HeroSection({
     phone: resumeData.phone,
     location: resumeData.location,
   },
-  profileImageUrl,
   showScrollButton = true,
 }: HeroSectionProps) {
   const scrollToNext = () => {
@@ -54,26 +52,6 @@ export function HeroSection({
           transition={{ duration: 0.8 }}
           className="text-center max-w-4xl mx-auto"
         >
-          {/* Profile Image */}
-          {profileImageUrl && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-              className="mb-8 flex justify-center"
-            >
-              <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden ring-4 ring-purple-500/50 shadow-2xl">
-                <Image
-                  src={profileImageUrl}
-                  alt="Profile"
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              </div>
-            </motion.div>
-          )}
-
           {/* Name and Title */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}

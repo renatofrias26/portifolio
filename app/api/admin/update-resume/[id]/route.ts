@@ -5,7 +5,7 @@ import { updateResumeData } from "@/lib/db/queries";
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // Check authentication
@@ -15,7 +15,8 @@ export async function PUT(
     }
 
     const userId = parseInt(session.user.id);
-    const versionId = parseInt(params.id);
+    const { id } = await params;
+    const versionId = parseInt(id);
 
     if (isNaN(versionId)) {
       return NextResponse.json(

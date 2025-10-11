@@ -5,7 +5,7 @@ import { getResumeDataById } from "@/lib/db/queries";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // Check authentication
@@ -15,7 +15,8 @@ export async function GET(
     }
 
     const userId = parseInt(session.user.id);
-    const versionId = parseInt(params.id);
+    const { id } = await params;
+    const versionId = parseInt(id);
 
     if (isNaN(versionId)) {
       return NextResponse.json(

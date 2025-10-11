@@ -270,8 +270,8 @@ export async function updateUserProfile(
     name?: string;
     username?: string;
     profile_data?: any;
-    logo_url?: string;
-    profile_image_url?: string;
+    logo_url?: string | null;
+    profile_image_url?: string | null;
     theme_settings?: any;
   },
 ) {

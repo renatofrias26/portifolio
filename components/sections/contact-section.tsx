@@ -23,6 +23,7 @@ interface SocialLinks {
 interface ContactSectionProps {
   contact?: ContactInfo;
   socialLinks?: SocialLinks;
+  profileImageUrl?: string;
   showHeading?: boolean;
   sectionId?: string;
 }
@@ -35,6 +36,7 @@ export function ContactSection({
     location: resumeData.location,
   },
   socialLinks,
+  profileImageUrl,
   showHeading = true,
   sectionId = "contact",
 }: ContactSectionProps) {
@@ -53,21 +55,23 @@ export function ContactSection({
         )}
 
         {/* Profile Photo */}
-        <div className="mt-12 flex justify-center">
-          <div className="relative">
-            <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-500 rounded-full blur opacity-75"></div>
+        {profileImageUrl && (
+          <div className="mt-12 flex justify-center">
             <div className="relative">
-              <Image
-                src="/profile.png"
-                alt="Renato Frias"
-                width={160}
-                height={160}
-                className="rounded-full object-cover border-4 border-white dark:border-gray-900"
-                priority
-              />
+              <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-500 rounded-full blur opacity-75"></div>
+              <div className="relative">
+                <Image
+                  src={profileImageUrl}
+                  alt={contact.name || "Profile"}
+                  width={160}
+                  height={160}
+                  className="rounded-full object-cover border-4 border-white dark:border-gray-900"
+                  priority
+                />
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         <div className="mt-12 grid md:grid-cols-2 gap-6">
           <GlassCard>

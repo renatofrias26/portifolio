@@ -5,12 +5,12 @@ import { getPublishedResumeByUsername } from "@/lib/db/queries";
 import { mapResumeData } from "@/lib/resume-data";
 
 type Props = {
-  params: { username: string };
+  params: Promise<{ username: string }>;
 };
 
 // Generate metadata for SEO
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { username } = params;
+  const { username } = await params;
   const data = await getPublishedResumeByUsername(username);
 
   if (!data) {
@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function UserPortfolioPage({ params }: Props) {
-  const { username } = params;
+  const { username } = await params;
 
   // Fetch user's published resume
   const data = await getPublishedResumeByUsername(username);
@@ -60,13 +60,11 @@ export default async function UserPortfolioPage({ params }: Props) {
     themeSettings: data.theme_settings,
     profileData: data.profile_data,
     pdfUrl: data.pdf_url,
+    userName: data.name, // Add user's name for initials fallback
   };
 
   return (
-    <PortfolioPage 
-      data={portfolioData} 
-      userCustomization={userCustomization}
-    />
+    <PortfolioPage data={portfolioData} userCustomization={userCustomization} />
   );
 }
 

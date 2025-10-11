@@ -56,7 +56,7 @@ export async function PUT(request: NextRequest) {
     const userId = parseInt(session.user.id);
     const body = await request.json();
 
-    const { name, username, profileData } = body;
+    const { name, username, profileData, logoUrl, profileImageUrl } = body;
 
     // Validate username format if provided
     if (username) {
@@ -76,11 +76,16 @@ export async function PUT(request: NextRequest) {
       name?: string;
       username?: string;
       profile_data?: any;
+      logo_url?: string | null;
+      profile_image_url?: string | null;
     } = {};
 
     if (name !== undefined) updates.name = name;
     if (username !== undefined) updates.username = username;
     if (profileData !== undefined) updates.profile_data = profileData;
+    if (logoUrl !== undefined) updates.logo_url = logoUrl || null;
+    if (profileImageUrl !== undefined)
+      updates.profile_image_url = profileImageUrl || null;
 
     const updatedUser = await updateUserProfile(userId, updates);
 

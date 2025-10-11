@@ -49,6 +49,7 @@ export interface PortfolioData {
 export interface UserCustomization {
   logoUrl?: string;
   profileImageUrl?: string;
+  userName?: string;
   themeSettings?: {
     primaryColor?: string;
     accentColor?: string;
@@ -106,9 +107,13 @@ export function PortfolioPage({
     <>
       {showSkipToContent && <SkipToContent />}
       {showNavigation && (
-        <Navigation 
+        <Navigation
           logoUrl={userCustomization?.logoUrl}
           pdfUrl={userCustomization?.pdfUrl}
+          userName={
+            userCustomization?.userName ||
+            (usePropsData ? data.personal?.name : undefined)
+          }
         />
       )}
 
@@ -116,7 +121,6 @@ export function PortfolioPage({
         {/* Hero Section */}
         <HeroSection
           personal={usePropsData ? data.personal : undefined}
-          profileImageUrl={userCustomization?.profileImageUrl}
           showScrollButton={true}
         />
 
@@ -153,6 +157,7 @@ export function PortfolioPage({
               : undefined
           }
           socialLinks={userCustomization?.profileData?.socialLinks}
+          profileImageUrl={userCustomization?.profileImageUrl}
         />
       </main>
 

@@ -52,7 +52,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Upload to Vercel Blob
-    const filename = `${type}-${userId}-${Date.now()}.${file.name.split(".").pop()}`;
+    const filename = `${type}-${userId}-${Date.now()}.${file.name
+      .split(".")
+      .pop()}`;
     const blob = await put(filename, file, {
       access: "public",
       addRandomSuffix: false,
@@ -66,7 +68,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: `${type === "logo" ? "Logo" : "Profile image"} uploaded successfully`,
+      message: `${
+        type === "logo" ? "Logo" : "Profile image"
+      } uploaded successfully`,
       url: blob.url,
     });
   } catch (error) {
