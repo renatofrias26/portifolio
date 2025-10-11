@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { sql } from "@vercel/postgres";
+import { getResumeDataById } from "@/lib/db/queries";
 
 export async function GET(
   request: NextRequest,
@@ -14,6 +14,7 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const userId = parseInt(session.user.id);
     const versionId = parseInt(params.id);
 
     if (isNaN(versionId)) {
@@ -23,21 +24,15 @@ export async function GET(
       );
     }
 
-    // Get resume data for this version
-    const result = await sql`
-      SELECT data, pdf_url, version, is_published, created_at, updated_at
-      FROM resume_data
-      WHERE id = ${versionId}
-    `;
+    // Get resume data for this version (with user verification)
+    const resume = await getResumeDataById(versionId, userId);
 
-    if (result.rows.length === 0) {
+    if (!resume) {
       return NextResponse.json(
-        { error: "Resume version not found" },
+        { error: "Resume version not found or unauthorized" },
         { status: 404 },
       );
     }
-
-    const resume = result.rows[0];
 
     return NextResponse.json({
       success: true,
@@ -45,6 +40,7 @@ export async function GET(
       meta: {
         version: resume.version,
         isPublished: resume.is_published,
+        isArchived: resume.is_archived,
         pdfUrl: resume.pdf_url,
         createdAt: resume.created_at,
         updatedAt: resume.updated_at,

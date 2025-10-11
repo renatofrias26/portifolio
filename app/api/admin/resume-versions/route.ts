@@ -11,12 +11,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const userId = parseInt(session.user.id);
+
     // Get query parameter for including archived versions
     const { searchParams } = new URL(request.url);
     const includeArchived = searchParams.get("includeArchived") === "true";
 
-    // Get all resume versions
-    const versions = await getAllResumeVersions(includeArchived);
+    // Get all resume versions for this user
+    const versions = await getAllResumeVersions(userId, includeArchived);
 
     return NextResponse.json({
       success: true,

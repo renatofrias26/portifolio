@@ -1,17 +1,28 @@
 import { NextResponse } from "next/server";
-import { getPublishedResume } from "@/lib/db/queries";
+import { getPublishedResumeByUsername } from "@/lib/db/queries";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const publishedResume = await getPublishedResume();
+    // Get username from query params (for public portfolio access)
+    const { searchParams } = new URL(request.url);
+    const username = searchParams.get("username");
 
-    if (!publishedResume) {
-      // Return empty data structure if no published resume exists
+    if (!username) {
       return NextResponse.json({
         success: false,
-        message: "No published resume found",
+        message: "Username parameter is required",
         data: null,
-      });
+      }, { status: 400 });
+    }
+
+    const publishedResume = await getPublishedResumeByUsername(username);
+
+    if (!publishedResume) {
+      return NextResponse.json({
+        success: false,
+        message: "No published resume found for this user",
+        data: null,
+      }, { status: 404 });
     }
 
     return NextResponse.json({
@@ -20,6 +31,11 @@ export async function GET() {
       version: publishedResume.version,
       pdfUrl: publishedResume.pdf_url,
       updatedAt: publishedResume.updated_at,
+      user: {
+        name: publishedResume.name,
+        username: publishedResume.username,
+        profile: publishedResume.profile_data,
+      },
     });
   } catch (error) {
     console.error("Error fetching published resume:", error);

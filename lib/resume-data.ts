@@ -1,13 +1,23 @@
-import { getPublishedResume } from "./db/queries";
+import { getPublishedResume, getPublishedResumeByUsername } from "./db/queries";
 
-// Helper function to fetch published resume data
-export async function getResumeData() {
+// Helper function to fetch published resume data by user ID
+export async function getResumeData(userId: number) {
   try {
-    const publishedResume = await getPublishedResume();
+    const publishedResume = await getPublishedResume(userId);
     return publishedResume?.data || null;
   } catch (error) {
     console.error("Error fetching resume:", error);
-    // Fallback to static data if API fails
+    return null;
+  }
+}
+
+// Helper function to fetch published resume data by username (for public access)
+export async function getResumeDataByUsername(username: string) {
+  try {
+    const publishedResume = await getPublishedResumeByUsername(username);
+    return publishedResume?.data || null;
+  } catch (error) {
+    console.error("Error fetching resume:", error);
     return null;
   }
 }

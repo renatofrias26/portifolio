@@ -109,10 +109,19 @@ export default function AdminLogin() {
             </button>
           </form>
 
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center space-y-2">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Don't have an account?{" "}
+              <a
+                href="/admin/register"
+                className="text-purple-600 dark:text-purple-400 hover:underline font-medium"
+              >
+                Sign up
+              </a>
+            </p>
             <a
               href="/"
-              className="text-sm text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+              className="block text-sm text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
             >
               ← Back to Portfolio
             </a>

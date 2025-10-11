@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { sql } from "@vercel/postgres";
+import { updateResumeData } from "@/lib/db/queries";
 
 export async function PUT(
   request: NextRequest,
@@ -14,6 +14,7 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const userId = parseInt(session.user.id);
     const versionId = parseInt(params.id);
 
     if (isNaN(versionId)) {
@@ -24,7 +25,7 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { data } = body;
+    const { data, pdfUrl } = body;
 
     if (!data) {
       return NextResponse.json(
@@ -33,14 +34,15 @@ export async function PUT(
       );
     }
 
-    // Update the resume data
-    await sql`
-      UPDATE resume_data
-      SET 
-        data = ${JSON.stringify(data)},
-        updated_at = NOW()
-      WHERE id = ${versionId}
-    `;
+    // Update the resume data (with user verification)
+    const result = await updateResumeData(versionId, userId, data, pdfUrl);
+
+    if (!result) {
+      return NextResponse.json(
+        { error: "Resume not found or unauthorized" },
+        { status: 404 },
+      );
+    }
 
     return NextResponse.json({
       success: true,

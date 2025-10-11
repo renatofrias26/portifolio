@@ -11,6 +11,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const userId = parseInt(session.user.id);
+
     // Get version ID from request
     const { versionId } = await request.json();
 
@@ -21,8 +23,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Publish the version
-    await publishResumeVersion(versionId);
+    // Publish the version (with user verification)
+    await publishResumeVersion(versionId, userId);
 
     return NextResponse.json({
       success: true,

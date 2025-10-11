@@ -11,6 +11,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const userId = parseInt(session.user.id);
     const { versionId, action } = await request.json();
 
     if (!versionId) {
@@ -21,13 +22,13 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "archive") {
-      await archiveResumeVersion(versionId);
+      await archiveResumeVersion(versionId, userId);
       return NextResponse.json({
         success: true,
         message: "Version archived successfully",
       });
     } else if (action === "unarchive") {
-      await unarchiveResumeVersion(versionId);
+      await unarchiveResumeVersion(versionId, userId);
       return NextResponse.json({
         success: true,
         message: "Version unarchived successfully",

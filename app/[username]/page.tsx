@@ -1,0 +1,60 @@
+import { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { PortfolioPage } from "@/components/portfolio-page";
+import { getPublishedResumeByUsername } from "@/lib/db/queries";
+import { mapResumeData } from "@/lib/resume-data";
+
+type Props = {
+  params: { username: string };
+};
+
+// Generate metadata for SEO
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { username } = params;
+  const data = await getPublishedResumeByUsername(username);
+
+  if (!data) {
+    return {
+      title: "User Not Found",
+    };
+  }
+
+  const resumeData = data.data;
+  const userName = data.name || resumeData?.personal?.name || username;
+  const userTitle = resumeData?.personal?.title || "Portfolio";
+
+  return {
+    title: `${userName} - ${userTitle}`,
+    description:
+      resumeData?.personal?.summary || `${userName}'s professional portfolio`,
+    openGraph: {
+      title: `${userName} - ${userTitle}`,
+      description:
+        resumeData?.personal?.summary || `${userName}'s professional portfolio`,
+    },
+  };
+}
+
+export default async function UserPortfolioPage({ params }: Props) {
+  const { username } = params;
+
+  // Fetch user's published resume
+  const data = await getPublishedResumeByUsername(username);
+
+  // If no data found, show 404
+  if (!data) {
+    notFound();
+  }
+
+  // Map the database structure to portfolio format
+  const portfolioData = mapResumeData(data.data);
+
+  if (!portfolioData) {
+    notFound();
+  }
+
+  return <PortfolioPage data={portfolioData} />;
+}
+
+// Enable ISR - revalidate every 60 seconds
+export const revalidate = 60;

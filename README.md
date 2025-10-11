@@ -1,53 +1,100 @@
-# Renato Frias - Portfolio
+# Portfolio Platform - Multi-User Edition
 
-A modern, iOS-inspired portfolio website built with Next.js, featuring an AI-powered chat interface and an admin panel for dynamic content management.
+A modern, AI-powered portfolio platform built with Next.js that supports multiple users. Each user can create their own account, upload resumes, and publish their portfolio at a custom URL.
 
 ## 🌟 Features
 
-- **iOS-Inspired Design**: Glassmorphism effects, smooth animations, and gradient accents
-- **AI-Powered Chat**: Interactive Q&A about my experience using OpenAI's GPT
-- **Admin Panel**: Secure login and dashboard for managing resume data (coming: PDF upload & AI parsing)
-- **Responsive Layout**: Optimized for all devices
-- **Smooth Animations**: Framer Motion for delightful user experience
-- **Modern Stack**: Next.js 15, TypeScript, Tailwind CSS, Neon Database
+### For Users
+- **Personal Portfolio URL**: Each user gets `yourdomain.com/{username}`
+- **AI Resume Parsing**: Upload PDF, AI extracts all data automatically
+- **Version Management**: Keep multiple resume versions, publish the best one
+- **Profile Customization**: Manage username, name, and profile settings
+- **Glassmorphism Design**: Beautiful iOS-inspired UI with smooth animations
+- **AI Chat**: Visitors can ask questions about your experience
+- **Responsive**: Looks great on all devices
 
-## 🚀 Getting Started
+### For Platform Owners
+- **Multi-User Support**: Unlimited users, each with isolated data
+- **Secure Authentication**: NextAuth.js with password hashing
+- **Database-Driven**: PostgreSQL with Neon/Vercel
+- **Admin Dashboard**: Full-featured management interface
+- **Version Control**: Track all resume versions per user
+- **Analytics Ready**: Built to add usage tracking
+
+## 🏗️ Architecture
+
+- **Frontend**: Next.js 15 (App Router), React, TypeScript
+- **Styling**: Tailwind CSS, Framer Motion
+- **Database**: PostgreSQL (Vercel Postgres / Neon)
+- **Authentication**: NextAuth.js v4
+- **AI**: OpenAI GPT-4 for resume parsing and chat
+- **File Storage**: Vercel Blob for PDF uploads
+- **Deployment**: Vercel (optimized with ISR)
+
+## 🚀 Quick Start
 
 ### Prerequisites
 
 - Node.js 18+
-- pnpm (or npm/yarn)
-- OpenAI API key (optional, for AI chat feature)
-- Neon Database (for admin panel - free tier available)
+- pnpm (recommended) or npm
+- PostgreSQL database (Vercel Postgres or Neon)
+- OpenAI API key
+- Vercel Blob storage
 
 ### Installation
 
-1. Install dependencies:
+1. **Clone and install dependencies:**
 
 ```bash
 pnpm install
 ```
 
-2. Set up environment variables:
+2. **Set up environment variables:**
+
+Create `.env.local` with:
 
 ```bash
-cp .env.example .env.local
+# Database
+POSTGRES_URL="postgresql://..."
+
+# Authentication
+NEXTAUTH_SECRET="your-secret-key-here"
+NEXTAUTH_URL="http://localhost:3000"
+
+# OpenAI
+OPENAI_API_KEY="sk-..."
+
+# Vercel Blob (for PDF uploads)
+BLOB_READ_WRITE_TOKEN="vercel_blob_..."
 ```
 
-3. Add your OpenAI API key to `.env.local`:
+3. **Run database migration:**
 
+```bash
+# Set up initial schema
+npx tsx scripts/setup-db.ts
+
+# Migrate to multi-user (if upgrading)
+npx tsx scripts/migrate-multi-user.ts
 ```
-OPENAI_API_KEY=your_api_key_here
+
+4. **Create your first user:**
+
+```bash
+# Start dev server
+pnpm dev
+
+# Visit http://localhost:3000/admin/register
+# Create your account with username
 ```
 
-Note: The AI chat will still work without an API key, but will show a fallback message.
+5. **Upload your resume:**
 
-### Admin Panel Setup (Optional)
-
-To enable the admin panel for dynamic content management:
-
-1. **See [NEON_SETUP.md](./NEON_SETUP.md)** for quick Neon database setup
-2. **Or see [ADMIN_SETUP.md](./ADMIN_SETUP.md)** for complete setup guide
+```bash
+# Login at /admin/dashboard
+# Upload PDF → AI parses → Edit → Publish
+# View at /{your-username}
+```
 
 The admin panel allows you to:
 

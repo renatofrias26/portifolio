@@ -4,14 +4,15 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Upload, FileText, LogOut, Home } from "lucide-react";
+import { Upload, FileText, LogOut, Home, User } from "lucide-react";
 import { ResumeUploader } from "@/components/admin/resume-uploader";
 import { ResumeVersionsList } from "@/components/admin/resume-versions-list";
+import { UserProfileCard } from "@/components/admin/user-profile-card";
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<"upload" | "versions">("upload");
+  const [activeTab, setActiveTab] = useState<"upload" | "versions" | "profile">("upload");
   const [refreshKey, setRefreshKey] = useState(0);
 
   const handleUploadSuccess = () => {
@@ -101,6 +102,19 @@ export default function AdminDashboard() {
               Manage Versions
             </div>
           </button>
+          <button
+            onClick={() => setActiveTab("profile")}
+            className={`px-6 py-3 rounded-lg font-medium transition-all ${
+              activeTab === "profile"
+                ? "bg-gradient-to-r from-purple-600 to-blue-500 text-white shadow-lg"
+                : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <User className="w-4 h-4" />
+              Profile
+            </div>
+          </button>
         </div>
 
         {/* Tab Content */}
@@ -128,6 +142,16 @@ export default function AdminDashboard() {
                 View, manage, and publish different versions of your resume
               </p>
               <ResumeVersionsList key={refreshKey} />
+            </div>
+          )}
+
+          {activeTab === "profile" && (
+            <div>
+              <h2 className="text-2xl font-bold mb-2">Your Profile</h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-8">
+                Manage your account settings and portfolio preferences
+              </p>
+              <UserProfileCard />
             </div>
           )}
         </motion.div>
