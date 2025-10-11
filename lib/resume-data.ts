@@ -1,19 +1,10 @@
+import { getPublishedResume } from "./db/queries";
+
 // Helper function to fetch published resume data
 export async function getResumeData() {
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/resume`,
-      {
-        next: { revalidate: 60 }, // Cache for 60 seconds
-      },
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch resume data");
-    }
-
-    const result = await response.json();
-    return result.data;
+    const publishedResume = await getPublishedResume();
+    return publishedResume?.data || null;
   } catch (error) {
     console.error("Error fetching resume:", error);
     // Fallback to static data if API fails
