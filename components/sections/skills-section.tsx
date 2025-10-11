@@ -20,8 +20,6 @@ export function SkillsSection({
   showHeading = true,
   sectionId = "skills",
 }: SkillsSectionProps) {
-  console.log("🎨 SkillsSection - Received skills:", skills);
-
   // Map categories to display configuration
   const getCategoryConfig = (category: string) => {
     const categoryLower = category.toLowerCase();

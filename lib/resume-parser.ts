@@ -42,8 +42,6 @@ export interface ParsedResume {
 export async function parseResume(pdfBuffer: Buffer): Promise<ParsedResume> {
   try {
     // Extract text from PDF
-    console.log("📖 Extracting text from PDF...");
-
     // Use pdf-parse-fork which doesn't require workers
     // @ts-ignore - pdf-parse-fork doesn't have type definitions
     const pdfParse = (await import("pdf-parse-fork")).default;
@@ -54,10 +52,7 @@ export async function parseResume(pdfBuffer: Buffer): Promise<ParsedResume> {
       throw new Error("Could not extract text from PDF");
     }
 
-    console.log(`✅ Extracted ${text.length} characters from PDF`);
-
     // Use OpenAI to parse the resume
-    console.log("🤖 Sending to OpenAI for parsing...");
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
@@ -153,27 +148,15 @@ Important:
       throw new Error("No response from OpenAI");
     }
 
-    console.log("✅ Received response from OpenAI");
     const parsedData = JSON.parse(response) as ParsedResume;
-
-    // Log the parsed skills for debugging
-    console.log(
-      "📊 Parsed skills structure:",
-      JSON.stringify(parsedData.skills, null, 2),
-    );
 
     // Convert skills to array format if AI returned object format
     if (parsedData.skills && !Array.isArray(parsedData.skills)) {
-      console.log("🔄 Converting skills from object to array format");
       const skillsArray: Array<{ category: string; items: string[] }> = [];
       Object.entries(parsedData.skills).forEach(([category, items]) => {
         skillsArray.push({ category, items: items as string[] });
       });
       parsedData.skills = skillsArray as any;
-      console.log(
-        "✅ Converted skills:",
-        JSON.stringify(parsedData.skills, null, 2),
-      );
     }
 
     // Validate the structure
@@ -181,15 +164,6 @@ Important:
       throw new Error("Invalid resume structure returned by AI");
     }
 
-    // Check if skills is defined (can be empty array)
-    if (
-      !parsedData.skills ||
-      (Array.isArray(parsedData.skills) && parsedData.skills.length === 0)
-    ) {
-      console.warn("⚠️ Warning: No skills found in resume");
-    }
-
-    console.log("✅ Resume parsed successfully");
     return parsedData;
   } catch (error) {
     console.error("Error parsing resume:", error);

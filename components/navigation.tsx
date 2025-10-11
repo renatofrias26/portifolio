@@ -86,7 +86,7 @@ export function Navigation() {
         alert("Link copied to clipboard!");
       }
     } catch (err) {
-      console.log("Error sharing:", err);
+      // Silently handle share errors (user cancelled, etc.)
     }
   };
 

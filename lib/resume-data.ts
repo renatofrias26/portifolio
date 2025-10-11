@@ -25,13 +25,9 @@ export async function getResumeData() {
 export function mapResumeData(dbData: any) {
   if (!dbData) return null;
 
-  console.log("🔍 mapResumeData - Input dbData.skills:", dbData.skills);
-
   // Skills should already be in array format from the database
   // No need for complex mapping - just use as-is!
   const skills = dbData.skills || [];
-
-  console.log("🔍 mapResumeData - Using skills directly:", skills);
 
   return {
     personal: {

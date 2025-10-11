@@ -100,7 +100,6 @@ async function fetchUrlContent(url: string): Promise<string> {
     // Check cache first
     const cached = URL_CACHE.get(url);
     if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-      console.log(`Using cached content for ${url}`);
       return cached.content;
     }
 
@@ -195,11 +194,9 @@ Current Focus:
 ${resumeData.experience[0].highlights.join("\n")}
 
 Skills:
-- Frontend: ${resumeData.skills.frontend.join(", ")}
-- Backend: ${resumeData.skills.backend.join(", ")}
-- AI: ${resumeData.skills.ai.join(", ")}
-- Testing: ${resumeData.skills.testing.join(", ")}
-- Tools: ${resumeData.skills.tools.join(", ")}
+${resumeData.skills
+  .map((s) => `- ${s.category}: ${s.items.join(", ")}`)
+  .join("\n")}
 
 Recent Experience:
 ${resumeData.experience

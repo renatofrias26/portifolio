@@ -5,28 +5,14 @@ export async function GET() {
   try {
     const publishedResume = await getPublishedResume();
 
-    console.log("📡 /api/resume - Published resume found:", !!publishedResume);
-
     if (!publishedResume) {
       // Return empty data structure if no published resume exists
-      console.log("⚠️ /api/resume - No published resume found");
       return NextResponse.json({
         success: false,
         message: "No published resume found",
         data: null,
       });
     }
-
-    console.log(
-      "📡 /api/resume - Skills in data:",
-      publishedResume.data?.skills,
-    );
-    console.log(
-      "📡 /api/resume - Skills type:",
-      typeof publishedResume.data?.skills,
-      "isArray:",
-      Array.isArray(publishedResume.data?.skills),
-    );
 
     return NextResponse.json({
       success: true,
