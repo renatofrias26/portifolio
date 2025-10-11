@@ -5,7 +5,29 @@ import { GradientText } from "../ui/gradient-text";
 import { ArrowDown, Mail, Phone, MapPin } from "lucide-react";
 import { resumeData } from "@/data/resume";
 
-export function HeroSection() {
+interface PersonalInfo {
+  name: string;
+  title: string;
+  email: string;
+  phone: string;
+  location: string;
+}
+
+interface HeroSectionProps {
+  personal?: PersonalInfo;
+  showScrollButton?: boolean;
+}
+
+export function HeroSection({
+  personal = {
+    name: resumeData.name,
+    title: resumeData.title,
+    email: resumeData.email,
+    phone: resumeData.phone,
+    location: resumeData.location,
+  },
+  showScrollButton = true,
+}: HeroSectionProps) {
   const scrollToNext = () => {
     window.scrollTo({ top: window.innerHeight, behavior: "smooth" });
   };
@@ -36,7 +58,7 @@ export function HeroSection() {
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <h1 className="text-6xl md:text-8xl font-bold mb-6">
-              <GradientText>{resumeData.name}</GradientText>
+              <GradientText>{personal.name}</GradientText>
             </h1>
           </motion.div>
 
@@ -46,7 +68,7 @@ export function HeroSection() {
             transition={{ duration: 0.5, delay: 0.4 }}
             className="text-2xl md:text-4xl font-semibold text-gray-700 dark:text-gray-300 mb-8"
           >
-            {resumeData.title}
+            {personal.title}
           </motion.h2>
 
           {/* Short intro */}
@@ -79,24 +101,24 @@ export function HeroSection() {
             className="flex flex-wrap justify-center gap-6 mb-12 text-gray-600 dark:text-gray-400"
           >
             <a
-              href={`mailto:${resumeData.email}`}
+              href={`mailto:${personal.email}`}
               className="flex items-center gap-2 hover:text-purple-600 dark:hover:text-purple-400 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 rounded-md px-2 py-1"
-              aria-label={`Email: ${resumeData.email}`}
+              aria-label={`Email: ${personal.email}`}
             >
               <Mail className="w-5 h-5" aria-hidden="true" />
-              <span>{resumeData.email}</span>
+              <span>{personal.email}</span>
             </a>
             <a
-              href={`tel:${resumeData.phone}`}
+              href={`tel:${personal.phone}`}
               className="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-md px-2 py-1"
-              aria-label={`Phone: ${resumeData.phone}`}
+              aria-label={`Phone: ${personal.phone}`}
             >
               <Phone className="w-5 h-5" aria-hidden="true" />
-              <span>{resumeData.phone}</span>
+              <span>{personal.phone}</span>
             </a>
             <div className="flex items-center gap-2">
               <MapPin className="w-5 h-5" aria-hidden="true" />
-              <span>{resumeData.location}</span>
+              <span>{personal.location}</span>
             </div>
           </motion.div>
 
@@ -124,21 +146,23 @@ export function HeroSection() {
       </div>
 
       {/* Scroll indicator */}
-      <motion.button
-        onClick={scrollToNext}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 1.2 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 rounded-full p-2"
-        aria-label="Scroll to about section"
-      >
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
+      {showScrollButton && (
+        <motion.button
+          onClick={scrollToNext}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 1.2 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 rounded-full p-2"
+          aria-label="Scroll to about section"
         >
-          <ArrowDown className="w-8 h-8" aria-hidden="true" />
-        </motion.div>
-      </motion.button>
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+          >
+            <ArrowDown className="w-8 h-8" aria-hidden="true" />
+          </motion.div>
+        </motion.button>
+      )}
     </section>
   );
 }

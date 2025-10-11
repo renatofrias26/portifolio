@@ -2,13 +2,23 @@
 
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Upload, FileText, LogOut, Settings } from "lucide-react";
+import { Upload, FileText, LogOut, Home } from "lucide-react";
+import { ResumeUploader } from "@/components/admin/resume-uploader";
+import { ResumeVersionsList } from "@/components/admin/resume-versions-list";
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState<"upload" | "versions">("upload");
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleUploadSuccess = () => {
+    // Switch to versions tab and refresh the list
+    setActiveTab("versions");
+    setRefreshKey((prev) => prev + 1);
+  };
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -40,6 +50,13 @@ export default function AdminDashboard() {
               Admin Dashboard
             </h1>
             <div className="flex items-center gap-4">
+              <a
+                href="/"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg glass hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                <Home className="w-4 h-4" />
+                <span className="hidden sm:inline">Home</span>
+              </a>
               <span className="text-sm text-gray-600 dark:text-gray-400">
                 {session.user.email}
               </span>
@@ -48,7 +65,7 @@ export default function AdminDashboard() {
                 className="flex items-center gap-2 px-4 py-2 rounded-lg glass hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
               >
                 <LogOut className="w-4 h-4" />
-                Sign Out
+                <span className="hidden sm:inline">Sign Out</span>
               </button>
             </div>
           </div>
@@ -56,90 +73,64 @@ export default function AdminDashboard() {
       </nav>
 
       <div className="container mx-auto px-6 py-12">
+        {/* Tabs */}
+        <div className="glass rounded-lg p-2 inline-flex gap-2 mb-8">
+          <button
+            onClick={() => setActiveTab("upload")}
+            className={`px-6 py-3 rounded-lg font-medium transition-all ${
+              activeTab === "upload"
+                ? "bg-gradient-to-r from-purple-600 to-blue-500 text-white shadow-lg"
+                : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <Upload className="w-4 h-4" />
+              Upload Resume
+            </div>
+          </button>
+          <button
+            onClick={() => setActiveTab("versions")}
+            className={`px-6 py-3 rounded-lg font-medium transition-all ${
+              activeTab === "versions"
+                ? "bg-gradient-to-r from-purple-600 to-blue-500 text-white shadow-lg"
+                : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              Manage Versions
+            </div>
+          </button>
+        </div>
+
+        {/* Tab Content */}
         <motion.div
+          key={activeTab}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="glass rounded-2xl p-8"
         >
-          {/* Upload Resume Card */}
-          <div className="glass rounded-2xl p-6 hover:shadow-xl transition-all cursor-pointer">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 rounded-lg bg-purple-100 dark:bg-purple-900/30">
-                <Upload className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-              </div>
-              <h2 className="text-xl font-semibold">Upload Resume</h2>
+          {activeTab === "upload" && (
+            <div>
+              <h2 className="text-2xl font-bold mb-2">Upload New Resume</h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-8">
+                Upload your PDF resume and let AI automatically parse and
+                structure your data
+              </p>
+              <ResumeUploader onUploadSuccess={handleUploadSuccess} />
             </div>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
-              Upload a new PDF resume to automatically update your portfolio
-            </p>
-            <button className="w-full py-2 px-4 rounded-lg bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium hover:shadow-lg transition-all">
-              Coming Soon
-            </button>
-          </div>
+          )}
 
-          {/* Manage Versions Card */}
-          <div className="glass rounded-2xl p-6 hover:shadow-xl transition-all cursor-pointer">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 rounded-lg bg-blue-100 dark:bg-blue-900/30">
-                <FileText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-              </div>
-              <h2 className="text-xl font-semibold">Resume Versions</h2>
+          {activeTab === "versions" && (
+            <div>
+              <h2 className="text-2xl font-bold mb-2">Resume Versions</h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-8">
+                View, manage, and publish different versions of your resume
+              </p>
+              <ResumeVersionsList key={refreshKey} />
             </div>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
-              View and manage different versions of your resume
-            </p>
-            <button className="w-full py-2 px-4 rounded-lg bg-gradient-to-r from-blue-600 to-purple-500 text-white font-medium hover:shadow-lg transition-all">
-              Coming Soon
-            </button>
-          </div>
-
-          {/* Settings Card */}
-          <div className="glass rounded-2xl p-6 hover:shadow-xl transition-all cursor-pointer">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 rounded-lg bg-green-100 dark:bg-green-900/30">
-                <Settings className="w-6 h-6 text-green-600 dark:text-green-400" />
-              </div>
-              <h2 className="text-xl font-semibold">Settings</h2>
-            </div>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
-              Configure your portfolio settings and preferences
-            </p>
-            <button className="w-full py-2 px-4 rounded-lg bg-gradient-to-r from-green-600 to-blue-500 text-white font-medium hover:shadow-lg transition-all">
-              Coming Soon
-            </button>
-          </div>
+          )}
         </motion.div>
-
-        {/* Quick Stats */}
-        <div className="mt-12 glass rounded-2xl p-6">
-          <h2 className="text-xl font-semibold mb-4">Quick Stats</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center">
-              <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">
-                0
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                Resume Versions
-              </p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-                --
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                Last Updated
-              </p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-green-600 dark:text-green-400">
-                Static
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                Current Mode
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

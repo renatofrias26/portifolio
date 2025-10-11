@@ -4,47 +4,72 @@ import { SectionHeading } from "../ui/section-heading";
 import { GlassCard } from "../ui/glass-card";
 import { resumeData } from "@/data/resume";
 
-export function ProjectsSection() {
+interface Project {
+  name: string;
+  description: string;
+  highlights?: string[];
+  stack: string[];
+  type?: string;
+  url?: string;
+}
+
+interface ProjectsSectionProps {
+  projects?: Project[];
+  showHeading?: boolean;
+  sectionId?: string;
+}
+
+export function ProjectsSection({
+  projects = resumeData.projects,
+  showHeading = true,
+  sectionId = "projects",
+}: ProjectsSectionProps) {
   return (
-    <section id="projects" className="py-20 px-6">
+    <section id={sectionId} className="py-20 px-6">
       <div className="container mx-auto max-w-6xl">
-        <SectionHeading
-          title="Projects"
-          subtitle="Personal and professional work"
-          centered
-        />
+        {showHeading && (
+          <SectionHeading
+            title="Projects"
+            subtitle="Personal and professional work"
+            centered
+          />
+        )}
 
         <div className="mt-16 grid md:grid-cols-2 gap-6">
-          {resumeData.projects.map((project, index) => (
+          {projects.map((project, index) => (
             <GlassCard key={index} delay={index * 0.1}>
               <div className="mb-4">
                 <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
                   {project.name}
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">
-                  {project.type}
-                </p>
+                {project.type && (
+                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">
+                    {project.type}
+                  </p>
+                )}
                 <p className="text-gray-700 dark:text-gray-300 mb-4">
                   {project.description}
                 </p>
               </div>
 
-              <div className="mb-4">
-                <h4 className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-2">
-                  Key Highlights:
-                </h4>
-                <ul className="space-y-1">
-                  {project.highlights.map((highlight, idx) => (
-                    <li
-                      key={idx}
-                      className="text-sm text-gray-600 dark:text-gray-400 flex gap-2"
-                    >
-                      <span className="text-purple-500">•</span>
-                      <span>{highlight}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {project.highlights && project.highlights.length > 0 && (
+                <div className="mb-4">
+                  <h4 className="font-semibold text-sm text-gray-700 dark:text-gray-300 mb-2">
+                    Key Highlights:
+                  </h4>
+                  <ul className="space-y-1">
+                    {project.highlights.map((highlight, idx) => (
+                      <li
+                        key={idx}
+                        className="text-sm text-gray-600 dark:text-gray-400 flex gap-2"
+                      >
+                        <span className="text-purple-500">•</span>
+                        <span>{highlight}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               <div className="flex flex-wrap gap-2">
                 {project.stack.map((tech, idx) => (
@@ -56,6 +81,17 @@ export function ProjectsSection() {
                   </span>
                 ))}
               </div>
+
+              {project.url && (
+                <a
+                  href={project.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 inline-block text-sm text-purple-600 dark:text-purple-400 hover:underline"
+                >
+                  View Project →
+                </a>
+              )}
             </GlassCard>
           ))}
         </div>

@@ -4,43 +4,75 @@ import { SectionHeading } from "../ui/section-heading";
 import { GlassCard } from "../ui/glass-card";
 import { resumeData } from "@/data/resume";
 
-export function SkillsSection() {
+interface Skills {
+  frontend?: string[];
+  backend?: string[];
+  testing?: string[];
+  tools?: string[];
+  ai?: string[];
+  technical?: string[];
+  soft?: string[];
+}
+
+interface SkillsSectionProps {
+  skills?: Skills;
+  showHeading?: boolean;
+  sectionId?: string;
+}
+
+export function SkillsSection({
+  skills = resumeData.skills,
+  showHeading = true,
+  sectionId = "skills",
+}: SkillsSectionProps) {
   const skillCategories = [
     {
       title: "Frontend",
-      skills: resumeData.skills.frontend,
+      skills: skills.frontend || [],
       gradient: "from-purple-600 to-pink-500",
     },
     {
       title: "Backend",
-      skills: resumeData.skills.backend,
+      skills: skills.backend || [],
       gradient: "from-blue-600 to-cyan-500",
     },
     {
       title: "AI & Innovation",
-      skills: resumeData.skills.ai,
+      skills: skills.ai || [],
       gradient: "from-teal-600 to-green-500",
     },
     {
       title: "Testing",
-      skills: resumeData.skills.testing,
+      skills: skills.testing || [],
       gradient: "from-orange-600 to-red-500",
     },
     {
       title: "Tools & DevOps",
-      skills: resumeData.skills.tools,
+      skills: skills.tools || [],
       gradient: "from-indigo-600 to-purple-500",
     },
-  ];
+    {
+      title: "Technical Skills",
+      skills: skills.technical || [],
+      gradient: "from-purple-600 to-blue-500",
+    },
+    {
+      title: "Soft Skills",
+      skills: skills.soft || [],
+      gradient: "from-pink-600 to-rose-500",
+    },
+  ].filter((cat) => cat.skills.length > 0); // Only show categories with skills
 
   return (
-    <section id="skills" className="py-20 px-6">
+    <section id={sectionId} className="py-20 px-6">
       <div className="container mx-auto max-w-6xl">
-        <SectionHeading
-          title="Skills"
-          subtitle="Technologies and tools I work with"
-          centered
-        />
+        {showHeading && (
+          <SectionHeading
+            title="Skills"
+            subtitle="Technologies and tools I work with"
+            centered
+          />
+        )}
 
         <div className="mt-16 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {skillCategories.map((category, index) => (

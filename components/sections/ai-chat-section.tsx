@@ -20,7 +20,15 @@ const suggestedQuestions = [
   "📎 Paste a job posting URL or PDF link!",
 ];
 
-export function AIChatSection() {
+interface AIChatSectionProps {
+  showHeading?: boolean;
+  sectionId?: string;
+}
+
+export function AIChatSection({
+  showHeading = true,
+  sectionId = "ai-chat",
+}: AIChatSectionProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -97,15 +105,17 @@ export function AIChatSection() {
 
   return (
     <section
-      id="ai-chat"
+      id={sectionId}
       className="py-20 px-6 bg-gradient-to-b from-transparent via-blue-50/30 to-transparent dark:via-blue-950/10"
     >
       <div className="container mx-auto max-w-4xl">
-        <SectionHeading
-          title="Ask AI About Me"
-          subtitle="Curious if I'm the right fit? Ask away!"
-          centered
-        />
+        {showHeading && (
+          <SectionHeading
+            title="Ask AI About Me"
+            subtitle="Curious if I'm the right fit? Ask away!"
+            centered
+          />
+        )}
 
         <GlassCard className="mt-16 p-0 overflow-hidden" hover={false}>
           {/* Chat Header */}

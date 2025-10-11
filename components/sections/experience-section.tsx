@@ -5,21 +5,41 @@ import { GlassCard } from "../ui/glass-card";
 import { resumeData } from "@/data/resume";
 import { Briefcase, Calendar } from "lucide-react";
 
-export function ExperienceSection() {
+interface Experience {
+  title: string;
+  company: string;
+  period: string;
+  highlights: string[];
+  stack: string[];
+}
+
+interface ExperienceSectionProps {
+  experience?: Experience[];
+  showHeading?: boolean;
+  sectionId?: string;
+}
+
+export function ExperienceSection({
+  experience = resumeData.experience,
+  showHeading = true,
+  sectionId = "experience",
+}: ExperienceSectionProps) {
   return (
     <section
-      id="experience"
+      id={sectionId}
       className="py-20 px-6 bg-gradient-to-b from-transparent via-purple-50/30 to-transparent dark:via-purple-950/10"
     >
       <div className="container mx-auto max-w-6xl">
-        <SectionHeading
-          title="Experience"
-          subtitle="My professional journey and achievements"
-          centered
-        />
+        {showHeading && (
+          <SectionHeading
+            title="Experience"
+            subtitle="My professional journey and achievements"
+            centered
+          />
+        )}
 
         <div className="mt-16 space-y-6">
-          {resumeData.experience.map((job, index) => (
+          {experience.map((job, index) => (
             <GlassCard key={index} delay={index * 0.1} hover={false}>
               <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-4">
                 <div>

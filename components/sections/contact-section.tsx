@@ -6,18 +6,42 @@ import { Mail, Phone, MapPin, Linkedin, Download } from "lucide-react";
 import { resumeData } from "@/data/resume";
 import Image from "next/image";
 
-export function ContactSection() {
+interface ContactInfo {
+  name?: string;
+  email: string;
+  phone: string;
+  location: string;
+}
+
+interface ContactSectionProps {
+  contact?: ContactInfo;
+  showHeading?: boolean;
+  sectionId?: string;
+}
+
+export function ContactSection({
+  contact = {
+    name: resumeData.name,
+    email: resumeData.email,
+    phone: resumeData.phone,
+    location: resumeData.location,
+  },
+  showHeading = true,
+  sectionId = "contact",
+}: ContactSectionProps) {
   return (
     <section
-      id="contact"
+      id={sectionId}
       className="py-20 px-6 bg-gradient-to-b from-transparent via-purple-50/30 to-transparent dark:via-purple-950/10"
     >
       <div className="container mx-auto max-w-4xl">
-        <SectionHeading
-          title="Get In Touch"
-          subtitle="Let's work together on something amazing"
-          centered
-        />
+        {showHeading && (
+          <SectionHeading
+            title="Get In Touch"
+            subtitle="Let's work together on something amazing"
+            centered
+          />
+        )}
 
         {/* Profile Photo */}
         <div className="mt-12 flex justify-center">
@@ -43,9 +67,9 @@ export function ContactSection() {
             </h3>
             <div className="space-y-4">
               <a
-                href={`mailto:${resumeData.email}`}
+                href={`mailto:${contact.email}`}
                 className="flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors group focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 rounded-md p-1"
-                aria-label={`Email Renato at ${resumeData.email}`}
+                aria-label={`Email ${contact.name || "me"} at ${contact.email}`}
               >
                 <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <Mail
@@ -57,14 +81,14 @@ export function ContactSection() {
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     Email
                   </p>
-                  <p className="font-medium">{resumeData.email}</p>
+                  <p className="font-medium">{contact.email}</p>
                 </div>
               </a>
 
               <a
-                href={`tel:${resumeData.phone}`}
+                href={`tel:${contact.phone}`}
                 className="flex items-center gap-3 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors group focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-md p-1"
-                aria-label={`Call Renato at ${resumeData.phone}`}
+                aria-label={`Call ${contact.name || "me"} at ${contact.phone}`}
               >
                 <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <Phone
@@ -76,7 +100,7 @@ export function ContactSection() {
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     Phone
                   </p>
-                  <p className="font-medium">{resumeData.phone}</p>
+                  <p className="font-medium">{contact.phone}</p>
                 </div>
               </a>
 
@@ -88,7 +112,7 @@ export function ContactSection() {
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     Location
                   </p>
-                  <p className="font-medium">{resumeData.location}</p>
+                  <p className="font-medium">{contact.location}</p>
                 </div>
               </div>
             </div>

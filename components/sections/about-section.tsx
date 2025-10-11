@@ -4,20 +4,40 @@ import { SectionHeading } from "../ui/section-heading";
 import { GlassCard } from "../ui/glass-card";
 import { resumeData } from "@/data/resume";
 
-export function AboutSection() {
+interface Education {
+  degree: string;
+  institution: string;
+  period: string;
+}
+
+interface AboutSectionProps {
+  summary?: string;
+  education?: Education[];
+  showHeading?: boolean;
+  sectionId?: string;
+}
+
+export function AboutSection({
+  summary = resumeData.summary,
+  education = resumeData.education,
+  showHeading = true,
+  sectionId = "about",
+}: AboutSectionProps) {
   return (
-    <section id="about" className="py-20 px-6">
+    <section id={sectionId} className="py-20 px-6">
       <div className="container mx-auto max-w-6xl">
-        <SectionHeading
-          title="About Me"
-          subtitle="A unique journey from engineering to code"
-          centered
-        />
+        {showHeading && (
+          <SectionHeading
+            title="About Me"
+            subtitle="A unique journey from engineering to code"
+            centered
+          />
+        )}
 
         <div className="mt-16 space-y-6">
           <GlassCard>
             <p className="text-lg leading-relaxed text-gray-700 dark:text-gray-300">
-              {resumeData.summary}
+              {summary}
             </p>
           </GlassCard>
 
@@ -27,7 +47,7 @@ export function AboutSection() {
                 🎓 Education
               </h3>
               <div className="space-y-4">
-                {resumeData.education.map((edu, index) => (
+                {education.map((edu, index) => (
                   <div key={index} className="text-sm">
                     <p className="font-semibold text-gray-800 dark:text-gray-200">
                       {edu.degree}
