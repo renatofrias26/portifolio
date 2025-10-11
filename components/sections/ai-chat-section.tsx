@@ -23,11 +23,15 @@ const suggestedQuestions = [
 interface AIChatSectionProps {
   showHeading?: boolean;
   sectionId?: string;
+  userName?: string;
+  username?: string; // username slug for API calls
 }
 
 export function AIChatSection({
   showHeading = true,
   sectionId = "ai-chat",
+  userName = "this candidate",
+  username,
 }: AIChatSectionProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -53,6 +57,12 @@ export function AIChatSection({
     const messageText = question || input;
     if (!messageText.trim() || isLoading || limitReached) return;
 
+    // Require username for API call
+    if (!username) {
+      console.error("Username is required for AI chat");
+      return;
+    }
+
     const userMessage: Message = { role: "user", content: messageText };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
@@ -62,7 +72,7 @@ export function AIChatSection({
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: messageText }),
+        body: JSON.stringify({ message: messageText, username }),
       });
 
       if (!response.ok) throw new Error("Failed to get response");
@@ -126,7 +136,7 @@ export function AIChatSection({
                 <div>
                   <h3 className="font-bold text-lg">AI Assistant</h3>
                   <p className="text-sm opacity-90">
-                    Ask me anything about Renato&apos;s experience and skills
+                    Ask me anything about {userName}&apos;s experience and skills
                   </p>
                 </div>
               </div>
@@ -280,7 +290,7 @@ export function AIChatSection({
                 className="flex gap-2"
               >
                 <label htmlFor="ai-chat-input" className="sr-only">
-                  Ask a question about Renato&apos;s experience
+                  Ask a question about {userName}&apos;s experience
                 </label>
                 <input
                   id="ai-chat-input"
@@ -288,7 +298,7 @@ export function AIChatSection({
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Ask about my experience, skills, or anything else..."
+                  placeholder="Ask about experience, skills, or anything else..."
                   className="flex-1 px-4 py-3 rounded-2xl glass border-none focus:outline-none focus:ring-2 focus:ring-purple-500 text-gray-800 dark:text-gray-200"
                   disabled={isLoading}
                   aria-describedby="ai-chat-description"

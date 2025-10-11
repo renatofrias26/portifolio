@@ -1,10 +1,9 @@
 import { openai } from "@ai-sdk/openai";
 import { generateText } from "ai";
-import { resumeData, aiContext } from "@/data/resume";
-import { socialLinks } from "@/data/social-links";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import * as cheerio from "cheerio";
+import { getPublishedResumeByUsername } from "@/lib/db/queries";
 
 const MAX_QUESTIONS = 10;
 const URL_CACHE = new Map<string, { content: string; timestamp: number }>();
@@ -124,7 +123,7 @@ async function fetchUrlContent(url: string): Promise<string> {
 
 export async function POST(req: Request) {
   try {
-    const { message } = await req.json();
+    const { message, username } = await req.json();
 
     if (!message) {
       return NextResponse.json(
@@ -132,6 +131,28 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
+
+    if (!username) {
+      return NextResponse.json(
+        { error: "Username is required" },
+        { status: 400 },
+      );
+    }
+
+    // Fetch user's published resume data
+    const userData = await getPublishedResumeByUsername(username);
+
+    if (!userData || !userData.data) {
+      return NextResponse.json(
+        { error: "User data not found" },
+        { status: 404 },
+      );
+    }
+
+    const resumeData = userData.data;
+    const userName = userData.name || resumeData.personal?.name || username;
+    const userEmail = resumeData.personal?.email || "";
+    const userLinkedIn = userData.profile_data?.socialLinks?.linkedin || "";
 
     // Extract URLs from the message
     const urls = extractUrls(message);
@@ -153,8 +174,16 @@ export async function POST(req: Request) {
 
     // Check if user has exceeded the limit
     if (currentCount >= MAX_QUESTIONS) {
+      const contactInfo = [];
+      if (userEmail) contactInfo.push(`📧 Email: ${userEmail}`);
+      if (userLinkedIn) contactInfo.push(`💼 LinkedIn: ${userLinkedIn}`);
+      
+      const contactText = contactInfo.length > 0 
+        ? `\n\nPlease reach out directly:\n${contactInfo.join("\n")}\n\nLooking forward to connecting with you!`
+        : "\n\nPlease check the contact section below for ways to get in touch!";
+
       return NextResponse.json({
-        message: `You've reached the maximum of ${MAX_QUESTIONS} questions per session. I'd love to continue our conversation!\n\nPlease reach out directly:\n📧 Email: ${resumeData.email}\n💼 LinkedIn: ${socialLinks.linkedin}\n\nLooking forward to connecting with you!`,
+        message: `You've reached the maximum of ${MAX_QUESTIONS} questions per session. I'd love to continue our conversation!${contactText}`,
         questionCount: currentCount,
         maxQuestions: MAX_QUESTIONS,
         limitReached: true,
@@ -166,70 +195,98 @@ export async function POST(req: Request) {
     // Check if OpenAI API key is configured
     if (!process.env.OPENAI_API_KEY) {
       // Return a fallback response if no API key is configured
+      const summary = resumeData.personal?.summary || "";
+      const title = resumeData.personal?.title || "Professional";
+      const experience = resumeData.experience?.[0];
+      
+      let fallbackInfo = `Thank you for your question! AI-powered chat is currently being configured.\n\n`;
+      fallbackInfo += `About ${userName}:\n`;
+      if (title) fallbackInfo += `- Title: ${title}\n`;
+      if (summary) fallbackInfo += `\n${summary.substring(0, 200)}...\n`;
+      if (experience) fallbackInfo += `\nCurrently: ${experience.title} at ${experience.company}\n`;
+      if (userEmail) fallbackInfo += `\nFeel free to reach out directly at ${userEmail}!`;
+      
       return NextResponse.json({
-        message: `Thank you for your question! To enable AI-powered responses, please configure the OPENAI_API_KEY environment variable. 
-
-In the meantime, here's some quick info:
-- 5+ years of software development experience
-- Specializing in Angular, React, and AI development
-- Currently at Auto & General, working on enterprise AI solutions
-- Unique background: Mechatronics Engineering → Boat Repair → Software Development
-
-Feel free to check out my experience section below or contact me directly at ${resumeData.email}!`,
+        message: fallbackInfo,
       });
     }
 
     // Create a detailed context from resume data
-    const resumeContext = `
+    const personal = resumeData.personal || {};
+    const experience = resumeData.experience || [];
+    const skills = resumeData.skills || [];
+    const projects = resumeData.projects || [];
+    const education = resumeData.education || [];
+
+    let resumeContext = `
 Resume Data:
-Name: ${resumeData.name}
-Title: ${resumeData.title}
-Location: ${resumeData.location}
-Email: ${resumeData.email}
+Name: ${personal.name || userName}
+Title: ${personal.title || "Professional"}
+Location: ${personal.location || "Not specified"}
+Email: ${personal.email || userEmail}
 
-Summary: ${resumeData.summary}
+Summary: ${personal.summary || "No summary provided"}
+`;
 
-Current Focus:
-${resumeData.experience[0].highlights.join("\n")}
+    if (experience.length > 0) {
+      resumeContext += `\nCurrent Focus:\n${experience[0].highlights?.join("\n") || "Current role information"}\n`;
+    }
 
-Skills:
-${resumeData.skills
-  .map((s) => `- ${s.category}: ${s.items.join(", ")}`)
-  .join("\n")}
+    if (skills.length > 0) {
+      resumeContext += `\nSkills:\n${skills
+        .map((s: { category: string; items?: string[] }) => `- ${s.category}: ${s.items?.join(", ") || ""}`)
+        .join("\n")}\n`;
+    }
 
-Recent Experience:
-${resumeData.experience
-  .map(
-    (exp) => `
+    if (experience.length > 0) {
+      resumeContext += `\nRecent Experience:\n${experience
+        .slice(0, 3)
+        .map(
+          (exp: { title: string; company: string; period: string; highlights?: string[]; stack?: string[] }) => `
 ${exp.title} at ${exp.company} (${exp.period})
-Key achievements: ${exp.highlights.slice(0, 3).join("; ")}
-Stack: ${exp.stack.join(", ")}
+Key achievements: ${exp.highlights?.slice(0, 3).join("; ") || ""}
+Stack: ${exp.stack?.join(", ") || ""}
 `,
-  )
-  .join("\n")}
+        )
+        .join("\n")}\n`;
+    }
 
-Projects:
-${resumeData.projects
-  .map(
-    (proj) => `
+    if (projects && projects.length > 0) {
+      resumeContext += `\nProjects:\n${projects
+        .map(
+          (proj: { name: string; description: string; stack?: string[] }) => `
 ${proj.name}: ${proj.description}
-Stack: ${proj.stack.join(", ")}
+Stack: ${proj.stack?.join(", ") || ""}
 `,
-  )
-  .join("\n")}
+        )
+        .join("\n")}\n`;
+    }
 
-Unique Background:
-${resumeData.uniqueBackground
-  .map((bg) => `${bg.title} at ${bg.company} (${bg.period})`)
-  .join("\n")}
-    `;
+    if (education.length > 0) {
+      resumeContext += `\nEducation:\n${education
+        .map((edu: { degree: string; institution: string; period: string }) => `${edu.degree} - ${edu.institution} (${edu.period})`)
+        .join("\n")}\n`;
+    }
+
+    // Generate dynamic AI context
+    const aiContext = `You are an AI assistant helping visitors learn about ${userName}, a ${personal.title || "professional"}.
+
+When answering questions:
+- Be friendly and professional
+- Provide accurate information based on the resume data provided
+- Highlight relevant experience and skills
+- For role-fit questions, analyze the technical stack and relevant experience
+- Keep responses concise but informative (typically 2-4 sentences unless more detail is requested)
+- If job posting or position details are provided, analyze qualifications against specific requirements
+
+Answer questions about their experience, skills, projects, and whether they'd be a good fit for positions.`;
 
     const { text } = await generateText({
       model: openai("gpt-4o-mini"),
       messages: [
         {
           role: "system",
-          content: `${aiContext}\n\n${resumeContext}${urlContext}\n\nProvide helpful, accurate, and concise responses about Renato. Keep responses friendly and professional, typically 2-4 sentences unless more detail is specifically requested. If job posting or position details are provided, analyze Renato's qualifications against the specific requirements mentioned.`,
+          content: `${aiContext}\n\n${resumeContext}${urlContext}\n\nProvide helpful, accurate, and concise responses about ${userName}. Keep responses friendly and professional.`,
         },
         {
           role: "user",
@@ -245,7 +302,15 @@ ${resumeData.uniqueBackground
 
     // Add warning message after 9th question (one question remaining)
     if (newCount === MAX_QUESTIONS - 1) {
-      responseMessage += `\n\n⚠️ Note: You have 1 question remaining in this session. For extended conversations, please contact me directly at ${resumeData.email} or via LinkedIn!`;
+      const contactMethods = [];
+      if (userEmail) contactMethods.push(`email at ${userEmail}`);
+      if (userLinkedIn) contactMethods.push("LinkedIn");
+      
+      const contactText = contactMethods.length > 0
+        ? ` For extended conversations, please contact me directly via ${contactMethods.join(" or ")}!`
+        : " For extended conversations, please check the contact section below!";
+      
+      responseMessage += `\n\n⚠️ Note: You have 1 question remaining in this session.${contactText}`;
     }
 
     // Set the updated count in cookies (expires in 24 hours)

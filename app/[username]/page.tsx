@@ -64,7 +64,11 @@ export default async function UserPortfolioPage({ params }: Props) {
   };
 
   return (
-    <PortfolioPage data={portfolioData} userCustomization={userCustomization} />
+    <PortfolioPage 
+      data={portfolioData} 
+      userCustomization={userCustomization}
+      username={username}
+    />
   );
 }
 

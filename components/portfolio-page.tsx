@@ -74,6 +74,7 @@ export interface PortfolioPageProps {
   showFooter?: boolean;
   showSkipToContent?: boolean;
   layout?: "default" | "compact" | "minimal"; // For future layout variations
+  username?: string; // username slug for API calls
 }
 
 /**
@@ -98,6 +99,7 @@ export function PortfolioPage({
   showNavigation = true,
   showFooter = true,
   showSkipToContent = true,
+  username,
 }: PortfolioPageProps) {
   // When data is not provided, sections will use their default static data
   const usePropsData = !!data;
@@ -121,6 +123,7 @@ export function PortfolioPage({
         <HeroSection
           personal={usePropsData ? data.personal : undefined}
           showScrollButton={true}
+          tagline={userCustomization?.profileData?.tagline}
         />
 
         {/* About Section */}
@@ -141,7 +144,13 @@ export function PortfolioPage({
         <ProjectsSection projects={usePropsData ? data.projects : undefined} />
 
         {/* AI Chat Section */}
-        <AIChatSection />
+        <AIChatSection 
+          userName={
+            userCustomization?.userName ||
+            (usePropsData ? data.personal?.name : undefined)
+          }
+          username={username}
+        />
 
         {/* Contact Section */}
         <ContactSection

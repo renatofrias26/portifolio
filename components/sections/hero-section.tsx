@@ -16,6 +16,7 @@ interface PersonalInfo {
 interface HeroSectionProps {
   personal?: PersonalInfo;
   showScrollButton?: boolean;
+  tagline?: string; // Custom tagline from user profile
 }
 
 export function HeroSection({
@@ -27,6 +28,7 @@ export function HeroSection({
     location: resumeData.location,
   },
   showScrollButton = true,
+  tagline,
 }: HeroSectionProps) {
   const scrollToNext = () => {
     window.scrollTo({ top: window.innerHeight, behavior: "smooth" });
@@ -72,26 +74,16 @@ export function HeroSection({
           </motion.h2>
 
           {/* Short intro */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            className="text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed"
-          >
-            From{" "}
-            <span className="font-semibold text-purple-600 dark:text-purple-400">
-              Mechatronics Engineering
-            </span>{" "}
-            to{" "}
-            <span className="font-semibold text-blue-600 dark:text-blue-400">
-              Software Development
-            </span>
-            , now specializing in{" "}
-            <span className="font-semibold text-teal-600 dark:text-teal-400">
-              AI Solutions
-            </span>
-            . Building the future, one line of code at a time.
-          </motion.p>
+          {tagline && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+              className="text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed"
+            >
+              {tagline}
+            </motion.p>
+          )}
 
           {/* Contact info */}
           <motion.div
