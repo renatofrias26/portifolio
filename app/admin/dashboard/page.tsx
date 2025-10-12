@@ -1,20 +1,23 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Upload, FileText } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Upload, FileText, CheckCircle, Sparkles } from "lucide-react";
 import { ResumeUploader } from "@/components/admin/resume-uploader";
 import { ResumeVersionsList } from "@/components/admin/resume-versions-list";
 import { AdminNavbar } from "@/components/admin/admin-navbar";
 import { containerPadding, typography, buttons, spacing } from "@/lib/styles";
 
-export default function AdminDashboard() {
+function DashboardContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<"upload" | "versions">("upload");
   const [refreshKey, setRefreshKey] = useState(0);
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [isUploadingGuest, setIsUploadingGuest] = useState(false);
 
   const handleUploadSuccess = () => {
     // Switch to versions tab and refresh the list
@@ -28,12 +31,61 @@ export default function AdminDashboard() {
     }
   }, [status, router]);
 
-  if (status === "loading") {
+  // Handle guest resume upload after authentication
+  useEffect(() => {
+    if (
+      status === "authenticated" &&
+      searchParams.get("uploadResume") === "true"
+    ) {
+      const uploadGuestResume = async () => {
+        const guestResumeData = sessionStorage.getItem("guestResumeData");
+
+        if (guestResumeData) {
+          setIsUploadingGuest(true);
+          try {
+            const { parsedData, fileName, fileContent } =
+              JSON.parse(guestResumeData);
+
+            const uploadResponse = await fetch("/api/resume/upload-guest", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                parsedData,
+                fileName,
+                fileContent,
+              }),
+            });
+
+            if (uploadResponse.ok) {
+              sessionStorage.removeItem("guestResumeData");
+              sessionStorage.removeItem("redirectAfterAuth");
+              setShowWelcome(true);
+              setActiveTab("versions");
+              setRefreshKey((prev) => prev + 1);
+
+              // Remove query param
+              router.replace("/admin/dashboard");
+            }
+          } catch (error) {
+            console.error("Failed to upload guest resume:", error);
+          } finally {
+            setIsUploadingGuest(false);
+          }
+        }
+      };
+
+      uploadGuestResume();
+    }
+  }, [status, searchParams, router]);
+
+  if (status === "loading" || isUploadingGuest) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">
+            {isUploadingGuest ? "Setting up your portfolio..." : "Loading..."}
+          </p>
         </div>
       </div>
     );
@@ -48,6 +100,40 @@ export default function AdminDashboard() {
       <AdminNavbar user={session.user} currentPage="dashboard" />
 
       <div className={`container mx-auto ${containerPadding.dashboard}`}>
+        {/* Welcome Banner */}
+        <AnimatePresence>
+          {showWelcome && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="mb-6 p-6 rounded-xl border-2 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border-purple-200 dark:border-purple-800"
+            >
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center">
+                  <CheckCircle className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                    Welcome to Upfolio!{" "}
+                    <Sparkles className="w-5 h-5 text-purple-600" />
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 mt-2">
+                    Your resume has been uploaded successfully! Review it below
+                    and publish when you&apos;re ready to go live.
+                  </p>
+                  <button
+                    onClick={() => setShowWelcome(false)}
+                    className="mt-4 text-sm text-purple-600 dark:text-purple-400 hover:underline font-medium"
+                  >
+                    Got it, thanks!
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Tabs */}
         <div
           className={`glass rounded-lg p-2 inline-flex ${spacing.gapSmall} mb-6 sm:mb-8`}
@@ -110,5 +196,22 @@ export default function AdminDashboard() {
         </motion.div>
       </div>
     </div>
+  );
+}
+
+export default function AdminDashboard() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
+          </div>
+        </div>
+      }
+    >
+      <DashboardContent />
+    </Suspense>
   );
 }

@@ -102,7 +102,44 @@ export default function RegisterPage() {
         );
         router.push("/admin/login");
       } else {
-        router.push("/admin/dashboard");
+        // Check if there's guest resume data to upload
+        const guestResumeData = sessionStorage.getItem("guestResumeData");
+
+        if (guestResumeData) {
+          try {
+            const { parsedData, fileName, fileContent } =
+              JSON.parse(guestResumeData);
+
+            // Upload the guest resume data
+            const uploadResponse = await fetch("/api/resume/upload-guest", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                parsedData,
+                fileName,
+                fileContent,
+              }),
+            });
+
+            if (uploadResponse.ok) {
+              // Clear the guest data
+              sessionStorage.removeItem("guestResumeData");
+              sessionStorage.removeItem("redirectAfterAuth");
+            }
+          } catch (uploadError) {
+            console.error("Failed to upload guest resume:", uploadError);
+            // Continue to dashboard anyway
+          }
+        }
+
+        // Check for redirect URL
+        const redirectUrl = sessionStorage.getItem("redirectAfterAuth");
+        if (redirectUrl) {
+          sessionStorage.removeItem("redirectAfterAuth");
+          router.push(redirectUrl);
+        } else {
+          router.push("/admin/dashboard");
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");

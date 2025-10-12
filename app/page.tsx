@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { LandingHeader } from "@/components/landing-header";
+import { TryNowSection } from "@/components/try-now-section";
 import {
   hero,
   logoSizes,
@@ -75,12 +76,10 @@ export default async function Home() {
             {/* CTA Buttons */}
             <div className="flex gap-3 sm:gap-4 justify-center flex-wrap mb-10 sm:mb-12 md:mb-16">
               <Link
-                href="/admin/register"
+                href="#try-now"
                 className={`group ${buttons.large} bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 text-white rounded-xl font-semibold hover:shadow-2xl hover:scale-105 transition-all duration-300 shadow-lg relative overflow-hidden`}
               >
-                <span className="relative z-10">
-                  Create Your Portfolio Free
-                </span>
+                <span className="relative z-10">Try It Free – No Sign Up</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-700 via-blue-700 to-cyan-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </Link>
               <Link href="/profiles" className={buttons.secondary}>
@@ -520,6 +519,30 @@ export default async function Home() {
               </p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Try It Now - Guest Upload Section */}
+      <section
+        id="try-now"
+        className={`${layouts.section} bg-gradient-to-br from-purple-50 via-blue-50 to-cyan-50 dark:from-gray-900 dark:via-purple-900 dark:to-blue-900`}
+      >
+        <div className={layouts.centered}>
+          <div className="text-center mb-8 sm:mb-10 md:mb-12">
+            <h2
+              className={`${typography.h2} mb-3 sm:mb-4 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent`}
+            >
+              Try It Now – No Sign Up Required
+            </h2>
+            <p
+              className={`${typography.bodyLarge} text-gray-600 dark:text-gray-400 max-w-3xl mx-auto`}
+            >
+              Upload your resume and see your AI-powered portfolio in seconds.
+              Create an account only when you&apos;re ready to publish.
+            </p>
+          </div>
+
+          <TryNowSection />
         </div>
       </section>
 

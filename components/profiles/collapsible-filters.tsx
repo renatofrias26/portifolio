@@ -4,6 +4,7 @@ import { useState } from "react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { formInput, buttons, spacing, containerPadding } from "@/lib/styles";
 import { ChevronDown, ChevronUp, Filter } from "lucide-react";
+import Link from "next/link";
 
 interface CollapsibleFiltersProps {
   searchParams: {
@@ -154,12 +155,12 @@ export function CollapsibleFilters({
           >
             Apply Filters
           </button>
-          <a
+          <Link
             href="/profiles"
             className={`${buttons.secondary} ${buttons.medium}`}
           >
             Clear All
-          </a>
+          </Link>
         </div>
       </form>
     </GlassCard>
