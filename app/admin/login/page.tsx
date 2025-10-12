@@ -126,9 +126,17 @@ export default function AdminLogin() {
             </div>
 
             <div>
-              <label htmlFor="password" className={formInput.label}>
-                Password
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label htmlFor="password" className={formInput.label}>
+                  Password
+                </label>
+                <Link
+                  href="/admin/forgot-password"
+                  className="text-xs sm:text-sm text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors"
+                >
+                  Forgot?
+                </Link>
+              </div>
               <input
                 id="password"
                 type="password"

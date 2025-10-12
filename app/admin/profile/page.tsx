@@ -8,6 +8,7 @@ import { Save, User, Edit } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { ImageUploader } from "@/components/admin/image-uploader";
 import { AdminNavbar } from "@/components/admin/admin-navbar";
+import ChangePasswordSection from "@/components/admin/change-password-section";
 
 interface UserProfile {
   id: number;
@@ -1083,6 +1084,9 @@ export default function ProfilePage() {
               </div>
             </GlassCard>
           )}
+
+          {/* Password & Security */}
+          <ChangePasswordSection />
 
           {/* Customization */}
           {profile && (
