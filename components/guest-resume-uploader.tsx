@@ -7,15 +7,28 @@ import { useRouter } from "next/navigation";
 import { GuestPreviewModal } from "./guest-preview-modal";
 
 interface ParsedResumeData {
+  personal?: {
+    name?: string;
+    email?: string;
+    phone?: string;
+    location?: string;
+    summary?: string;
+    title?: string;
+  };
+  // Legacy flat structure for backwards compatibility
   name?: string;
   email?: string;
   phone?: string;
   summary?: string;
+  title?: string;
   experience?: Array<{
     title: string;
     company: string;
-    duration: string;
+    duration?: string;
+    period?: string;
     description: string;
+    highlights?: string[];
+    achievements?: string[];
   }>;
   education?: Array<{
     degree: string;
@@ -29,6 +42,13 @@ interface ParsedResumeData {
   [key: string]: unknown;
 }
 
+interface ProfileEnhancement {
+  professionalTitle: string;
+  taglines: string[];
+  currentFocus: string[];
+  bio?: string;
+}
+
 interface GuestResumeUploaderProps {
   onDataReady?: (data: ParsedResumeData, file: File) => void;
 }
@@ -37,8 +57,12 @@ export function GuestResumeUploader({ onDataReady }: GuestResumeUploaderProps) {
   const router = useRouter();
   const [isDragging, setIsDragging] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isEnhancing, setIsEnhancing] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [parsedData, setParsedData] = useState<ParsedResumeData | null>(null);
+  const [profileEnhancements, setProfileEnhancements] =
+    useState<ProfileEnhancement | null>(null);
+  const [selectedTagline, setSelectedTagline] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [showFullPreview, setShowFullPreview] = useState(false);
@@ -94,46 +118,80 @@ export function GuestResumeUploader({ onDataReady }: GuestResumeUploaderProps) {
       reader.onload = async (e) => {
         const fileContent = e.target?.result as string;
 
-        // Call the parse API without authentication
-        const formData = new FormData();
-        formData.append("file", selectedFile);
+        try {
+          // Step 1: Parse the resume
+          const formData = new FormData();
+          formData.append("file", selectedFile);
 
-        const response = await fetch("/api/resume/parse", {
-          method: "POST",
-          body: formData,
-        });
+          const response = await fetch("/api/resume/parse", {
+            method: "POST",
+            body: formData,
+          });
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || "Failed to parse resume");
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Failed to parse resume");
+          }
+
+          const result = await response.json();
+          const resumeData = result.data;
+          setParsedData(resumeData);
+
+          // Step 2: Show parsing complete, start enhancement
+          setIsProcessing(false);
+          setIsEnhancing(true);
+
+          // Step 3: Enhance profile with AI
+          const enhanceResponse = await fetch("/api/resume/enhance-profile", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ resumeData }),
+          });
+
+          if (enhanceResponse.ok) {
+            const enhanceResult = await enhanceResponse.json();
+            setProfileEnhancements(enhanceResult.data);
+            setSelectedTagline(enhanceResult.data.taglines[0] || "");
+
+            // Store enhancements in sessionStorage
+            sessionStorage.setItem(
+              "guestProfileEnhancements",
+              JSON.stringify(enhanceResult.data),
+            );
+          } else {
+            console.error("Enhancement API failed, continuing without");
+          }
+
+          // Step 4: All processing complete
+          setIsEnhancing(false);
+          setShowPreview(true);
+
+          // Store in sessionStorage for later use after registration
+          sessionStorage.setItem(
+            "guestResumeData",
+            JSON.stringify({
+              parsedData: resumeData,
+              fileName: selectedFile.name,
+              fileContent: fileContent,
+              fileType: selectedFile.type,
+              timestamp: Date.now(),
+            }),
+          );
+
+          if (onDataReady) {
+            onDataReady(resumeData, selectedFile);
+          }
+        } catch (innerError) {
+          setIsProcessing(false);
+          setIsEnhancing(false);
+          throw innerError;
         }
-
-        const result = await response.json();
-        setParsedData(result.data);
-        setShowPreview(true);
-
-        // Store in sessionStorage for later use after registration
-        sessionStorage.setItem(
-          "guestResumeData",
-          JSON.stringify({
-            parsedData: result.data,
-            fileName: selectedFile.name,
-            fileContent: fileContent,
-            fileType: selectedFile.type,
-            timestamp: Date.now(),
-          }),
-        );
-
-        if (onDataReady) {
-          onDataReady(result.data, selectedFile);
-        }
-
-        setIsProcessing(false);
       };
 
       reader.onerror = () => {
         setError("Failed to read file");
         setIsProcessing(false);
+        setIsEnhancing(false);
       };
 
       reader.readAsDataURL(selectedFile);
@@ -148,6 +206,19 @@ export function GuestResumeUploader({ onDataReady }: GuestResumeUploaderProps) {
   const handlePublish = () => {
     // Store the current data and redirect to registration with a callback
     if (parsedData && selectedFile) {
+      // Update sessionStorage with selected enhancements
+      if (profileEnhancements && selectedTagline) {
+        sessionStorage.setItem(
+          "guestProfileEnhancements",
+          JSON.stringify({
+            selectedTagline: selectedTagline,
+            professionalTitle: profileEnhancements.professionalTitle,
+            currentFocus: profileEnhancements.currentFocus,
+            bio: profileEnhancements.bio,
+          }),
+        );
+      }
+
       sessionStorage.setItem(
         "redirectAfterAuth",
         "/admin/dashboard?uploadResume=true",
@@ -196,7 +267,7 @@ export function GuestResumeUploader({ onDataReady }: GuestResumeUploaderProps) {
                   : "bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30"
               }`}
             >
-              {isProcessing ? (
+              {isProcessing || isEnhancing ? (
                 <Loader2 className="w-12 h-12 text-purple-600 dark:text-purple-400 animate-spin" />
               ) : (
                 <Upload
@@ -213,13 +284,19 @@ export function GuestResumeUploader({ onDataReady }: GuestResumeUploaderProps) {
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                 {selectedFile
                   ? isProcessing
-                    ? "Processing your resume with AI..."
+                    ? "Parsing your resume..."
+                    : isEnhancing
+                    ? "Generating AI suggestions..."
                     : selectedFile.name
                   : "Drop your resume here"}
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
                 {selectedFile
-                  ? `${(selectedFile.size / 1024 / 1024).toFixed(2)} MB • PDF`
+                  ? isProcessing
+                    ? "Extracting your experience, skills, and education"
+                    : isEnhancing
+                    ? "Creating personalized taglines and professional branding"
+                    : `${(selectedFile.size / 1024 / 1024).toFixed(2)} MB • PDF`
                   : "or click to browse • PDF only • Max 10MB"}
               </p>
             </div>
@@ -301,23 +378,129 @@ export function GuestResumeUploader({ onDataReady }: GuestResumeUploaderProps) {
                     Resume Parsed Successfully!
                   </h4>
                   <p className="text-sm mt-1 text-green-700 dark:text-green-300">
-                    AI has extracted your professional information. Review below
-                    and click publish when ready.
+                    AI has extracted your professional information.
+                    {isEnhancing && " Generating your professional tagline..."}
                   </p>
                 </div>
               </div>
             </div>
+
+            {/* Profile Enhancements */}
+            {isEnhancing && (
+              <div className="glass rounded-2xl p-6">
+                <div className="flex items-center gap-3">
+                  <Loader2 className="w-5 h-5 animate-spin text-purple-600" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900 dark:text-white">
+                      Crafting Your Professional Brand
+                    </h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                      AI is generating compelling taglines and profile
+                      enhancements...
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {!isEnhancing && profileEnhancements && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="glass rounded-2xl p-6 space-y-6"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center">
+                    <Sparkles className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                      Your Professional Brand
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      AI-generated to make you stand out
+                    </p>
+                  </div>
+                </div>
+
+                {/* Professional Title */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Professional Title
+                  </label>
+                  <div className="px-4 py-3 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800">
+                    <p className="text-purple-900 dark:text-purple-100 font-medium">
+                      {profileEnhancements.professionalTitle}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Tagline Selection */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                    Choose Your Tagline
+                  </label>
+                  <div className="space-y-2">
+                    {profileEnhancements.taglines.map((tagline, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setSelectedTagline(tagline)}
+                        className={`w-full text-left px-4 py-3 rounded-lg border-2 transition-all ${
+                          selectedTagline === tagline
+                            ? "border-purple-500 bg-purple-50 dark:bg-purple-900/30 shadow-md"
+                            : "border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-700"
+                        }`}
+                      >
+                        <p
+                          className={`text-sm ${
+                            selectedTagline === tagline
+                              ? "text-purple-900 dark:text-purple-100 font-medium"
+                              : "text-gray-700 dark:text-gray-300"
+                          }`}
+                        >
+                          {tagline}
+                        </p>
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-500 mt-2">
+                    ✨ Click to select your favorite
+                  </p>
+                </div>
+
+                {/* Current Focus */}
+                {profileEnhancements.currentFocus.length > 0 && (
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                      Current Focus
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {profileEnhancements.currentFocus.map((focus, idx) => (
+                        <span
+                          key={idx}
+                          className="px-3 py-1.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-medium"
+                        >
+                          {focus}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            )}
 
             {/* Preview Content */}
             <div className="glass rounded-2xl p-6 space-y-6">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {parsedData.name || "Your Name"}
+                    {parsedData.personal?.name ||
+                      parsedData.name ||
+                      "Your Name"}
                   </h3>
-                  {parsedData.email && (
+                  {(parsedData.personal?.email || parsedData.email) && (
                     <p className="text-gray-600 dark:text-gray-400 mt-1">
-                      {parsedData.email}
+                      {parsedData.personal?.email || parsedData.email}
                     </p>
                   )}
                 </div>
@@ -329,13 +512,13 @@ export function GuestResumeUploader({ onDataReady }: GuestResumeUploaderProps) {
                 </button>
               </div>
 
-              {parsedData.summary && (
+              {(parsedData.personal?.summary || parsedData.summary) && (
                 <div>
                   <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
                     Summary
                   </h4>
                   <p className="text-gray-600 dark:text-gray-400 text-sm">
-                    {parsedData.summary}
+                    {parsedData.personal?.summary || parsedData.summary}
                   </p>
                 </div>
               )}
@@ -482,6 +665,8 @@ export function GuestResumeUploader({ onDataReady }: GuestResumeUploaderProps) {
       {showFullPreview && parsedData && (
         <GuestPreviewModal
           parsedData={parsedData}
+          profileEnhancements={profileEnhancements || undefined}
+          selectedTagline={selectedTagline}
           onClose={() => setShowFullPreview(false)}
         />
       )}

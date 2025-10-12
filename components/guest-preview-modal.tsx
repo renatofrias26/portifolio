@@ -9,6 +9,15 @@ import { X, Eye } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface ParsedResumeData {
+  personal?: {
+    name?: string;
+    email?: string;
+    phone?: string;
+    location?: string;
+    summary?: string;
+    title?: string;
+  };
+  // Legacy flat structure for backwards compatibility
   name?: string;
   email?: string;
   phone?: string;
@@ -18,9 +27,11 @@ interface ParsedResumeData {
   experience?: Array<{
     title: string;
     company: string;
-    duration: string;
+    duration?: string;
+    period?: string;
     description: string;
     highlights?: string[];
+    achievements?: string[];
     stack?: string[];
   }>;
   education?: Array<{
@@ -37,30 +48,60 @@ interface ParsedResumeData {
   [key: string]: unknown;
 }
 
+interface ProfileEnhancements {
+  professionalTitle?: string;
+  taglines?: string[];
+  currentFocus?: string[];
+  bio?: string;
+}
+
 interface GuestPreviewModalProps {
   parsedData: ParsedResumeData;
+  profileEnhancements?: ProfileEnhancements;
+  selectedTagline?: string;
   onClose: () => void;
 }
 
 export function GuestPreviewModal({
   parsedData,
+  profileEnhancements,
+  selectedTagline,
   onClose,
 }: GuestPreviewModalProps) {
+  // Support both nested (personal.name) and flat (name) structures
+  const getName = () =>
+    parsedData.personal?.name || parsedData.name || "Your Name";
+  const getEmail = () => parsedData.personal?.email || parsedData.email || "";
+  const getPhone = () => parsedData.personal?.phone || parsedData.phone || "";
+  const getLocation = () =>
+    parsedData.personal?.location || parsedData.location || "";
+  const getTitle = () =>
+    profileEnhancements?.professionalTitle ||
+    parsedData.personal?.title ||
+    parsedData.title ||
+    "Your Professional Title";
+  const getSummary = () =>
+    profileEnhancements?.bio ||
+    parsedData.personal?.summary ||
+    parsedData.summary ||
+    "";
+
   // Transform parsed data to match portfolio format
   const portfolioData = {
     personal: {
-      name: parsedData.name || "Your Name",
-      title: parsedData.title || "Your Professional Title",
-      email: parsedData.email || "",
-      phone: parsedData.phone || "",
-      location: parsedData.location || "",
-      summary: parsedData.summary || "",
+      name: getName(),
+      title: getTitle(),
+      email: getEmail(),
+      phone: getPhone(),
+      location: getLocation(),
+      summary: getSummary(),
     },
     experience: (parsedData.experience || []).map((exp) => ({
       title: exp.title,
       company: exp.company,
-      period: exp.duration,
-      highlights: exp.highlights || [exp.description].filter(Boolean),
+      period: exp.duration || exp.period || "",
+      highlights:
+        exp.highlights || exp.achievements || [exp.description].filter(Boolean),
       stack: exp.stack || [],
     })),
     education: (parsedData.education || []).map((edu) => ({
@@ -113,7 +154,7 @@ export function GuestPreviewModal({
               <HeroSection
                 name={portfolioData.personal.name}
                 title={portfolioData.personal.title}
-                tagline="AI-Powered Portfolio"
+                tagline={selectedTagline || "AI-Powered Portfolio"}
                 contactInfo={{
                   email: portfolioData.personal.email,
                   phone: portfolioData.personal.phone,
@@ -125,7 +166,7 @@ export function GuestPreviewModal({
               {portfolioData.personal.summary && (
                 <AboutSection
                   summary={portfolioData.personal.summary}
-                  currentFocus={[]}
+                  currentFocus={profileEnhancements?.currentFocus || []}
                 />
               )}
 

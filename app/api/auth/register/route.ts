@@ -4,7 +4,8 @@ import { sql } from "@vercel/postgres";
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password, name, username } = await request.json();
+    const { email, password, name, username, profileEnhancements } =
+      await request.json();
 
     // Validate required fields
     if (!email || !password || !username) {
@@ -58,10 +59,27 @@ export async function POST(request: NextRequest) {
     // Hash password
     const passwordHash = await bcrypt.hash(password, 10);
 
+    // Prepare profile data if enhancements are provided
+    const profileData = profileEnhancements
+      ? JSON.stringify({
+          tagline: profileEnhancements.selectedTagline,
+          title: profileEnhancements.professionalTitle, // Changed from professionalTitle to title
+          currentFocus: profileEnhancements.currentFocus,
+          bio: profileEnhancements.bio,
+        })
+      : null;
+
+    console.log("Registering user with profile enhancements:", {
+      hasEnhancements: !!profileEnhancements,
+      profileData: profileData,
+    });
+
     // Create user
     const result = await sql`
-      INSERT INTO users (email, password_hash, name, username)
-      VALUES (${email}, ${passwordHash}, ${name || null}, ${username})
+      INSERT INTO users (email, password_hash, name, username, profile_data)
+      VALUES (${email}, ${passwordHash}, ${
+      name || null
+    }, ${username}, ${profileData})
       RETURNING id, email, name, username, created_at
     `;
 

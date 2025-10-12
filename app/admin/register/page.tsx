@@ -71,6 +71,19 @@ export default function RegisterPage() {
     }
 
     try {
+      // Get profile enhancements from sessionStorage if available
+      const guestProfileEnhancements = sessionStorage.getItem(
+        "guestProfileEnhancements",
+      );
+      const profileEnhancements = guestProfileEnhancements
+        ? JSON.parse(guestProfileEnhancements)
+        : null;
+
+      console.log("Profile enhancements from sessionStorage:", {
+        raw: guestProfileEnhancements,
+        parsed: profileEnhancements,
+      });
+
       // Register user
       const response = await fetch("/api/auth/register", {
         method: "POST",
@@ -80,6 +93,7 @@ export default function RegisterPage() {
           password: formData.password,
           name: formData.name,
           username: formData.username,
+          profileEnhancements,
         }),
       });
 
@@ -124,6 +138,7 @@ export default function RegisterPage() {
             if (uploadResponse.ok) {
               // Clear the guest data
               sessionStorage.removeItem("guestResumeData");
+              sessionStorage.removeItem("guestProfileEnhancements");
               sessionStorage.removeItem("redirectAfterAuth");
             }
           } catch (uploadError) {
