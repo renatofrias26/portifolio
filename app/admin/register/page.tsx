@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { useState, useEffect } from "react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { GlassCard } from "@/components/ui/glass-card";
 import Image from "next/image";
@@ -9,6 +9,7 @@ import Link from "next/link";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -16,8 +17,33 @@ export default function RegisterPage() {
     name: "",
     username: "",
   });
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/admin/dashboard");
+    }
+  }, [status, router]);
+
+  // Show loading while checking authentication
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render registration form if already authenticated
+  if (session) {
+    return null;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,6 +53,13 @@ export default function RegisterPage() {
     // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
+      setLoading(false);
+      return;
+    }
+
+    // Validate terms agreement
+    if (!agreedToTerms) {
+      setError("You must agree to the Terms of Service and Privacy Policy");
       setLoading(false);
       return;
     }
@@ -199,6 +232,38 @@ export default function RegisterPage() {
                 minLength={8}
                 required
               />
+            </div>
+
+            {/* Terms and Privacy Agreement */}
+            <div className="space-y-3">
+              <label className="flex items-start gap-3 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={agreedToTerms}
+                  onChange={(e) => setAgreedToTerms(e.target.checked)}
+                  className="mt-1 w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-purple-600 focus:ring-2 focus:ring-purple-500 cursor-pointer"
+                  required
+                />
+                <span className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                  I agree to the{" "}
+                  <Link
+                    href="/legal/terms"
+                    target="_blank"
+                    className="text-purple-600 dark:text-purple-400 hover:underline font-medium"
+                  >
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
+                  <Link
+                    href="/legal/privacy"
+                    target="_blank"
+                    className="text-purple-600 dark:text-purple-400 hover:underline font-medium"
+                  >
+                    Privacy Policy
+                  </Link>
+                  <span className="text-red-500 ml-1">*</span>
+                </span>
+              </label>
             </div>
 
             <button

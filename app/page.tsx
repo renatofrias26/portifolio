@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { LandingHeader } from "@/components/landing-header";
 
 /**
  * Main Landing Page
@@ -10,6 +11,9 @@ export default async function Home() {
   // Show the landing page
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-cyan-50 dark:from-gray-900 dark:via-purple-900 dark:to-blue-900">
+      {/* Header with Login/Dashboard */}
+      <LandingHeader />
+
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 via-blue-600/10 to-cyan-600/10 dark:from-purple-600/20 dark:via-blue-600/20 dark:to-cyan-600/20" />
