@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import Link from "next/link";
 import { PortfolioPage } from "@/components/portfolio-page";
 import {
   getPublishedResumeByUsername,
@@ -101,12 +102,12 @@ export default async function UserPortfolioPage({ params }: Props) {
           <p className="text-sm text-yellow-800 dark:text-yellow-200">
             🔒 <strong>Private Profile</strong> - Only you can see this page.
             Others will see a 404 error.{" "}
-            <a
+            <Link
               href="/admin/profile"
               className="underline hover:no-underline font-medium"
             >
               Make it public
-            </a>
+            </Link>
           </p>
         </div>
       )}
