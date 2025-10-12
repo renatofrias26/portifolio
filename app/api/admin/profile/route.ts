@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { getUserById, updateUserProfile } from "@/lib/db/queries";
+import {
+  getUserById,
+  updateUserProfile,
+  getUserByUsername,
+} from "@/lib/db/queries";
 
 // GET - Get current user profile
 export async function GET() {
@@ -69,6 +73,15 @@ export async function PUT(request: NextRequest) {
             error:
               "Username must be 3-30 characters and contain only lowercase letters, numbers, hyphens, and underscores",
           },
+          { status: 400 },
+        );
+      }
+
+      // Check if username is already taken by another user
+      const existingUser = await getUserByUsername(username);
+      if (existingUser && existingUser.id !== userId) {
+        return NextResponse.json(
+          { error: "Username is already taken" },
           { status: 400 },
         );
       }

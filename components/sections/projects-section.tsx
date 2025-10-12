@@ -84,7 +84,11 @@ export function ProjectsSection({
 
               {project.url && (
                 <a
-                  href={project.url}
+                  href={
+                    project.url.startsWith("http")
+                      ? project.url
+                      : `https://${project.url}`
+                  }
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-4 inline-block text-sm text-purple-600 dark:text-purple-400 hover:underline"

@@ -1,7 +1,7 @@
 "use client";
 
 import { signOut } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Eye,
@@ -29,10 +29,30 @@ export function AdminNavbar({
   currentPage = "dashboard",
 }: AdminNavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [currentUsername, setCurrentUsername] = useState(user.username);
   const router = useRouter();
 
   const title = currentPage === "profile" ? "Profile Settings" : "Dashboard";
   const showBackButton = currentPage === "profile";
+
+  // Fetch the current username when component mounts or when user prop changes
+  useEffect(() => {
+    const fetchCurrentUsername = async () => {
+      try {
+        const response = await fetch("/api/admin/profile");
+        if (response.ok) {
+          const data = await response.json();
+          setCurrentUsername(data.user.username);
+        }
+      } catch (error) {
+        console.error("Failed to fetch current username:", error);
+        // Fallback to prop value
+        setCurrentUsername(user.username);
+      }
+    };
+
+    fetchCurrentUsername();
+  }, [user.username]);
 
   return (
     <nav className="glass border-b border-gray-200 dark:border-gray-700">
@@ -76,7 +96,7 @@ export function AdminNavbar({
           <div className="flex items-center gap-3">
             {/* View Portfolio Button */}
             <a
-              href={user.username ? `/${user.username}` : "/"}
+              href={currentUsername ? `/${currentUsername}` : "/"}
               className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-blue-500 text-white hover:from-purple-700 hover:to-blue-600 transition-all shadow-sm hover:shadow-md"
             >
               <Eye className="w-4 h-4" />

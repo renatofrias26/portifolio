@@ -214,7 +214,13 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
       {/* Navigation */}
-      <AdminNavbar user={session.user} currentPage="profile" />
+      <AdminNavbar
+        user={{
+          ...session.user,
+          username: profile?.username || session.user.username,
+        }}
+        currentPage="profile"
+      />
 
       <div className="container mx-auto px-6 py-12">
         <motion.div
