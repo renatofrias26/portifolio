@@ -6,30 +6,24 @@ import { ArrowDown, Mail, Phone, MapPin } from "lucide-react";
 import { resumeData } from "@/data/resume";
 import { Fragment } from "react";
 
-interface PersonalInfo {
-  name: string;
-  title: string;
-  email: string;
-  phone: string;
-  location: string;
-}
-
 interface HeroSectionProps {
-  personal?: PersonalInfo;
+  name?: string; // User's name
   showScrollButton?: boolean;
+  title?: string; // Custom title from user profile settings
   tagline?: string; // Custom tagline from user profile
+  contactInfo?: {
+    email?: string;
+    phone?: string;
+    location?: string;
+  };
 }
 
 export function HeroSection({
-  personal = {
-    name: resumeData.name,
-    title: resumeData.title,
-    email: resumeData.email,
-    phone: resumeData.phone,
-    location: resumeData.location,
-  },
+  name = resumeData.name,
   showScrollButton = true,
+  title,
   tagline,
+  contactInfo,
 }: HeroSectionProps) {
   const scrollToNext = () => {
     window.scrollTo({ top: window.innerHeight, behavior: "smooth" });
@@ -42,7 +36,7 @@ export function HeroSection({
 
     const parts: Array<{ text: string; colorIndex?: number }> = [];
     const colors = ["purple", "blue", "teal"] as const;
-    
+
     // Regular expression to match highlight markers
     const regex = /(\#\#([^#]+)\#\#)/g;
     let lastIndex = 0;
@@ -56,9 +50,9 @@ export function HeroSection({
       }
 
       // Add the highlighted text with cycling color
-      parts.push({ 
-        text: match[2], 
-        colorIndex: highlightCount % colors.length 
+      parts.push({
+        text: match[2],
+        colorIndex: highlightCount % colors.length,
       });
       highlightCount++;
 
@@ -78,7 +72,7 @@ export function HeroSection({
             return <Fragment key={index}>{part.text}</Fragment>;
           }
 
-          const colorClasses: Record<typeof colors[number], string> = {
+          const colorClasses: Record<(typeof colors)[number], string> = {
             purple: "font-semibold text-purple-600 dark:text-purple-400",
             blue: "font-semibold text-blue-600 dark:text-blue-400",
             teal: "font-semibold text-teal-600 dark:text-teal-400",
@@ -122,7 +116,7 @@ export function HeroSection({
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <h1 className="text-6xl md:text-8xl font-bold mb-6">
-              <GradientText>{personal.name}</GradientText>
+              <GradientText>{name}</GradientText>
             </h1>
           </motion.div>
 
@@ -132,7 +126,7 @@ export function HeroSection({
             transition={{ duration: 0.5, delay: 0.4 }}
             className="text-2xl md:text-4xl font-semibold text-gray-700 dark:text-gray-300 mb-8"
           >
-            {personal.title}
+            {title || resumeData.title}
           </motion.h2>
 
           {/* Short intro */}
@@ -147,40 +141,51 @@ export function HeroSection({
             </motion.p>
           )}
 
-          {/* Contact info */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.8 }}
-            className="flex flex-wrap justify-center gap-6 mb-12 text-gray-600 dark:text-gray-400"
-          >
-            <a
-              href={`mailto:${personal.email}`}
-              className="flex items-center gap-2 hover:text-purple-600 dark:hover:text-purple-400 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 rounded-md px-2 py-1"
-              aria-label={`Email: ${personal.email}`}
-            >
-              <Mail className="w-5 h-5" aria-hidden="true" />
-              <span>{personal.email}</span>
-            </a>
-            <a
-              href={`tel:${personal.phone}`}
-              className="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-md px-2 py-1"
-              aria-label={`Phone: ${personal.phone}`}
-            >
-              <Phone className="w-5 h-5" aria-hidden="true" />
-              <span>{personal.phone}</span>
-            </a>
-            <div className="flex items-center gap-2">
-              <MapPin className="w-5 h-5" aria-hidden="true" />
-              <span>{personal.location}</span>
-            </div>
-          </motion.div>
+          {/* Contact info - displayed if provided from profile settings */}
+          {contactInfo &&
+            (contactInfo.email ||
+              contactInfo.phone ||
+              contactInfo.location) && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.7 }}
+                className="flex flex-wrap justify-center gap-6 mb-12 text-gray-600 dark:text-gray-400"
+              >
+                {contactInfo.email && (
+                  <a
+                    href={`mailto:${contactInfo.email}`}
+                    className="flex items-center gap-2 hover:text-purple-600 dark:hover:text-purple-400 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 rounded-md px-2 py-1"
+                    aria-label={`Email: ${contactInfo.email}`}
+                  >
+                    <Mail className="w-5 h-5" aria-hidden="true" />
+                    <span>{contactInfo.email}</span>
+                  </a>
+                )}
+                {contactInfo.phone && (
+                  <a
+                    href={`tel:${contactInfo.phone}`}
+                    className="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-md px-2 py-1"
+                    aria-label={`Phone: ${contactInfo.phone}`}
+                  >
+                    <Phone className="w-5 h-5" aria-hidden="true" />
+                    <span>{contactInfo.phone}</span>
+                  </a>
+                )}
+                {contactInfo.location && (
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-5 h-5" aria-hidden="true" />
+                    <span>{contactInfo.location}</span>
+                  </div>
+                )}
+              </motion.div>
+            )}
 
           {/* CTA */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 1 }}
+            transition={{ duration: 0.5, delay: 0.9 }}
             className="flex flex-wrap justify-center gap-4"
           >
             <a

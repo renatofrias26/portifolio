@@ -55,14 +55,23 @@ export interface UserCustomization {
     accentColor?: string;
   };
   profileData?: {
+    title?: string;
+    contactInfo?: {
+      email?: string;
+      phone?: string;
+      location?: string;
+    };
     socialLinks?: {
       github?: string;
       linkedin?: string;
       twitter?: string;
       website?: string;
+      instagram?: string;
+      youtube?: string;
     };
     tagline?: string;
     bio?: string;
+    currentFocus?: string[];
   };
   pdfUrl?: string;
 }
@@ -121,15 +130,37 @@ export function PortfolioPage({
       <main id="main-content" className="min-h-screen">
         {/* Hero Section */}
         <HeroSection
-          personal={usePropsData ? data.personal : undefined}
+          name={
+            userCustomization?.userName ||
+            (usePropsData ? data.personal?.name : undefined)
+          }
           showScrollButton={true}
+          title={
+            userCustomization?.profileData?.title ||
+            (usePropsData ? data.personal?.title : undefined)
+          }
           tagline={userCustomization?.profileData?.tagline}
+          contactInfo={
+            userCustomization?.profileData?.contactInfo &&
+            (userCustomization.profileData.contactInfo.email ||
+              userCustomization.profileData.contactInfo.phone ||
+              userCustomization.profileData.contactInfo.location)
+              ? userCustomization.profileData.contactInfo
+              : usePropsData
+              ? {
+                  email: data.personal?.email,
+                  phone: data.personal?.phone,
+                  location: data.personal?.location,
+                }
+              : undefined
+          }
         />
 
         {/* About Section */}
         <AboutSection
           summary={usePropsData ? data.personal.summary : undefined}
           education={usePropsData ? data.education : undefined}
+          currentFocus={userCustomization?.profileData?.currentFocus}
         />
 
         {/* Experience Section */}
@@ -144,7 +175,7 @@ export function PortfolioPage({
         <ProjectsSection projects={usePropsData ? data.projects : undefined} />
 
         {/* AI Chat Section */}
-        <AIChatSection 
+        <AIChatSection
           userName={
             userCustomization?.userName ||
             (usePropsData ? data.personal?.name : undefined)
@@ -155,7 +186,20 @@ export function PortfolioPage({
         {/* Contact Section */}
         <ContactSection
           contact={
-            usePropsData
+            userCustomization?.profileData?.contactInfo &&
+            (userCustomization.profileData.contactInfo.email ||
+              userCustomization.profileData.contactInfo.phone ||
+              userCustomization.profileData.contactInfo.location)
+              ? {
+                  name:
+                    userCustomization.userName ||
+                    (usePropsData ? data.personal.name : ""),
+                  email: userCustomization.profileData.contactInfo.email || "",
+                  phone: userCustomization.profileData.contactInfo.phone || "",
+                  location:
+                    userCustomization.profileData.contactInfo.location || "",
+                }
+              : usePropsData
               ? {
                   name: data.personal.name,
                   email: data.personal.email,

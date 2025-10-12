@@ -17,12 +17,21 @@ interface UserProfile {
   logoUrl?: string;
   profileImageUrl?: string;
   profileData?: {
+    title?: string; // Professional title
     tagline?: string;
+    currentFocus?: string[]; // Array of focus items
+    contactInfo?: {
+      email?: string;
+      phone?: string;
+      location?: string;
+    };
     socialLinks?: {
       github?: string;
       linkedin?: string;
       twitter?: string;
       website?: string;
+      instagram?: string;
+      youtube?: string;
     };
     bio?: string;
     [key: string]: unknown;
@@ -43,7 +52,20 @@ export default function ProfilePage() {
   const [formData, setFormData] = useState({
     name: "",
     username: "",
+    title: "", // Professional title
     tagline: "", // Hero section tagline
+    currentFocus: [""],
+    // Contact Information
+    contactEmail: "",
+    contactPhone: "",
+    contactLocation: "",
+    // Social Links
+    github: "",
+    linkedin: "",
+    twitter: "",
+    website: "",
+    instagram: "",
+    youtube: "",
   });
 
   useEffect(() => {
@@ -65,10 +87,26 @@ export default function ProfilePage() {
 
       if (response.ok && data.user) {
         setProfile(data.user);
+        const focusArray = data.user.profileData?.currentFocus || [];
+        // Ensure we always have 5 slots
+        const paddedFocus = [...focusArray].slice(0, 5);
         setFormData({
           name: data.user.name || "",
           username: data.user.username || "",
+          title: data.user.profileData?.title || "",
           tagline: data.user.profileData?.tagline || "",
+          currentFocus: paddedFocus,
+          // Contact Information
+          contactEmail: data.user.profileData?.contactInfo?.email || "",
+          contactPhone: data.user.profileData?.contactInfo?.phone || "",
+          contactLocation: data.user.profileData?.contactInfo?.location || "",
+          // Social Links
+          github: data.user.profileData?.socialLinks?.github || "",
+          linkedin: data.user.profileData?.socialLinks?.linkedin || "",
+          twitter: data.user.profileData?.socialLinks?.twitter || "",
+          website: data.user.profileData?.socialLinks?.website || "",
+          instagram: data.user.profileData?.socialLinks?.instagram || "",
+          youtube: data.user.profileData?.socialLinks?.youtube || "",
         });
       } else {
         setError("Failed to load profile");
@@ -87,6 +125,11 @@ export default function ProfilePage() {
     setSuccess("");
 
     try {
+      // Filter out empty focus items before saving
+      const currentFocus = formData.currentFocus.filter(
+        (item) => item.trim() !== "",
+      );
+
       const response = await fetch("/api/admin/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -94,7 +137,22 @@ export default function ProfilePage() {
           ...formData,
           profileData: {
             ...profile?.profileData,
+            title: formData.title,
             tagline: formData.tagline,
+            currentFocus: currentFocus.length > 0 ? currentFocus : undefined,
+            contactInfo: {
+              email: formData.contactEmail || undefined,
+              phone: formData.contactPhone || undefined,
+              location: formData.contactLocation || undefined,
+            },
+            socialLinks: {
+              github: formData.github || undefined,
+              linkedin: formData.linkedin || undefined,
+              twitter: formData.twitter || undefined,
+              website: formData.website || undefined,
+              instagram: formData.instagram || undefined,
+              youtube: formData.youtube || undefined,
+            },
           },
         }),
       });
@@ -184,7 +242,7 @@ export default function ProfilePage() {
                   Account Information
                 </h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Update your profile details
+                  Basic account details
                 </p>
               </div>
               {!editing && profile && (
@@ -236,40 +294,6 @@ export default function ProfilePage() {
                       </p>
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Hero Tagline (Optional)
-                      </label>
-                      <textarea
-                        value={formData.tagline}
-                        onChange={(e) =>
-                          setFormData({ ...formData, tagline: e.target.value })
-                        }
-                        rows={3}
-                        placeholder="From ##Mechatronics Engineering## to ##Software Development##, now specializing in ##AI Solutions##"
-                        className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none resize-none"
-                      />
-                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 space-y-1">
-                        <p>
-                          This appears below your title on the hero section of
-                          your portfolio
-                        </p>
-                        <p className="font-medium">Add highlights with ##text## - colors auto-rotate!</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <code className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded border border-gray-300 dark:border-gray-600">
-                            ##highlight##
-                          </code>
-                          <span className="text-xs">→</span>
-                          <div className="flex gap-1">
-                            <span className="w-3 h-3 rounded-full bg-purple-500"></span>
-                            <span className="w-3 h-3 rounded-full bg-blue-500"></span>
-                            <span className="w-3 h-3 rounded-full bg-teal-500"></span>
-                            <span className="text-xs text-gray-400">...</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
                     <div className="flex gap-2 pt-4">
                       <button
                         type="submit"
@@ -285,7 +309,34 @@ export default function ProfilePage() {
                           setFormData({
                             name: profile.name || "",
                             username: profile.username || "",
+                            title: profile.profileData?.title || "",
                             tagline: profile.profileData?.tagline || "",
+                            currentFocus: [
+                              ...(profile.profileData?.currentFocus || []),
+                              "",
+                              "",
+                              "",
+                              "",
+                              "",
+                            ].slice(0, 5),
+                            contactEmail:
+                              profile.profileData?.contactInfo?.email || "",
+                            contactPhone:
+                              profile.profileData?.contactInfo?.phone || "",
+                            contactLocation:
+                              profile.profileData?.contactInfo?.location || "",
+                            github:
+                              profile.profileData?.socialLinks?.github || "",
+                            linkedin:
+                              profile.profileData?.socialLinks?.linkedin || "",
+                            twitter:
+                              profile.profileData?.socialLinks?.twitter || "",
+                            website:
+                              profile.profileData?.socialLinks?.website || "",
+                            instagram:
+                              profile.profileData?.socialLinks?.instagram || "",
+                            youtube:
+                              profile.profileData?.socialLinks?.youtube || "",
                           });
                           setError("");
                           setSuccess("");
@@ -339,19 +390,6 @@ export default function ProfilePage() {
                       </a>
                     </div>
 
-                    <div className="md:col-span-2">
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Hero Tagline
-                      </p>
-                      <p className="text-gray-900 dark:text-white font-medium">
-                        {(profile.profileData?.tagline as string) || (
-                          <span className="text-gray-400 dark:text-gray-500 italic">
-                            Not set
-                          </span>
-                        )}
-                      </p>
-                    </div>
-
                     <div>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
                         Member Since
@@ -390,12 +428,564 @@ export default function ProfilePage() {
             )}
           </GlassCard>
 
+          {/* Portfolio Settings */}
+          {profile && (
+            <GlassCard className="p-8 mb-6">
+              <div>
+                <div className="flex items-start justify-between mb-6">
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                      <span className="text-purple-600 dark:text-purple-400">
+                        ✨
+                      </span>
+                      Portfolio Settings
+                    </h2>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      Customize how your portfolio appears to visitors
+                    </p>
+                  </div>
+                  {!editing && (
+                    <button
+                      onClick={() => setEditing(true)}
+                      className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                    >
+                      Edit Settings
+                    </button>
+                  )}
+                </div>
+
+                {editing ? (
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Professional Title */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Professional Title
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.title}
+                        onChange={(e) =>
+                          setFormData({ ...formData, title: e.target.value })
+                        }
+                        placeholder="e.g., Senior Software Engineer | AI Solutions Architect"
+                        className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                      />
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        This appears below your name on your portfolio
+                      </p>
+                    </div>
+
+                    {/* Hero Tagline */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Hero Tagline (Optional)
+                      </label>
+                      <textarea
+                        value={formData.tagline}
+                        onChange={(e) =>
+                          setFormData({ ...formData, tagline: e.target.value })
+                        }
+                        rows={3}
+                        placeholder="From ##Mechatronics Engineering## to ##Software Development##, now specializing in ##AI Solutions##"
+                        className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                      />
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 space-y-1">
+                        <p>This appears below your title on the hero section</p>
+                        <p className="font-medium">
+                          Add highlights with ##text## - colors auto-rotate!
+                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <code className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded border border-gray-300 dark:border-gray-600">
+                            ##highlight##
+                          </code>
+                          <span className="text-xs">→</span>
+                          <div className="flex gap-1">
+                            <span className="w-3 h-3 rounded-full bg-purple-500"></span>
+                            <span className="w-3 h-3 rounded-full bg-blue-500"></span>
+                            <span className="w-3 h-3 rounded-full bg-teal-500"></span>
+                            <span className="text-xs text-gray-400">...</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Current Focus */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Current Focus (Optional)
+                      </label>
+                      <div className="space-y-2">
+                        {formData.currentFocus.map((focus, index) => (
+                          <div key={index} className="flex gap-2">
+                            <input
+                              type="text"
+                              value={focus}
+                              onChange={(e) => {
+                                const newFocus = [...formData.currentFocus];
+                                newFocus[index] = e.target.value;
+                                setFormData({
+                                  ...formData,
+                                  currentFocus: newFocus,
+                                });
+                              }}
+                              placeholder="e.g., AI Development & Integration"
+                              className="flex-1 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newFocus = formData.currentFocus.filter(
+                                  (_, i) => i !== index,
+                                );
+                                setFormData({
+                                  ...formData,
+                                  currentFocus: newFocus,
+                                });
+                              }}
+                              className="px-3 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors"
+                              aria-label="Remove item"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData({
+                            ...formData,
+                            currentFocus: [...formData.currentFocus, ""],
+                          });
+                        }}
+                        className="mt-2 px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white text-sm transition-colors"
+                      >
+                        + Add Focus Item
+                      </button>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                        What you&apos;re currently focusing on or interested in
+                      </p>
+                    </div>
+
+                    {/* Contact Information */}
+                    <div>
+                      <h4 className="text-md font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                        <span className="text-teal-600 dark:text-teal-400">
+                          📧
+                        </span>
+                        Contact Information
+                      </h4>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Display Email
+                          </label>
+                          <input
+                            type="email"
+                            value={formData.contactEmail}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                contactEmail: e.target.value,
+                              })
+                            }
+                            placeholder="contact@example.com"
+                            className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                          />
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            Public email shown on your portfolio (can be
+                            different from login email)
+                          </p>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Phone Number
+                          </label>
+                          <input
+                            type="tel"
+                            value={formData.contactPhone}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                contactPhone: e.target.value,
+                              })
+                            }
+                            placeholder="+1 (555) 123-4567"
+                            className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Location
+                          </label>
+                          <input
+                            type="text"
+                            value={formData.contactLocation}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                contactLocation: e.target.value,
+                              })
+                            }
+                            placeholder="San Francisco, CA"
+                            className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Social Links */}
+                    <div>
+                      <h4 className="text-md font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                        <span className="text-blue-600 dark:text-blue-400">
+                          🔗
+                        </span>
+                        Social Links
+                      </h4>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            GitHub
+                          </label>
+                          <input
+                            type="url"
+                            value={formData.github}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                github: e.target.value,
+                              })
+                            }
+                            placeholder="https://github.com/username"
+                            className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            LinkedIn
+                          </label>
+                          <input
+                            type="url"
+                            value={formData.linkedin}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                linkedin: e.target.value,
+                              })
+                            }
+                            placeholder="https://linkedin.com/in/username"
+                            className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Twitter / X
+                          </label>
+                          <input
+                            type="url"
+                            value={formData.twitter}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                twitter: e.target.value,
+                              })
+                            }
+                            placeholder="https://twitter.com/username"
+                            className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Website
+                          </label>
+                          <input
+                            type="url"
+                            value={formData.website}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                website: e.target.value,
+                              })
+                            }
+                            placeholder="https://yourwebsite.com"
+                            className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Instagram
+                          </label>
+                          <input
+                            type="url"
+                            value={formData.instagram}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                instagram: e.target.value,
+                              })
+                            }
+                            placeholder="https://instagram.com/username"
+                            className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            YouTube
+                          </label>
+                          <input
+                            type="url"
+                            value={formData.youtube}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                youtube: e.target.value,
+                              })
+                            }
+                            placeholder="https://youtube.com/@username"
+                            className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 pt-4 border-t border-gray-200 dark:border-gray-700 mt-6">
+                      <button
+                        type="submit"
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                      >
+                        <Save className="w-4 h-4" />
+                        Save Changes
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditing(false);
+                          const focusArray =
+                            profile.profileData?.currentFocus || [];
+                          const paddedFocus = [
+                            ...focusArray,
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                          ].slice(0, 5);
+                          setFormData({
+                            name: profile.name || "",
+                            username: profile.username || "",
+                            title: profile.profileData?.title || "",
+                            tagline: profile.profileData?.tagline || "",
+                            currentFocus: paddedFocus,
+                            // Contact Information
+                            contactEmail:
+                              profile.profileData?.contactInfo?.email || "",
+                            contactPhone:
+                              profile.profileData?.contactInfo?.phone || "",
+                            contactLocation:
+                              profile.profileData?.contactInfo?.location || "",
+                            // Social Links
+                            github:
+                              profile.profileData?.socialLinks?.github || "",
+                            linkedin:
+                              profile.profileData?.socialLinks?.linkedin || "",
+                            twitter:
+                              profile.profileData?.socialLinks?.twitter || "",
+                            website:
+                              profile.profileData?.socialLinks?.website || "",
+                            instagram:
+                              profile.profileData?.socialLinks?.instagram || "",
+                            youtube:
+                              profile.profileData?.socialLinks?.youtube || "",
+                          });
+                          setError("");
+                          setSuccess("");
+                        }}
+                        className="px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <div className="space-y-6">
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                        Professional Title
+                      </p>
+                      <p className="text-gray-900 dark:text-white">
+                        {profile.profileData?.title || (
+                          <span className="text-gray-400 dark:text-gray-500 italic">
+                            Not set
+                          </span>
+                        )}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                        Hero Tagline
+                      </p>
+                      <p className="text-gray-900 dark:text-white">
+                        {profile.profileData?.tagline || (
+                          <span className="text-gray-400 dark:text-gray-500 italic">
+                            Not set
+                          </span>
+                        )}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                        Current Focus
+                      </p>
+                      {profile.profileData?.currentFocus &&
+                      profile.profileData.currentFocus.length > 0 ? (
+                        <ul className="space-y-1">
+                          {profile.profileData.currentFocus.map(
+                            (focus, index) => (
+                              <li
+                                key={index}
+                                className="text-gray-900 dark:text-white flex items-start"
+                              >
+                                <span className="text-purple-500 mr-2">▸</span>
+                                {focus}
+                              </li>
+                            ),
+                          )}
+                        </ul>
+                      ) : (
+                        <span className="text-gray-400 dark:text-gray-500 italic">
+                          Not set
+                        </span>
+                      )}
+                    </div>
+
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                        Contact Information
+                      </p>
+                      <div className="space-y-1">
+                        <p className="text-gray-900 dark:text-white text-sm">
+                          <span className="text-gray-500">Email:</span>{" "}
+                          {profile.profileData?.contactInfo?.email || (
+                            <span className="text-gray-400 dark:text-gray-500 italic">
+                              Not set
+                            </span>
+                          )}
+                        </p>
+                        <p className="text-gray-900 dark:text-white text-sm">
+                          <span className="text-gray-500">Phone:</span>{" "}
+                          {profile.profileData?.contactInfo?.phone || (
+                            <span className="text-gray-400 dark:text-gray-500 italic">
+                              Not set
+                            </span>
+                          )}
+                        </p>
+                        <p className="text-gray-900 dark:text-white text-sm">
+                          <span className="text-gray-500">Location:</span>{" "}
+                          {profile.profileData?.contactInfo?.location || (
+                            <span className="text-gray-400 dark:text-gray-500 italic">
+                              Not set
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                        Social Links
+                      </p>
+                      <div className="grid grid-cols-2 gap-2">
+                        {profile.profileData?.socialLinks?.github && (
+                          <a
+                            href={profile.profileData.socialLinks.github}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                          >
+                            GitHub
+                          </a>
+                        )}
+                        {profile.profileData?.socialLinks?.linkedin && (
+                          <a
+                            href={profile.profileData.socialLinks.linkedin}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                          >
+                            LinkedIn
+                          </a>
+                        )}
+                        {profile.profileData?.socialLinks?.twitter && (
+                          <a
+                            href={profile.profileData.socialLinks.twitter}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                          >
+                            Twitter/X
+                          </a>
+                        )}
+                        {profile.profileData?.socialLinks?.website && (
+                          <a
+                            href={profile.profileData.socialLinks.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                          >
+                            Website
+                          </a>
+                        )}
+                        {profile.profileData?.socialLinks?.instagram && (
+                          <a
+                            href={profile.profileData.socialLinks.instagram}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                          >
+                            Instagram
+                          </a>
+                        )}
+                        {profile.profileData?.socialLinks?.youtube && (
+                          <a
+                            href={profile.profileData.socialLinks.youtube}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                          >
+                            YouTube
+                          </a>
+                        )}
+                        {!profile.profileData?.socialLinks ||
+                          (Object.values(profile.profileData.socialLinks).every(
+                            (v) => !v,
+                          ) && (
+                            <span className="text-gray-400 dark:text-gray-500 italic col-span-2">
+                              No social links set
+                            </span>
+                          ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </GlassCard>
+          )}
+
           {/* Customization */}
           {profile && (
             <GlassCard className="p-8">
               <div className="mb-6">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                  Customization
+                  Brand Assets
                 </h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                   Upload your brand assets and profile images

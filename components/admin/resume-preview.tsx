@@ -85,14 +85,14 @@ export function ResumePreview({
 
       {/* Hero Section */}
       <HeroSection
-        personal={{
-          name: data.personal.name,
-          title: data.personal.title,
+        name={data.personal.name}
+        title={data.personal.title}
+        showScrollButton={false}
+        contactInfo={{
           email: data.personal.email,
           phone: data.personal.phone,
           location: data.personal.location,
         }}
-        showScrollButton={false}
       />
 
       {/* About / Summary */}

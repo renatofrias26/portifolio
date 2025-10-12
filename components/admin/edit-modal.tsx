@@ -35,10 +35,10 @@ interface ResumeData {
     period: string;
     details: string[];
   }>;
-  skills: {
-    technical: string[];
-    soft: string[];
-  };
+  skills: Array<{
+    category: string;
+    items: string[];
+  }>;
   projects: Array<{
     name: string;
     description: string;
@@ -54,6 +54,12 @@ export function EditModal({
   onSaveSuccess,
 }: EditModalProps) {
   const [data, setData] = useState<ResumeData | null>(null);
+  const [profileData, setProfileData] = useState<{
+    title: string;
+    email: string;
+    phone: string;
+    location: string;
+  } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -62,14 +68,32 @@ export function EditModal({
     try {
       setIsLoading(true);
       setError(null);
-      const response = await fetch(`/api/admin/resume-data/${versionId}`);
-      const result = await response.json();
 
-      if (response.ok) {
-        setData(result.data);
-      } else {
-        setError(result.error || "Failed to load data");
+      // Fetch resume data
+      const resumeResponse = await fetch(`/api/admin/resume-data/${versionId}`);
+      const resumeResult = await resumeResponse.json();
+
+      if (!resumeResponse.ok) {
+        setError(resumeResult.error || "Failed to load data");
+        return;
       }
+
+      // Fetch profile data for contact information
+      const profileResponse = await fetch("/api/admin/profile");
+      const profileResult = await profileResponse.json();
+
+      if (profileResponse.ok && profileResult.user) {
+        const profile = profileResult.user.profileData || {};
+        const contactInfo = profile.contactInfo || {};
+        setProfileData({
+          title: profile.title || "",
+          email: contactInfo.email || "",
+          phone: contactInfo.phone || "",
+          location: contactInfo.location || "",
+        });
+      }
+
+      setData(resumeResult.data);
     } catch {
       setError("Failed to fetch resume data");
     } finally {
@@ -195,22 +219,34 @@ export function EditModal({
     });
   };
 
-  const updateSkills = (category: "technical" | "soft", value: string) => {
+  const updateSkillCategory = (
+    index: number,
+    field: "category" | "items",
+    value: string | string[],
+  ) => {
     if (!data) return;
-    const skills = value
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
+    const updatedSkills = [...data.skills];
+    if (field === "category") {
+      updatedSkills[index].category = value as string;
+    } else {
+      updatedSkills[index].items = value as string[];
+    }
+    setData({ ...data, skills: updatedSkills });
+  };
 
-    // Ensure skills object exists with both properties
-    const currentSkills = data.skills || { technical: [], soft: [] };
-
+  const addSkillCategory = () => {
+    if (!data) return;
     setData({
       ...data,
-      skills: {
-        ...currentSkills,
-        [category]: skills,
-      },
+      skills: [...data.skills, { category: "", items: [] }],
+    });
+  };
+
+  const removeSkillCategory = (index: number) => {
+    if (!data) return;
+    setData({
+      ...data,
+      skills: data.skills.filter((_, i) => i !== index),
     });
   };
 
@@ -310,57 +346,73 @@ export function EditModal({
                         className="w-full px-3 py-2 rounded-lg glass border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none"
                       />
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">
-                        Title
-                      </label>
-                      <input
-                        type="text"
-                        value={data.personal.title}
-                        onChange={(e) =>
-                          updatePersonal("title", e.target.value)
-                        }
-                        className="w-full px-3 py-2 rounded-lg glass border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">
-                        Email
-                      </label>
-                      <input
-                        type="email"
-                        value={data.personal.email}
-                        onChange={(e) =>
-                          updatePersonal("email", e.target.value)
-                        }
-                        className="w-full px-3 py-2 rounded-lg glass border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">
-                        Phone
-                      </label>
-                      <input
-                        type="text"
-                        value={data.personal.phone}
-                        onChange={(e) =>
-                          updatePersonal("phone", e.target.value)
-                        }
-                        className="w-full px-3 py-2 rounded-lg glass border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">
-                        Location
-                      </label>
-                      <input
-                        type="text"
-                        value={data.personal.location}
-                        onChange={(e) =>
-                          updatePersonal("location", e.target.value)
-                        }
-                        className="w-full px-3 py-2 rounded-lg glass border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none"
-                      />
+                    <div className="md:col-span-2 p-4 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                      <div className="flex items-start gap-2 mb-3">
+                        <svg
+                          className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                            Contact information is managed in{" "}
+                            <a
+                              href="/admin/profile"
+                              className="underline hover:text-blue-700 dark:hover:text-blue-300"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Profile Settings
+                            </a>
+                          </p>
+                          <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                            Your title, email, phone, and location are set in
+                            your profile and displayed across your portfolio
+                          </p>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                            Title
+                          </label>
+                          <div className="px-3 py-2 rounded-lg bg-white/50 dark:bg-gray-900/30 border border-gray-200 dark:border-gray-700 text-sm">
+                            {profileData?.title || "Not set"}
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                            Email
+                          </label>
+                          <div className="px-3 py-2 rounded-lg bg-white/50 dark:bg-gray-900/30 border border-gray-200 dark:border-gray-700 text-sm">
+                            {profileData?.email || "Not set"}
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                            Phone
+                          </label>
+                          <div className="px-3 py-2 rounded-lg bg-white/50 dark:bg-gray-900/30 border border-gray-200 dark:border-gray-700 text-sm">
+                            {profileData?.phone || "Not set"}
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                            Location
+                          </label>
+                          <div className="px-3 py-2 rounded-lg bg-white/50 dark:bg-gray-900/30 border border-gray-200 dark:border-gray-700 text-sm">
+                            {profileData?.location || "Not set"}
+                          </div>
+                        </div>
+                      </div>
                     </div>
                     <div className="md:col-span-2">
                       <label className="block text-sm font-medium mb-1">
@@ -565,32 +617,75 @@ export function EditModal({
 
                 {/* Skills */}
                 <section>
-                  <h3 className="text-xl font-bold mb-4">Skills</h3>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-sm font-medium mb-1">
-                        Technical Skills (comma-separated)
-                      </label>
-                      <textarea
-                        value={(data.skills?.technical || []).join(", ")}
-                        onChange={(e) =>
-                          updateSkills("technical", e.target.value)
-                        }
-                        rows={3}
-                        className="w-full px-3 py-2 rounded-lg glass border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none resize-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">
-                        Soft Skills (comma-separated)
-                      </label>
-                      <textarea
-                        value={(data.skills?.soft || []).join(", ")}
-                        onChange={(e) => updateSkills("soft", e.target.value)}
-                        rows={3}
-                        className="w-full px-3 py-2 rounded-lg glass border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none resize-none"
-                      />
-                    </div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-bold">Skills</h3>
+                    <button
+                      onClick={addSkillCategory}
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-700 transition-colors"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Add Category
+                    </button>
+                  </div>
+                  <div className="space-y-4">
+                    {data.skills.map((skillCategory, idx) => (
+                      <div
+                        key={idx}
+                        className="p-4 rounded-lg glass border border-gray-200 dark:border-gray-700"
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex-1 mr-3">
+                            <label className="block text-sm font-medium mb-1">
+                              Category Name
+                            </label>
+                            <input
+                              type="text"
+                              value={skillCategory.category}
+                              onChange={(e) =>
+                                updateSkillCategory(
+                                  idx,
+                                  "category",
+                                  e.target.value,
+                                )
+                              }
+                              placeholder="e.g., Frontend, Backend, Tools"
+                              className="w-full px-3 py-2 rounded-lg glass border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none"
+                            />
+                          </div>
+                          <button
+                            onClick={() => removeSkillCategory(idx)}
+                            className="mt-6 p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg transition-colors"
+                            title="Remove category"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium mb-1">
+                            Skills (comma-separated)
+                          </label>
+                          <textarea
+                            value={skillCategory.items.join(", ")}
+                            onChange={(e) => {
+                              const items = e.target.value
+                                .split(",")
+                                .map((s) => s.trim())
+                                .filter(Boolean);
+                              updateSkillCategory(idx, "items", items);
+                            }}
+                            rows={2}
+                            placeholder="e.g., React, TypeScript, Next.js"
+                            className="w-full px-3 py-2 rounded-lg glass border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                    {data.skills.length === 0 && (
+                      <p className="text-center text-gray-500 dark:text-gray-400 py-4">
+                        No skill categories yet. Click &quot;Add Category&quot;
+                        to create one.
+                      </p>
+                    )}
                   </div>
                 </section>
 
