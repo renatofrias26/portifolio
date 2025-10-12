@@ -1,11 +1,11 @@
 "use client";
 
-import { GuestResumeUploader } from "@/components/guest-resume-uploader";
+import { TryNowContent } from "@/components/try-now-content";
 
+/**
+ * Try Now Section - wrapper component for landing page
+ * Uses TryNowContent without the heading (heading is in the section)
+ */
 export function TryNowSection() {
-  return (
-    <div className="max-w-4xl mx-auto">
-      <GuestResumeUploader />
-    </div>
-  );
+  return <TryNowContent showHeading={false} />;
 }
