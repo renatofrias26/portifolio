@@ -37,6 +37,7 @@ interface UserProfile {
     [key: string]: unknown;
   };
   isActive: boolean;
+  isPublic: boolean; // Add public profile setting
   createdAt: string;
 }
 
@@ -66,6 +67,8 @@ export default function ProfilePage() {
     website: "",
     instagram: "",
     youtube: "",
+    // Privacy setting
+    isPublic: true,
   });
 
   useEffect(() => {
@@ -107,6 +110,8 @@ export default function ProfilePage() {
           website: data.user.profileData?.socialLinks?.website || "",
           instagram: data.user.profileData?.socialLinks?.instagram || "",
           youtube: data.user.profileData?.socialLinks?.youtube || "",
+          // Privacy setting
+          isPublic: data.user.isPublic ?? true,
         });
       } else {
         setError("Failed to load profile");
@@ -134,7 +139,9 @@ export default function ProfilePage() {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ...formData,
+          name: formData.name,
+          username: formData.username,
+          isPublic: formData.isPublic,
           profileData: {
             ...profile?.profileData,
             title: formData.title,
@@ -344,6 +351,7 @@ export default function ProfilePage() {
                               profile.profileData?.socialLinks?.instagram || "",
                             youtube:
                               profile.profileData?.socialLinks?.youtube || "",
+                            isPublic: profile.isPublic ?? true,
                           });
                           setError("");
                           setSuccess("");
@@ -763,6 +771,51 @@ export default function ProfilePage() {
                       </div>
                     </div>
 
+                    {/* Privacy Settings */}
+                    <div>
+                      <h4 className="text-md font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                        <span className="text-purple-600 dark:text-purple-400">
+                          🔒
+                        </span>
+                        Privacy Settings
+                        <span
+                          className={`ml-auto text-xs px-3 py-1 rounded-full font-medium ${
+                            formData.isPublic
+                              ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 border border-green-300 dark:border-green-700"
+                              : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border border-yellow-300 dark:border-yellow-700"
+                          }`}
+                        >
+                          {formData.isPublic ? "✓ Public" : "🔒 Private"}
+                        </span>
+                      </h4>
+                      <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                        <label className="flex items-start gap-3 cursor-pointer group">
+                          <input
+                            type="checkbox"
+                            checked={formData.isPublic}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                isPublic: e.target.checked,
+                              })
+                            }
+                            className="mt-1 w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-purple-600 focus:ring-2 focus:ring-purple-500 cursor-pointer"
+                          />
+                          <div className="flex-1">
+                            <span className="text-sm font-medium text-gray-900 dark:text-white block">
+                              Public Profile
+                            </span>
+                            <span className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                              When enabled, your portfolio will be visible in
+                              the Profiles Directory and accessible to anyone
+                              with your link. Disable to make it private (only
+                              you can access it when logged in).
+                            </span>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+
                     <div className="flex gap-2 pt-4 border-t border-gray-200 dark:border-gray-700 mt-6">
                       <button
                         type="submit"
@@ -811,6 +864,7 @@ export default function ProfilePage() {
                               profile.profileData?.socialLinks?.instagram || "",
                             youtube:
                               profile.profileData?.socialLinks?.youtube || "",
+                            isPublic: profile.isPublic ?? true,
                           });
                           setError("");
                           setSuccess("");
@@ -980,6 +1034,42 @@ export default function ProfilePage() {
                               No social links set
                             </span>
                           ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 flex items-center gap-2">
+                        Privacy Settings
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-full font-medium ${
+                            profile.isPublic
+                              ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 border border-green-300 dark:border-green-700"
+                              : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border border-yellow-300 dark:border-yellow-700"
+                          }`}
+                        >
+                          {profile.isPublic ? (
+                            <>
+                              <span>✓</span>
+                              <span>Public Profile</span>
+                            </>
+                          ) : (
+                            <>
+                              <span>🔒</span>
+                              <span>Private Profile</span>
+                            </>
+                          )}
+                        </span>
+                        {profile.isPublic ? (
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            Visible in directory
+                          </span>
+                        ) : (
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            Only you can see it
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>

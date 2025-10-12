@@ -27,13 +27,41 @@ export async function getPublishedResumeByUsername(username: string) {
              u.name, u.username, u.profile_data, u.logo_url, u.profile_image_url, u.theme_settings
       FROM resume_data r
       JOIN users u ON r.user_id = u.id
-      WHERE u.username = ${username} AND u.is_active = true AND r.is_published = true
+      WHERE u.username = ${username} 
+        AND u.is_active = true 
+        AND u.is_public = true 
+        AND r.is_published = true
       ORDER BY r.version DESC
       LIMIT 1
     `;
     return result.rows[0] || null;
   } catch (error) {
     console.error("Error fetching published resume by username:", error);
+    return null;
+  }
+}
+
+// Helper function to get published resume by username for owner (ignores is_public)
+// This allows users to view their own private profiles
+export async function getPublishedResumeByUsernameForOwner(username: string) {
+  try {
+    const result = await sql`
+      SELECT r.data, r.pdf_url, r.version, r.updated_at, 
+             u.id as user_id, u.name, u.username, u.profile_data, u.logo_url, u.profile_image_url, u.theme_settings
+      FROM resume_data r
+      JOIN users u ON r.user_id = u.id
+      WHERE u.username = ${username} 
+        AND u.is_active = true 
+        AND r.is_published = true
+      ORDER BY r.version DESC
+      LIMIT 1
+    `;
+    return result.rows[0] || null;
+  } catch (error) {
+    console.error(
+      "Error fetching published resume by username for owner:",
+      error,
+    );
     return null;
   }
 }
@@ -237,7 +265,7 @@ export async function updateResumeData(
 export async function getUserById(userId: number) {
   try {
     const result = await sql`
-      SELECT id, email, name, username, profile_data, logo_url, profile_image_url, theme_settings, is_active, created_at
+      SELECT id, email, name, username, profile_data, logo_url, profile_image_url, theme_settings, is_active, is_public, created_at
       FROM users
       WHERE id = ${userId}
     `;
@@ -252,7 +280,7 @@ export async function getUserById(userId: number) {
 export async function getUserByUsername(username: string) {
   try {
     const result = await sql`
-      SELECT id, email, name, username, profile_data, logo_url, profile_image_url, theme_settings, is_active, created_at
+      SELECT id, email, name, username, profile_data, logo_url, profile_image_url, theme_settings, is_active, is_public, created_at
       FROM users
       WHERE username = ${username} AND is_active = true
     `;
@@ -273,11 +301,14 @@ export async function updateUserProfile(
     logo_url?: string | null;
     profile_image_url?: string | null;
     theme_settings?: Record<string, unknown>;
+    is_public?: boolean;
   },
 ) {
   try {
     const updateFields: string[] = ["updated_at = CURRENT_TIMESTAMP"];
-    const params: Array<string | number | Record<string, unknown> | null> = [];
+    const params: Array<
+      string | number | Record<string, unknown> | null | boolean
+    > = [];
 
     if (updates.name !== undefined) {
       params.push(updates.name);
@@ -309,13 +340,18 @@ export async function updateUserProfile(
       updateFields.push(`theme_settings = $${params.length}`);
     }
 
+    if (updates.is_public !== undefined) {
+      params.push(updates.is_public);
+      updateFields.push(`is_public = $${params.length}`);
+    }
+
     params.push(userId);
 
     const query = `
       UPDATE users
       SET ${updateFields.join(", ")}
       WHERE id = $${params.length}
-      RETURNING id, email, name, username, profile_data, logo_url, profile_image_url, theme_settings
+      RETURNING id, email, name, username, profile_data, logo_url, profile_image_url, theme_settings, is_public, is_active
     `;
 
     const result = await sql.query(query, params);

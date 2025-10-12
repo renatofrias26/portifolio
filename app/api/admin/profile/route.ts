@@ -30,6 +30,7 @@ export async function GET() {
         profileImageUrl: user.profile_image_url,
         themeSettings: user.theme_settings,
         isActive: user.is_active,
+        isPublic: user.is_public,
         createdAt: user.created_at,
       },
     });
@@ -56,7 +57,8 @@ export async function PUT(request: NextRequest) {
     const userId = parseInt(session.user.id);
     const body = await request.json();
 
-    const { name, username, profileData, logoUrl, profileImageUrl } = body;
+    const { name, username, profileData, logoUrl, profileImageUrl, isPublic } =
+      body;
 
     // Validate username format if provided
     if (username) {
@@ -78,6 +80,7 @@ export async function PUT(request: NextRequest) {
       profile_data?: Record<string, unknown>;
       logo_url?: string | null;
       profile_image_url?: string | null;
+      is_public?: boolean;
     } = {};
 
     if (name !== undefined) updates.name = name;
@@ -86,6 +89,7 @@ export async function PUT(request: NextRequest) {
     if (logoUrl !== undefined) updates.logo_url = logoUrl || null;
     if (profileImageUrl !== undefined)
       updates.profile_image_url = profileImageUrl || null;
+    if (isPublic !== undefined) updates.is_public = isPublic;
 
     const updatedUser = await updateUserProfile(userId, updates);
 
@@ -108,6 +112,7 @@ export async function PUT(request: NextRequest) {
         logoUrl: updatedUser.logo_url,
         profileImageUrl: updatedUser.profile_image_url,
         themeSettings: updatedUser.theme_settings,
+        isPublic: updatedUser.is_public,
       },
     });
   } catch (error) {

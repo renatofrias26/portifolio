@@ -22,6 +22,7 @@ export default function RegisterPage() {
     confirmPassword: "",
     name: "",
     username: "",
+    isPublic: true, // Default to public profile
   });
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [error, setError] = useState("");
@@ -93,6 +94,7 @@ export default function RegisterPage() {
           password: formData.password,
           name: formData.name,
           username: formData.username,
+          isPublic: formData.isPublic,
           profileEnhancements,
         }),
       });
@@ -292,6 +294,41 @@ export default function RegisterPage() {
                 minLength={8}
                 required
               />
+            </div>
+
+            {/* Public Profile Setting */}
+            <div className="space-y-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+              <label className="flex items-start gap-3 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={formData.isPublic}
+                  onChange={(e) =>
+                    setFormData({ ...formData, isPublic: e.target.checked })
+                  }
+                  className="mt-1 w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-purple-600 focus:ring-2 focus:ring-purple-500 cursor-pointer"
+                />
+                <div className="flex-1">
+                  <span
+                    className={`${typography.bodySmall} font-medium text-gray-900 dark:text-white block`}
+                  >
+                    Make my profile public
+                  </span>
+                  <span
+                    className={`${typography.bodySmall} text-gray-600 dark:text-gray-400 leading-relaxed`}
+                  >
+                    Your portfolio will be visible in the{" "}
+                    <Link
+                      href="/profiles"
+                      target="_blank"
+                      className="text-purple-600 dark:text-purple-400 hover:underline"
+                    >
+                      Profiles Directory
+                    </Link>{" "}
+                    and accessible to anyone with your link. You can change this
+                    anytime in settings.
+                  </span>
+                </div>
+              </label>
             </div>
 
             {/* Terms and Privacy Agreement */}

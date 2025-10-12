@@ -37,6 +37,7 @@ async function getProfiles(searchParams: SearchParams) {
       FROM users u
       INNER JOIN resume_data r ON u.id = r.user_id
       WHERE u.is_active = true 
+        AND u.is_public = true
         AND r.is_published = true
     `;
 
