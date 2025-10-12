@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Save, User } from "lucide-react";
+import { Save, User, Edit } from "lucide-react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { ImageUploader } from "@/components/admin/image-uploader";
 import { AdminNavbar } from "@/components/admin/admin-navbar";
@@ -215,9 +215,15 @@ export default function ProfilePage() {
           animate={{ opacity: 1, y: 0 }}
           className="max-w-4xl mx-auto"
         >
-          <p className="text-gray-600 dark:text-gray-400 mb-8">
-            Manage your Upfolio account and portfolio preferences
-          </p>
+          {/* Page Title */}
+          <div className="mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              Profile Settings
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400">
+              Manage your Upfolio account and portfolio preferences
+            </p>
+          </div>
 
           {error && (
             <div className="mb-6 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
@@ -234,9 +240,9 @@ export default function ProfilePage() {
           )}
 
           {/* Account Information */}
-          <GlassCard className="p-8 mb-6">
-            <div className="flex items-start justify-between mb-6">
-              <div>
+          <GlassCard className="mb-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex-1">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                   <User className="w-5 h-5" />
                   Account Information
@@ -248,9 +254,10 @@ export default function ProfilePage() {
               {!editing && profile && (
                 <button
                   onClick={() => setEditing(true)}
-                  className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                  className="p-2 rounded-lg glass hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors flex-shrink-0"
+                  title="Edit Account Information"
                 >
-                  Edit Info
+                  <Edit className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                 </button>
               )}
             </div>
@@ -430,10 +437,10 @@ export default function ProfilePage() {
 
           {/* Portfolio Settings */}
           {profile && (
-            <GlassCard className="p-8 mb-6">
+            <GlassCard className="mb-6">
               <div>
-                <div className="flex items-start justify-between mb-6">
-                  <div>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex-1">
                     <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                       <span className="text-purple-600 dark:text-purple-400">
                         ✨
@@ -447,9 +454,10 @@ export default function ProfilePage() {
                   {!editing && (
                     <button
                       onClick={() => setEditing(true)}
-                      className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                      className="p-2 rounded-lg glass hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors flex-shrink-0"
+                      title="Edit Portfolio Settings"
                     >
-                      Edit Settings
+                      <Edit className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                     </button>
                   )}
                 </div>
@@ -982,7 +990,7 @@ export default function ProfilePage() {
 
           {/* Customization */}
           {profile && (
-            <GlassCard className="p-8">
+            <GlassCard>
               <div className="mb-6">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                   Brand Assets

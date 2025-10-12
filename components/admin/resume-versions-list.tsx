@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { PreviewModal } from "./preview-modal";
 import { EditModal } from "./edit-modal";
+import { spacing, buttons } from "@/lib/styles";
 
 interface ResumeVersion {
   id: number;
@@ -134,9 +135,9 @@ export function ResumeVersionsList() {
   const activeCount = versions.filter((v) => !v.is_archived).length;
 
   return (
-    <div className="space-y-6">
+    <div className={spacing.subsection}>
       {/* Archive Toggle */}
-      <div className="flex items-center justify-between glass rounded-xl p-4">
+      <div className="flex items-center justify-between glass rounded-xl p-4 sm:p-6">
         <div className="flex items-center gap-3">
           <Archive className="w-5 h-5 text-gray-600 dark:text-gray-400" />
           <div>
@@ -160,7 +161,7 @@ export function ResumeVersionsList() {
       </div>
 
       {/* Versions List */}
-      <div className="space-y-4">
+      <div className={spacing.subsection}>
         {versions.map((version, index) => (
           <motion.div
             key={version.id}
@@ -175,9 +176,9 @@ export function ResumeVersionsList() {
                 : "border-gray-200 dark:border-gray-700"
             }`}
           >
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
+            <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+              <div className="flex-1 w-full">
+                <div className="flex items-center gap-2 sm:gap-3 mb-2 flex-wrap">
                   <h3 className="text-lg font-semibold">
                     Version {version.version}
                   </h3>
@@ -227,7 +228,7 @@ export function ResumeVersionsList() {
                 )}
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-shrink-0">
                 <button
                   onClick={() => setPreviewVersionId(version.id)}
                   className="p-2 rounded-lg glass hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
@@ -267,7 +268,7 @@ export function ResumeVersionsList() {
                 {!version.is_published && !version.is_archived && (
                   <button
                     onClick={() => handlePublish(version.id)}
-                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-green-600 to-blue-500 text-white font-medium hover:shadow-lg transition-all"
+                    className={`${buttons.medium} bg-gradient-to-r from-green-600 to-blue-500 text-white font-medium hover:shadow-lg transition-all rounded-lg`}
                   >
                     Publish
                   </button>

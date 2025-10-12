@@ -6,6 +6,12 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import {
+  containerPadding,
+  logoSizes,
+  formInput,
+  typography,
+} from "@/lib/styles";
 
 export default function AdminLogin() {
   const router = useRouter();
@@ -66,47 +72,46 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 px-3 sm:px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md"
       >
-        <div className="glass rounded-2xl p-8 shadow-xl">
-          <div className="text-center mb-8">
+        <div className={`glass rounded-2xl ${containerPadding.form} shadow-xl`}>
+          <div className="text-center mb-4 sm:mb-6 md:mb-8">
             {/* Upfolio Logo */}
-            <div className="mb-6 flex justify-center">
+            <div className="mb-3 sm:mb-4 md:mb-6 flex justify-center">
               <Image
                 src="/logo-dark.svg"
                 alt="Upfolio"
-                width={160}
-                height={64}
-                className="dark:hidden"
+                width={logoSizes.auth.imageWidth}
+                height={logoSizes.auth.imageHeight}
+                className={`dark:hidden ${logoSizes.auth.width}`}
                 priority
               />
               <Image
                 src="/logo-dark.svg"
                 alt="Upfolio"
-                width={160}
-                height={64}
-                className="hidden dark:block"
+                width={logoSizes.auth.imageWidth}
+                height={logoSizes.auth.imageHeight}
+                className={`hidden dark:block ${logoSizes.auth.width}`}
                 priority
               />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h1 className={`${typography.h4} text-gray-900 dark:text-white`}>
               Welcome Back
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">
+            <p
+              className={`${typography.body} text-gray-600 dark:text-gray-400 mt-2`}
+            >
               Sign in to manage your portfolio
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
+              <label htmlFor="email" className={formInput.label}>
                 Email
               </label>
               <input
@@ -115,16 +120,13 @@ export default function AdminLogin() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                className={formInput.base}
                 placeholder="admin@example.com"
               />
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
+              <label htmlFor="password" className={formInput.label}>
                 Password
               </label>
               <input
@@ -133,30 +135,30 @@ export default function AdminLogin() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                className={formInput.base}
                 placeholder="••••••••"
               />
             </div>
 
             {error && (
-              <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-                <p className="text-sm text-red-600 dark:text-red-400">
-                  {error}
-                </p>
+              <div className={formInput.error}>
+                <p>{error}</p>
               </div>
             )}
 
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 px-4 rounded-lg bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-4 py-2.5 sm:py-3 rounded-lg bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
             >
               {isLoading ? "Signing in..." : "Sign In"}
             </button>
           </form>
 
-          <div className="mt-6 text-center space-y-2">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+          <div className="mt-4 sm:mt-6 text-center space-y-2">
+            <p
+              className={`${typography.bodySmall} text-gray-600 dark:text-gray-400`}
+            >
               Don&apos;t have an account?{" "}
               <Link
                 href="/admin/register"
@@ -167,7 +169,7 @@ export default function AdminLogin() {
             </p>
             <Link
               href="/"
-              className="block text-sm text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+              className={`block ${typography.bodySmall} text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors`}
             >
               ← Back to Portfolio
             </Link>

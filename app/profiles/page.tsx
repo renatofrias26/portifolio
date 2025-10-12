@@ -4,6 +4,8 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { GlassCard } from "@/components/ui/glass-card";
 import { LandingHeader } from "@/components/landing-header";
+import { CollapsibleFilters } from "@/components/profiles/collapsible-filters";
+import { layouts, typography, containerPadding } from "@/lib/styles";
 
 interface SearchParams {
   search?: string;
@@ -151,8 +153,8 @@ function ProfileCard({ profile }: { profile: ProfileCardData }) {
     <Link href={`/${profile.username}`} className="block group">
       <GlassCard className="h-full">
         <div className="flex items-start gap-4">
-          {/* Profile Image */}
-          <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-purple-600 to-blue-600 flex-shrink-0">
+          {/* Profile Image - Hidden on mobile */}
+          <div className="hidden sm:block relative w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-purple-600 to-blue-600 flex-shrink-0">
             {profile.profile_image_url ? (
               <Image
                 src={profile.profile_image_url}
@@ -310,155 +312,28 @@ export default async function ProfilesPage({
       {/* Header with Login/Dashboard */}
       <LandingHeader />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div
+        className={`${layouts.centered} ${containerPadding.page} py-8 sm:py-10 md:py-12`}
+      >
         {/* Page Title */}
-        <div className="mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent">
+        <div className="mb-8 sm:mb-10 md:mb-12">
+          <h1
+            className={`${typography.h1} mb-3 sm:mb-4 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent`}
+          >
             Discover Talented Professionals
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400">
+          <p
+            className={`${typography.bodyLarge} text-gray-600 dark:text-gray-400`}
+          >
             Browse AI-powered portfolios and find your next hire
           </p>
         </div>
 
-        {/* Filters */}
-        <GlassCard className="mb-8" hover={false}>
-          <form method="GET" className="space-y-4">
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* Search */}
-              <div>
-                <label
-                  htmlFor="search"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                >
-                  Search
-                </label>
-                <input
-                  type="text"
-                  id="search"
-                  name="search"
-                  defaultValue={searchParams.search}
-                  placeholder="Name, title, or keywords..."
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                />
-              </div>
-
-              {/* Location */}
-              <div>
-                <label
-                  htmlFor="location"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                >
-                  Location
-                </label>
-                <input
-                  type="text"
-                  id="location"
-                  name="location"
-                  defaultValue={searchParams.location}
-                  placeholder="City, Country..."
-                  list="locations"
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                />
-                <datalist id="locations">
-                  {filterOptions.locations.map((loc) => (
-                    <option key={loc} value={loc} />
-                  ))}
-                </datalist>
-              </div>
-
-              {/* Job Title */}
-              <div>
-                <label
-                  htmlFor="title"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                >
-                  Job Title
-                </label>
-                <input
-                  type="text"
-                  id="title"
-                  name="title"
-                  defaultValue={searchParams.title}
-                  placeholder="e.g., Software Engineer..."
-                  list="titles"
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                />
-                <datalist id="titles">
-                  {filterOptions.titles.map((title) => (
-                    <option key={title} value={title} />
-                  ))}
-                </datalist>
-              </div>
-
-              {/* Skills */}
-              <div>
-                <label
-                  htmlFor="skill"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                >
-                  Skills
-                </label>
-                <input
-                  type="text"
-                  id="skill"
-                  name="skill"
-                  defaultValue={searchParams.skill}
-                  placeholder="e.g., React, Python..."
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                />
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-3">
-              <button
-                type="submit"
-                className="px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-medium hover:shadow-lg hover:scale-105 transition-all duration-300"
-              >
-                Apply Filters
-              </button>
-              <Link
-                href="/profiles"
-                className="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-all"
-              >
-                Clear Filters
-              </Link>
-            </div>
-          </form>
-        </GlassCard>
-
-        {/* Active Filters Display */}
-        {(searchParams.search ||
-          searchParams.location ||
-          searchParams.title ||
-          searchParams.skill) && (
-          <div className="mb-6 flex flex-wrap gap-2 items-center">
-            <span className="text-sm text-gray-600 dark:text-gray-400">
-              Active filters:
-            </span>
-            {searchParams.search && (
-              <span className="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-sm font-medium">
-                Search: {searchParams.search}
-              </span>
-            )}
-            {searchParams.location && (
-              <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium">
-                Location: {searchParams.location}
-              </span>
-            )}
-            {searchParams.title && (
-              <span className="px-3 py-1 bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 rounded-full text-sm font-medium">
-                Title: {searchParams.title}
-              </span>
-            )}
-            {searchParams.skill && (
-              <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-sm font-medium">
-                Skill: {searchParams.skill}
-              </span>
-            )}
-          </div>
-        )}
+        {/* Filters - Collapsible on Mobile */}
+        <CollapsibleFilters
+          searchParams={searchParams}
+          filterOptions={filterOptions}
+        />
 
         {/* Profiles Grid */}
         <Suspense fallback={<ProfilesLoading />}>

@@ -136,7 +136,8 @@ export function AIChatSection({
                 <div>
                   <h3 className="font-bold text-lg">AI Assistant</h3>
                   <p className="text-sm opacity-90">
-                    Ask me anything about {userName}&apos;s experience and skills
+                    Ask me anything about {userName}&apos;s experience and
+                    skills
                   </p>
                 </div>
               </div>
@@ -158,7 +159,7 @@ export function AIChatSection({
           {/* Messages Area */}
           <div
             ref={chatContainerRef}
-            className="h-[400px] overflow-y-auto p-6 space-y-4"
+            className="h-[400px] overflow-y-auto space-y-4"
             role="log"
             aria-live="polite"
             aria-atomic="false"

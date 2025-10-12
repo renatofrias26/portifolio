@@ -1,6 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { LandingHeader } from "@/components/landing-header";
+import {
+  hero,
+  logoSizes,
+  typography,
+  buttons,
+  layouts,
+  cards,
+  containerPadding,
+} from "@/lib/styles";
 
 /**
  * Main Landing Page
@@ -17,34 +26,38 @@ export default async function Home() {
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 via-blue-600/10 to-cyan-600/10 dark:from-purple-600/20 dark:via-blue-600/20 dark:to-cyan-600/20" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
+        <div className={`relative ${layouts.centered} ${hero.container}`}>
           <div className="text-center">
             {/* Logo */}
-            <div className="mb-8 flex justify-center animate-fade-in">
+            <div className="mb-6 sm:mb-8 flex justify-center animate-fade-in">
               <Image
                 src="/logo-full.svg"
                 alt="Upfolio"
-                width={350}
-                height={90}
-                className="dark:hidden"
+                width={logoSizes.hero.imageWidth}
+                height={logoSizes.hero.imageHeight}
+                className={`dark:hidden ${logoSizes.hero.width}`}
                 priority
               />
               <Image
                 src="/logo-full-dark.svg"
                 alt="Upfolio"
-                width={350}
-                height={90}
-                className="hidden dark:block"
+                width={logoSizes.hero.imageWidth}
+                height={logoSizes.hero.imageHeight}
+                className={`hidden dark:block ${logoSizes.hero.width}`}
                 priority
               />
             </div>
 
             {/* Hero Headline */}
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent animate-fade-in">
+            <h1
+              className={`${hero.title} mb-4 sm:mb-6 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent animate-fade-in`}
+            >
               Your Resume, Reimagined
             </h1>
 
-            <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-8 max-w-3xl mx-auto font-medium">
+            <p
+              className={`${hero.subtitle} text-gray-700 dark:text-gray-300 mb-6 sm:mb-8 max-w-3xl mx-auto font-medium`}
+            >
               Transform your resume into an{" "}
               <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent font-bold">
                 AI-powered digital portfolio
@@ -52,38 +65,36 @@ export default async function Home() {
               that works for you 24/7
             </p>
 
-            <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-12 max-w-2xl mx-auto">
+            <p
+              className={`${hero.description} text-gray-600 dark:text-gray-400 mb-8 sm:mb-10 md:mb-12 max-w-2xl mx-auto`}
+            >
               Stand out from the crowd. Let AI tell your story. Connect with the
               right opportunities.
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex gap-4 justify-center flex-wrap mb-16">
+            <div className="flex gap-3 sm:gap-4 justify-center flex-wrap mb-10 sm:mb-12 md:mb-16">
               <Link
                 href="/admin/register"
-                className="group px-8 py-4 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 text-white rounded-xl font-semibold hover:shadow-2xl hover:scale-105 transition-all duration-300 shadow-lg relative overflow-hidden"
+                className={`group ${buttons.large} bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 text-white rounded-xl font-semibold hover:shadow-2xl hover:scale-105 transition-all duration-300 shadow-lg relative overflow-hidden`}
               >
                 <span className="relative z-10">
                   Create Your Portfolio Free
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-700 via-blue-700 to-cyan-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </Link>
-              <Link
-                href="/profiles"
-                className="px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-2 border-purple-200 dark:border-purple-700 rounded-xl font-semibold hover:bg-purple-50 dark:hover:bg-purple-900/30 hover:border-purple-400 dark:hover:border-purple-500 transition-all duration-300"
-              >
+              <Link href="/profiles" className={buttons.secondary}>
                 Browse Portfolios
               </Link>
-              <Link
-                href="#how-it-works"
-                className="px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-2 border-purple-200 dark:border-purple-700 rounded-xl font-semibold hover:bg-purple-50 dark:hover:bg-purple-900/30 hover:border-purple-400 dark:hover:border-purple-500 transition-all duration-300"
-              >
+              <Link href="#how-it-works" className={buttons.secondary}>
                 See How It Works
               </Link>
             </div>
 
             {/* Social Proof */}
-            <div className="flex items-center justify-center gap-8 text-sm text-gray-600 dark:text-gray-400">
+            <div
+              className={`flex flex-wrap items-center justify-center gap-4 sm:gap-6 md:gap-8 ${typography.bodySmall} text-gray-600 dark:text-gray-400`}
+            >
               <div className="flex items-center gap-2">
                 <svg
                   className="w-5 h-5 text-green-500"
@@ -132,24 +143,33 @@ export default async function Home() {
       </section>
 
       {/* Features Section - For Job Seekers */}
-      <section id="how-it-works" className="py-20 bg-white dark:bg-gray-800/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+      <section
+        id="how-it-works"
+        className={`${layouts.section} bg-white dark:bg-gray-800/50`}
+      >
+        <div className={layouts.centered}>
+          <div className="text-center mb-10 sm:mb-12 md:mb-16">
+            <h2
+              className={`${typography.h2} mb-3 sm:mb-4 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent`}
+            >
               Stand Out with AI-Powered Portfolios
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+            <p
+              className={`${typography.bodyLarge} text-gray-600 dark:text-gray-400 max-w-3xl mx-auto`}
+            >
               Your unique story deserves to be told. We&apos;re here to help you
               tell it.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className={layouts.grid3}>
             {/* Feature 1: AI Chat */}
-            <div className="group p-8 rounded-2xl bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border border-purple-200 dark:border-purple-800 hover:shadow-2xl hover:scale-105 transition-all duration-300">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+            <div
+              className={`${cards.feature} bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border border-purple-200 dark:border-purple-800`}
+            >
+              <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl flex items-center justify-center mb-4 sm:mb-5 md:mb-6 group-hover:scale-110 transition-transform duration-300">
                 <svg
-                  className="w-8 h-8 text-white"
+                  className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-white"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -162,10 +182,14 @@ export default async function Home() {
                   />
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
+              <h3
+                className={`${typography.h4} mb-3 sm:mb-4 text-gray-900 dark:text-white`}
+              >
                 24/7 AI Assistant
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+              <p
+                className={`${typography.body} text-gray-600 dark:text-gray-400 leading-relaxed`}
+              >
                 Let AI tell your story. Answer recruiter questions instantly,
                 anytime, with our intelligent chat that knows your resume inside
                 and out.
@@ -173,10 +197,12 @@ export default async function Home() {
             </div>
 
             {/* Feature 2: Customization */}
-            <div className="group p-8 rounded-2xl bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border border-blue-200 dark:border-blue-800 hover:shadow-2xl hover:scale-105 transition-all duration-300">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+            <div
+              className={`${cards.feature} bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border border-blue-200 dark:border-blue-800`}
+            >
+              <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl flex items-center justify-center mb-4 sm:mb-5 md:mb-6 group-hover:scale-110 transition-transform duration-300">
                 <svg
-                  className="w-8 h-8 text-white"
+                  className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-white"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -189,20 +215,26 @@ export default async function Home() {
                   />
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
+              <h3
+                className={`${typography.h4} mb-3 sm:mb-4 text-gray-900 dark:text-white`}
+              >
                 Your Portfolio, Your Way
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+              <p
+                className={`${typography.body} text-gray-600 dark:text-gray-400 leading-relaxed`}
+              >
                 Customize every detail to reflect your unique personality. Add
                 hobbies, projects, and achievements beyond your resume.
               </p>
             </div>
 
             {/* Feature 3: Easy Sharing */}
-            <div className="group p-8 rounded-2xl bg-gradient-to-br from-cyan-50 to-purple-50 dark:from-cyan-900/20 dark:to-purple-900/20 border border-cyan-200 dark:border-cyan-800 hover:shadow-2xl hover:scale-105 transition-all duration-300">
-              <div className="w-16 h-16 bg-gradient-to-br from-cyan-600 to-purple-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+            <div
+              className={`${cards.feature} bg-gradient-to-br from-cyan-50 to-purple-50 dark:from-cyan-900/20 dark:to-purple-900/20 border border-cyan-200 dark:border-cyan-800`}
+            >
+              <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-br from-cyan-600 to-purple-600 rounded-xl flex items-center justify-center mb-4 sm:mb-5 md:mb-6 group-hover:scale-110 transition-transform duration-300">
                 <svg
-                  className="w-8 h-8 text-white"
+                  className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-white"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -215,10 +247,14 @@ export default async function Home() {
                   />
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
+              <h3
+                className={`${typography.h4} mb-3 sm:mb-4 text-gray-900 dark:text-white`}
+              >
                 Share Instantly
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+              <p
+                className={`${typography.body} text-gray-600 dark:text-gray-400 leading-relaxed`}
+              >
                 One beautiful link that works everywhere. Mobile-friendly,
                 always accessible, and way better than a PDF resume.
               </p>
@@ -228,18 +264,24 @@ export default async function Home() {
       </section>
 
       {/* For Recruiters Section */}
-      <section className="py-20 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-purple-900/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+      <section
+        className={`${layouts.section} bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-purple-900/30`}
+      >
+        <div className={layouts.centered}>
+          <div className="text-center mb-10 sm:mb-12 md:mb-16">
+            <h2
+              className={`${typography.h2} mb-3 sm:mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent`}
+            >
               Built for Recruiters Too
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto mb-6">
+            <p
+              className={`${typography.bodyLarge} text-gray-600 dark:text-gray-400 max-w-3xl mx-auto mb-4 sm:mb-6`}
+            >
               Find the right talent faster with intelligent candidate portfolios
             </p>
             <Link
               href="/profiles"
-              className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-xl hover:scale-105 transition-all duration-300"
+              className={`inline-flex items-center gap-2 ${buttons.large} bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-xl hover:scale-105 transition-all duration-300`}
             >
               Browse All Profiles
               <svg
@@ -258,13 +300,15 @@ export default async function Home() {
             </Link>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          <div className={`${layouts.grid2} max-w-5xl mx-auto`}>
             {/* Recruiter Feature 1 */}
-            <div className="p-8 rounded-2xl bg-white dark:bg-gray-800 shadow-xl hover:shadow-2xl transition-all duration-300">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div
+              className={`${containerPadding.card} rounded-2xl bg-white dark:bg-gray-800 shadow-xl hover:shadow-2xl transition-all duration-300`}
+            >
+              <div className="flex items-start gap-3 sm:gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg
-                    className="w-6 h-6 text-white"
+                    className="w-5 h-5 sm:w-6 sm:h-6 text-white"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -278,10 +322,14 @@ export default async function Home() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
+                  <h3
+                    className={`${typography.h5} mb-2 text-gray-900 dark:text-white`}
+                  >
                     Job Fit Analysis
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <p
+                    className={`${typography.body} text-gray-600 dark:text-gray-400`}
+                  >
                     Send a job link and let AI determine if the candidate is a
                     perfect match. Save time with smarter screening.
                   </p>
@@ -290,11 +338,13 @@ export default async function Home() {
             </div>
 
             {/* Recruiter Feature 2 */}
-            <div className="p-8 rounded-2xl bg-white dark:bg-gray-800 shadow-xl hover:shadow-2xl transition-all duration-300">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div
+              className={`${containerPadding.card} rounded-2xl bg-white dark:bg-gray-800 shadow-xl hover:shadow-2xl transition-all duration-300`}
+            >
+              <div className="flex items-start gap-3 sm:gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg
-                    className="w-6 h-6 text-white"
+                    className="w-5 h-5 sm:w-6 sm:h-6 text-white"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -308,10 +358,14 @@ export default async function Home() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
+                  <h3
+                    className={`${typography.h5} mb-2 text-gray-900 dark:text-white`}
+                  >
                     Always Available
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <p
+                    className={`${typography.body} text-gray-600 dark:text-gray-400`}
+                  >
                     Chat with candidates 24/7 through their AI assistant. Get
                     answers to your questions instantly, no waiting required.
                   </p>
@@ -320,11 +374,13 @@ export default async function Home() {
             </div>
 
             {/* Recruiter Feature 3 */}
-            <div className="p-8 rounded-2xl bg-white dark:bg-gray-800 shadow-xl hover:shadow-2xl transition-all duration-300">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-cyan-600 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div
+              className={`${containerPadding.card} rounded-2xl bg-white dark:bg-gray-800 shadow-xl hover:shadow-2xl transition-all duration-300`}
+            >
+              <div className="flex items-start gap-3 sm:gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-cyan-600 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg
-                    className="w-6 h-6 text-white"
+                    className="w-5 h-5 sm:w-6 sm:h-6 text-white"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -344,10 +400,14 @@ export default async function Home() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
+                  <h3
+                    className={`${typography.h5} mb-2 text-gray-900 dark:text-white`}
+                  >
                     Better Insights
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <p
+                    className={`${typography.body} text-gray-600 dark:text-gray-400`}
+                  >
                     Go beyond the resume. Discover candidates&apos;
                     personalities, hobbies, and cultural fit through their
                     enriched profiles.
@@ -357,11 +417,13 @@ export default async function Home() {
             </div>
 
             {/* Recruiter Feature 4 */}
-            <div className="p-8 rounded-2xl bg-white dark:bg-gray-800 shadow-xl hover:shadow-2xl transition-all duration-300">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-cyan-600 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div
+              className={`${containerPadding.card} rounded-2xl bg-white dark:bg-gray-800 shadow-xl hover:shadow-2xl transition-all duration-300`}
+            >
+              <div className="flex items-start gap-3 sm:gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-600 to-cyan-600 rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg
-                    className="w-6 h-6 text-white"
+                    className="w-5 h-5 sm:w-6 sm:h-6 text-white"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -375,10 +437,14 @@ export default async function Home() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
+                  <h3
+                    className={`${typography.h5} mb-2 text-gray-900 dark:text-white`}
+                  >
                     Quality Over Quantity
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <p
+                    className={`${typography.body} text-gray-600 dark:text-gray-400`}
+                  >
                     Connect with motivated talent who invested time in creating
                     standout portfolios. Find candidates who care.
                   </p>
@@ -390,49 +456,65 @@ export default async function Home() {
       </section>
 
       {/* How It Works - Simple Steps */}
-      <section className="py-20 bg-white dark:bg-gray-800/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-cyan-600 bg-clip-text text-transparent">
+      <section className={`${layouts.section} bg-white dark:bg-gray-800/50`}>
+        <div className={layouts.centered}>
+          <div className="text-center mb-10 sm:mb-12 md:mb-16">
+            <h2
+              className={`${typography.h2} mb-3 sm:mb-4 bg-gradient-to-r from-purple-600 to-cyan-600 bg-clip-text text-transparent`}
+            >
               From Resume to Remarkable in 3 Steps
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-12 max-w-5xl mx-auto">
+          <div
+            className={`${layouts.grid3} gap-8 sm:gap-10 md:gap-12 max-w-5xl mx-auto`}
+          >
             <div className="text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-6 mx-auto shadow-lg">
+              <div className="w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full flex items-center justify-center text-white text-2xl sm:text-3xl font-bold mb-4 sm:mb-5 md:mb-6 mx-auto shadow-lg">
                 1
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
+              <h3
+                className={`${typography.h4} mb-3 sm:mb-4 text-gray-900 dark:text-white`}
+              >
                 Upload
               </h3>
-              <p className="text-gray-600 dark:text-gray-400">
+              <p
+                className={`${typography.body} text-gray-600 dark:text-gray-400`}
+              >
                 Drop your resume and let our AI parse it instantly. No
                 formatting headaches.
               </p>
             </div>
 
             <div className="text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-6 mx-auto shadow-lg">
+              <div className="w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-full flex items-center justify-center text-white text-2xl sm:text-3xl font-bold mb-4 sm:mb-5 md:mb-6 mx-auto shadow-lg">
                 2
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
+              <h3
+                className={`${typography.h4} mb-3 sm:mb-4 text-gray-900 dark:text-white`}
+              >
                 Customize
               </h3>
-              <p className="text-gray-600 dark:text-gray-400">
+              <p
+                className={`${typography.body} text-gray-600 dark:text-gray-400`}
+              >
                 Add your personality, tweak colors, upload photos. Make it
                 uniquely yours.
               </p>
             </div>
 
             <div className="text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-cyan-600 to-purple-600 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-6 mx-auto shadow-lg">
+              <div className="w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 bg-gradient-to-br from-cyan-600 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl sm:text-3xl font-bold mb-4 sm:mb-5 md:mb-6 mx-auto shadow-lg">
                 3
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
+              <h3
+                className={`${typography.h4} mb-3 sm:mb-4 text-gray-900 dark:text-white`}
+              >
                 Share
               </h3>
-              <p className="text-gray-600 dark:text-gray-400">
+              <p
+                className={`${typography.body} text-gray-600 dark:text-gray-400`}
+              >
                 Get your unique link and start sharing. Your AI-powered
                 portfolio is ready!
               </p>
@@ -442,21 +524,29 @@ export default async function Home() {
       </section>
 
       {/* Trust & Privacy */}
-      <section className="py-20 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20">
+      <section
+        className={`${layouts.section} bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20`}
+      >
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+          <div className="text-center mb-8 sm:mb-10 md:mb-12">
+            <h2
+              className={`${typography.h2} md:text-4xl mb-3 sm:mb-4 text-gray-900 dark:text-white`}
+            >
               Your Data. Your Control. Your Privacy.
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400">
+            <p
+              className={`${typography.bodyLarge} text-gray-600 dark:text-gray-400`}
+            >
               We take your trust seriously. Here&apos;s our promise to you.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="flex items-start gap-4 p-6 rounded-xl bg-white dark:bg-gray-800 shadow-md">
+          <div className={`${layouts.grid2} gap-4 sm:gap-5 md:gap-6`}>
+            <div
+              className={`flex items-start gap-3 sm:gap-4 ${containerPadding.cardSmall} rounded-xl bg-white dark:bg-gray-800 shadow-md`}
+            >
               <svg
-                className="w-8 h-8 text-green-500 flex-shrink-0"
+                className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-green-500 flex-shrink-0"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -469,18 +559,24 @@ export default async function Home() {
                 />
               </svg>
               <div>
-                <h3 className="font-bold text-gray-900 dark:text-white mb-2">
+                <h3
+                  className={`${typography.h5} mb-1 sm:mb-2 text-gray-900 dark:text-white`}
+                >
                   Bank-Level Security
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                <p
+                  className={`${typography.bodySmall} text-gray-600 dark:text-gray-400`}
+                >
                   Industry-standard encryption keeps your data safe and secure.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start gap-4 p-6 rounded-xl bg-white dark:bg-gray-800 shadow-md">
+            <div
+              className={`flex items-start gap-3 sm:gap-4 ${containerPadding.cardSmall} rounded-xl bg-white dark:bg-gray-800 shadow-md`}
+            >
               <svg
-                className="w-8 h-8 text-green-500 flex-shrink-0"
+                className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-green-500 flex-shrink-0"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -493,18 +589,24 @@ export default async function Home() {
                 />
               </svg>
               <div>
-                <h3 className="font-bold text-gray-900 dark:text-white mb-2">
+                <h3
+                  className={`${typography.h5} mb-1 sm:mb-2 text-gray-900 dark:text-white`}
+                >
                   You&apos;re In Control
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                <p
+                  className={`${typography.bodySmall} text-gray-600 dark:text-gray-400`}
+                >
                   Choose what to share, who can view it, and update anytime.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start gap-4 p-6 rounded-xl bg-white dark:bg-gray-800 shadow-md">
+            <div
+              className={`flex items-start gap-3 sm:gap-4 ${containerPadding.cardSmall} rounded-xl bg-white dark:bg-gray-800 shadow-md`}
+            >
               <svg
-                className="w-8 h-8 text-green-500 flex-shrink-0"
+                className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-green-500 flex-shrink-0"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -517,18 +619,24 @@ export default async function Home() {
                 />
               </svg>
               <div>
-                <h3 className="font-bold text-gray-900 dark:text-white mb-2">
+                <h3
+                  className={`${typography.h5} mb-1 sm:mb-2 text-gray-900 dark:text-white`}
+                >
                   Crystal Clear Privacy
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                <p
+                  className={`${typography.bodySmall} text-gray-600 dark:text-gray-400`}
+                >
                   No selling your data. Ever. Plain and simple.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start gap-4 p-6 rounded-xl bg-white dark:bg-gray-800 shadow-md">
+            <div
+              className={`flex items-start gap-3 sm:gap-4 ${containerPadding.cardSmall} rounded-xl bg-white dark:bg-gray-800 shadow-md`}
+            >
               <svg
-                className="w-8 h-8 text-green-500 flex-shrink-0"
+                className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-green-500 flex-shrink-0"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -541,10 +649,14 @@ export default async function Home() {
                 />
               </svg>
               <div>
-                <h3 className="font-bold text-gray-900 dark:text-white mb-2">
+                <h3
+                  className={`${typography.h5} mb-1 sm:mb-2 text-gray-900 dark:text-white`}
+                >
                   GDPR Compliant
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                <p
+                  className={`${typography.bodySmall} text-gray-600 dark:text-gray-400`}
+                >
                   We follow international privacy standards to protect your
                   rights.
                 </p>
@@ -555,20 +667,24 @@ export default async function Home() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-24 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 relative overflow-hidden">
+      <section className="py-16 sm:py-20 md:py-24 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 relative overflow-hidden">
         <div className="absolute inset-0 bg-black/10" />
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+          <h2
+            className={`${typography.h2} md:text-5xl text-white mb-4 sm:mb-5 md:mb-6`}
+          >
             Ready to Stand Out?
           </h2>
-          <p className="text-xl md:text-2xl text-white/90 mb-10">
+          <p
+            className={`${typography.bodyLarge} md:text-2xl text-white/90 mb-6 sm:mb-8 md:mb-10`}
+          >
             Join thousands of job seekers who are getting noticed with
             AI-powered portfolios
           </p>
-          <div className="flex gap-4 justify-center flex-wrap">
+          <div className="flex gap-3 sm:gap-4 justify-center flex-wrap">
             <Link
               href="/admin/register"
-              className="group px-10 py-5 bg-white text-purple-600 rounded-xl font-bold text-lg hover:bg-gray-100 hover:scale-105 transition-all duration-300 shadow-2xl"
+              className={`group ${buttons.large} bg-white text-purple-600 rounded-xl font-bold hover:bg-gray-100 hover:scale-105 transition-all duration-300 shadow-2xl`}
             >
               Create Your Free Portfolio
               <span className="ml-2 inline-block group-hover:translate-x-1 transition-transform">
@@ -577,12 +693,12 @@ export default async function Home() {
             </Link>
             <Link
               href="/admin/login"
-              className="px-10 py-5 bg-transparent text-white border-2 border-white rounded-xl font-bold text-lg hover:bg-white/10 transition-all duration-300"
+              className={`${buttons.large} bg-transparent text-white border-2 border-white rounded-xl font-bold hover:bg-white/10 transition-all duration-300`}
             >
               Sign In
             </Link>
           </div>
-          <p className="mt-8 text-white/80">
+          <p className={`mt-6 sm:mt-8 ${typography.body} text-white/80`}>
             No credit card required • Setup in 5 minutes • Cancel anytime
           </p>
         </div>

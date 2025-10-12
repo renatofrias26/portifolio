@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { Upload, X, Check, Loader2 } from "lucide-react";
+import { buttons } from "@/lib/styles";
 
 interface ImageUploaderProps {
   type: "logo" | "profile";
@@ -187,16 +188,16 @@ export function ImageUploader({
           />
           <label
             htmlFor={`upload-${type}`}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`${buttons.medium} bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2`}
           >
             <Upload className="w-4 h-4" />
-            {preview ? "Change" : "Upload"} {title}
+            Upload
           </label>
 
           {preview && !uploading && (
             <button
               onClick={handleRemove}
-              className="ml-2 inline-flex items-center gap-2 px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors text-sm font-medium"
+              className={`ml-2 ${buttons.medium} bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors inline-flex items-center gap-2`}
             >
               <X className="w-4 h-4" />
               Remove

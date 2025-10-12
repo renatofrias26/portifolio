@@ -6,6 +6,12 @@ import { useRouter } from "next/navigation";
 import { GlassCard } from "@/components/ui/glass-card";
 import Image from "next/image";
 import Link from "next/link";
+import {
+  containerPadding,
+  logoSizes,
+  formInput,
+  typography,
+} from "@/lib/styles";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -106,60 +112,58 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900 flex items-center justify-center p-3 sm:p-4">
       <GlassCard className="max-w-md w-full">
-        <div className="p-8">
+        <div className={containerPadding.form}>
           {/* Upfolio Logo */}
-          <div className="mb-6 flex justify-center">
+          <div className="mb-4 sm:mb-6 flex justify-center">
             <Image
               src="/logo-dark.svg"
               alt="Upfolio"
-              width={160}
-              height={64}
-              className="dark:hidden"
+              width={logoSizes.auth.imageWidth}
+              height={logoSizes.auth.imageHeight}
+              className={`dark:hidden ${logoSizes.auth.width}`}
               priority
             />
             <Image
               src="/logo-dark.svg"
               alt="Upfolio"
-              width={160}
-              height={64}
-              className="hidden dark:block"
+              width={logoSizes.auth.imageWidth}
+              height={logoSizes.auth.imageHeight}
+              className={`hidden dark:block ${logoSizes.auth.width}`}
               priority
             />
           </div>
 
-          <h1 className="text-2xl font-bold mb-2 text-center text-gray-900 dark:text-white">
+          <h1
+            className={`${typography.h4} mb-2 text-center text-gray-900 dark:text-white`}
+          >
             Join Upfolio
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-center mb-8">
+          <p
+            className={`${typography.body} text-gray-600 dark:text-gray-400 text-center mb-4 sm:mb-6 md:mb-8`}
+          >
             Upload. Share. Get hired.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-4 py-3 rounded-lg text-sm">
-                {error}
-              </div>
-            )}
+            {error && <div className={formInput.error}>{error}</div>}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Full Name
-              </label>
+              <label className={formInput.label}>Full Name</label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
                 }
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 outline-none"
+                className={formInput.base}
                 placeholder="John Doe"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className={formInput.label}>
                 Username <span className="text-red-500">*</span>
               </label>
               <input
@@ -171,18 +175,20 @@ export default function RegisterPage() {
                     username: e.target.value.toLowerCase(),
                   })
                 }
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 outline-none"
+                className={formInput.base}
                 placeholder="johndoe"
                 pattern="[a-z0-9_-]{3,30}"
                 required
               />
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <p
+                className={`${typography.bodySmall} text-gray-500 dark:text-gray-400 mt-1`}
+              >
                 Your portfolio will be at: /{formData.username || "username"}
               </p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className={formInput.label}>
                 Email <span className="text-red-500">*</span>
               </label>
               <input
@@ -191,14 +197,14 @@ export default function RegisterPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, email: e.target.value })
                 }
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 outline-none"
+                className={formInput.base}
                 placeholder="john@example.com"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className={formInput.label}>
                 Password <span className="text-red-500">*</span>
               </label>
               <input
@@ -207,18 +213,20 @@ export default function RegisterPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, password: e.target.value })
                 }
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 outline-none"
+                className={formInput.base}
                 placeholder="••••••••"
                 minLength={8}
                 required
               />
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <p
+                className={`${typography.bodySmall} text-gray-500 dark:text-gray-400 mt-1`}
+              >
                 At least 8 characters
               </p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className={formInput.label}>
                 Confirm Password <span className="text-red-500">*</span>
               </label>
               <input
@@ -227,7 +235,7 @@ export default function RegisterPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, confirmPassword: e.target.value })
                 }
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 outline-none"
+                className={formInput.base}
                 placeholder="••••••••"
                 minLength={8}
                 required
@@ -244,7 +252,9 @@ export default function RegisterPage() {
                   className="mt-1 w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-purple-600 focus:ring-2 focus:ring-purple-500 cursor-pointer"
                   required
                 />
-                <span className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                <span
+                  className={`${typography.bodySmall} text-gray-700 dark:text-gray-300 leading-relaxed`}
+                >
                   I agree to the{" "}
                   <Link
                     href="/legal/terms"
@@ -269,14 +279,16 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-4 py-2.5 sm:px-6 sm:py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
             >
               {loading ? "Creating Account..." : "Create Account"}
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+          <div className="mt-4 sm:mt-6 text-center">
+            <p
+              className={`${typography.bodySmall} text-gray-600 dark:text-gray-400`}
+            >
               Already have an account?{" "}
               <Link
                 href="/admin/login"

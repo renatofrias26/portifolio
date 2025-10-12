@@ -48,23 +48,29 @@ export function AdminNavbar({
                 <span className="hidden sm:inline">Back</span>
               </button>
             )}
-            <Image
-              src="/logo-icon.svg"
-              alt="Upfolio"
-              width={32}
-              height={32}
-              className="w-8 h-8 dark:hidden"
-            />
-            <Image
-              src="/logo-icon-dark.svg"
-              alt="Upfolio"
-              width={32}
-              height={32}
-              className="w-8 h-8 hidden dark:block"
-            />
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-              {title}
-            </h1>
+            {/* Logo - Hidden on mobile for profile page */}
+            <div className={currentPage === "profile" ? "hidden sm:block" : ""}>
+              <Image
+                src="/logo-icon.svg"
+                alt="Upfolio"
+                width={32}
+                height={32}
+                className="w-8 h-8 dark:hidden"
+              />
+              <Image
+                src="/logo-icon-dark.svg"
+                alt="Upfolio"
+                width={32}
+                height={32}
+                className="w-8 h-8 hidden dark:block"
+              />
+            </div>
+            {/* Title - Only show on dashboard */}
+            {currentPage === "dashboard" && (
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+                {title}
+              </h1>
+            )}
           </div>
 
           <div className="flex items-center gap-3">
