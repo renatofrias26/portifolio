@@ -5,6 +5,7 @@ import { Upload, CheckCircle, XCircle, Loader2, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { GuestPreviewModal } from "./guest-preview-modal";
+import { AILoader } from "./ui/ai-loader";
 
 interface ParsedResumeData {
   personal?: {
@@ -237,6 +238,36 @@ export function GuestResumeUploader({ onDataReady }: GuestResumeUploaderProps) {
 
   return (
     <div className="space-y-6">
+      {/* AI Enhancement Loader Overlay */}
+      <AnimatePresence>
+        {isEnhancing && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm z-[100] flex items-center justify-center"
+            style={{ pointerEvents: isEnhancing ? "auto" : "none" }}
+          >
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-2xl max-w-md">
+              <AILoader
+                isLoading={true}
+                type="general"
+                customMessages={[
+                  "Analyzing your resume...",
+                  "Generating professional title...",
+                  "Crafting compelling taglines...",
+                  "Identifying your key strengths...",
+                  "Creating your professional bio...",
+                  "Optimizing your profile...",
+                  "Adding finishing touches...",
+                ]}
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Upload Area */}
       {!showPreview && (
         <div

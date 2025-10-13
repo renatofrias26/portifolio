@@ -6,6 +6,7 @@ import { Menu, X, Download, Share2, Home, LayoutDashboard } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { useToast } from "@/components/ui/toast";
 
 const navItems = [
   { name: "About", href: "#about" },
@@ -30,6 +31,7 @@ export function Navigation({
   isOwner = false,
 }: NavigationProps = {}) {
   const { data: session } = useSession();
+  const toast = useToast();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -102,7 +104,7 @@ export function Navigation({
       } else {
         // Fallback: copy to clipboard
         await navigator.clipboard.writeText(window.location.href);
-        alert("Link copied to clipboard!");
+        toast.success("Link copied to clipboard!");
       }
     } catch {
       // Silently handle share errors (user cancelled, etc.)

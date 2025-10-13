@@ -11,6 +11,8 @@ import {
   Loader2,
 } from "lucide-react";
 import { cards, buttons, spacing, typography } from "@/lib/styles";
+import { useToast } from "@/components/ui/toast";
+import { useConfirm } from "@/components/ui/confirm-dialog";
 
 interface Application {
   id: number;
@@ -35,6 +37,8 @@ export function JobHistoryPanel({
   onNewApplication,
   refreshTrigger,
 }: JobHistoryPanelProps) {
+  const toast = useToast();
+  const { confirm } = useConfirm();
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<number | null>(null);
@@ -62,28 +66,37 @@ export function JobHistoryPanel({
   const handleDelete = async (id: number, e: React.MouseEvent) => {
     e.stopPropagation();
 
-    if (!confirm("Delete this application? This cannot be undone.")) {
-      return;
-    }
+    confirm({
+      title: "Delete Application?",
+      message:
+        "This application will be permanently deleted. This cannot be undone.",
+      type: "danger",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      onConfirm: async () => {
+        try {
+          setDeleting(id);
+          const response = await fetch(`/api/job-assistant/delete/${id}`, {
+            method: "DELETE",
+          });
 
-    try {
-      setDeleting(id);
-      const response = await fetch(`/api/job-assistant/delete/${id}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        setApplications((prev) => prev.filter((app) => app.id !== id));
-        if (selectedId === id) {
-          onNewApplication();
+          if (response.ok) {
+            setApplications((prev) => prev.filter((app) => app.id !== id));
+            if (selectedId === id) {
+              onNewApplication();
+            }
+            toast.success("Application deleted successfully");
+          } else {
+            toast.error("Failed to delete application");
+          }
+        } catch (error) {
+          console.error("Failed to delete:", error);
+          toast.error("Failed to delete application. Please try again.");
+        } finally {
+          setDeleting(null);
         }
-      }
-    } catch (error) {
-      console.error("Failed to delete:", error);
-      alert("Failed to delete application. Please try again.");
-    } finally {
-      setDeleting(null);
-    }
+      },
+    });
   };
 
   const formatDate = (dateString: string) => {

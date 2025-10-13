@@ -5,8 +5,10 @@ import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { containerPadding, spacing } from "@/lib/styles";
+import { useToast } from "@/components/ui/toast";
 
 export default function DeleteAccountSection() {
+  const toast = useToast();
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [password, setPassword] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
@@ -44,10 +46,8 @@ export default function DeleteAccountSection() {
         throw new Error(data.error || "Failed to delete account");
       }
 
-      // Show success and redirect
-      alert(
-        "Account deleted successfully. You will be redirected to the home page.",
-      );
+      // Show success message
+      toast.success("Account deleted successfully. Redirecting...");
 
       // Sign out and redirect to home page
       await signOut({ redirect: false });

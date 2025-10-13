@@ -18,6 +18,7 @@ import {
 import { PreviewModal } from "./preview-modal";
 import { EditModal } from "./edit-modal";
 import { spacing, buttons } from "@/lib/styles";
+import { useToast } from "@/components/ui/toast";
 
 interface ResumeVersion {
   id: number;
@@ -37,6 +38,7 @@ export function ResumeVersionsList() {
   const [editVersionId, setEditVersionId] = useState<number | null>(null);
   const [showArchived, setShowArchived] = useState(false);
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+  const toast = useToast();
 
   const fetchVersions = useCallback(async () => {
     try {
@@ -75,10 +77,10 @@ export function ResumeVersionsList() {
         fetchVersions();
       } else {
         const data = await response.json();
-        alert(data.error || "Failed to publish version");
+        toast.error(data.error || "Failed to publish version");
       }
     } catch {
-      alert("Failed to publish version");
+      toast.error("Failed to publish version");
     }
   };
 
@@ -98,10 +100,10 @@ export function ResumeVersionsList() {
         fetchVersions();
       } else {
         const data = await response.json();
-        alert(data.error || `Failed to ${action} version`);
+        toast.error(data.error || `Failed to ${action} version`);
       }
     } catch {
-      alert(`Failed to ${action} version`);
+      toast.error(`Failed to ${action} version`);
     }
   };
 

@@ -22,6 +22,9 @@ import { cards, buttons, spacing, typography, formInput } from "@/lib/styles";
 import { MarkdownEditor } from "./markdown-editor";
 import { ResumePreview } from "./resume-preview";
 import { JobFitScore } from "./job-fit-score";
+import { AILoader } from "@/components/ui/ai-loader";
+import { useToast } from "@/components/ui/toast";
+import { useConfirm } from "@/components/ui/confirm-dialog";
 import type { JobFitAnalysis } from "@/lib/job-assistant";
 
 interface WizardState {
@@ -64,6 +67,9 @@ export function JobAssistantWizard({
   onSaved,
   onClearSelection,
 }: JobAssistantWizardProps) {
+  const toast = useToast();
+  const { confirm } = useConfirm();
+
   const [state, setState] = useState<WizardState>({
     resumeSource: "existing",
     resumeFile: null,
@@ -312,7 +318,7 @@ export function JobAssistantWizard({
       onSaved();
 
       // Show success message
-      alert("Application saved successfully!");
+      toast.success("Application saved successfully!");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save");
     } finally {
@@ -322,8 +328,7 @@ export function JobAssistantWizard({
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
-    // You could add a toast notification here
-    alert("Copied to clipboard!");
+    toast.success("Copied to clipboard!");
   };
 
   const handleDownload = (text: string, filename: string) => {
@@ -343,7 +348,49 @@ export function JobAssistantWizard({
     (state.generateResume || state.generateCoverLetter);
 
   return (
-    <div className="glass rounded-2xl p-4 sm:p-6">
+    <div className="glass rounded-2xl p-4 sm:p-6 relative">
+      {/* AI Loading Overlay */}
+      <AnimatePresence>
+        {loading && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm z-[100] flex items-center justify-center"
+            style={{ pointerEvents: loading ? "auto" : "none" }}
+          >
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-2xl max-w-md">
+              <AILoader
+                isLoading={true}
+                type={
+                  state.generateResume && state.generateCoverLetter
+                    ? "resume" // Default to resume when both
+                    : state.generateResume
+                    ? "resume"
+                    : "cover-letter"
+                }
+              />
+            </div>
+          </motion.div>
+        )}
+
+        {analyzingFit && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm z-[100] flex items-center justify-center"
+            style={{ pointerEvents: analyzingFit ? "auto" : "none" }}
+          >
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-2xl max-w-md">
+              <AILoader isLoading={true} type="job-fit" />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {loadingApp ? (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
@@ -1072,13 +1119,16 @@ export function JobAssistantWizard({
 
                 <button
                   onClick={() => {
-                    if (
-                      confirm(
-                        "Start a new application? Unsaved changes will be lost.",
-                      )
-                    ) {
-                      resetForm();
-                    }
+                    confirm({
+                      title: "Start New Application?",
+                      message: "Unsaved changes will be lost.",
+                      type: "warning",
+                      confirmText: "Start New",
+                      cancelText: "Cancel",
+                      onConfirm: () => {
+                        resetForm();
+                      },
+                    });
                   }}
                   className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
                 >

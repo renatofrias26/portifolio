@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ClientSessionProvider } from "@/components/client-session-provider";
+import { ToastProvider } from "@/components/ui/toast";
+import { ConfirmProvider } from "@/components/ui/confirm-dialog";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -86,7 +88,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ClientSessionProvider>{children}</ClientSessionProvider>
+        <ToastProvider>
+          <ConfirmProvider>
+            <ClientSessionProvider>{children}</ClientSessionProvider>
+          </ConfirmProvider>
+        </ToastProvider>
         <SpeedInsights />
       </body>
     </html>
