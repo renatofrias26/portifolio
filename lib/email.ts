@@ -234,3 +234,160 @@ This email was sent by Upfolio
     text,
   });
 }
+
+/**
+ * Send email verification link
+ */
+export async function sendVerificationEmail(
+  email: string,
+  verificationToken: string,
+  username: string,
+): Promise<{ success: boolean; error?: string }> {
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const verificationUrl = `${baseUrl}/admin/verify-email?token=${verificationToken}`;
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Verify Your Email</title>
+      </head>
+      <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+          <h1 style="color: white; margin: 0; font-size: 28px;">Upfolio</h1>
+        </div>
+        
+        <div style="background: #ffffff; padding: 40px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+          <h2 style="color: #333; margin-top: 0;">Welcome to Upfolio! 🎉</h2>
+          
+          <p>Hi <strong>${username}</strong>,</p>
+          
+          <p>Thank you for signing up! To complete your registration and start building your portfolio, please verify your email address.</p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${verificationUrl}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: 600;">Verify Email Address</a>
+          </div>
+          
+          <p style="color: #666; font-size: 14px;">Or copy and paste this link into your browser:</p>
+          <p style="color: #667eea; font-size: 14px; word-break: break-all;">${verificationUrl}</p>
+          
+          <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 4px;">
+            <p style="margin: 0; color: #856404; font-size: 14px;"><strong>⚠️ Important:</strong> This link will expire in 24 hours.</p>
+          </div>
+          
+          <p style="color: #666; font-size: 14px;">If you didn't create an account with Upfolio, you can safely ignore this email.</p>
+          
+          <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+          
+          <p style="color: #999; font-size: 12px; text-align: center;">
+            This email was sent by Upfolio<br>
+            If you have questions, contact us at support@upfolio.app
+          </p>
+        </div>
+      </body>
+    </html>
+  `;
+
+  const text = `
+Welcome to Upfolio!
+
+Hi ${username},
+
+Thank you for signing up! To complete your registration and start building your portfolio, please verify your email address.
+
+Click the link below to verify your email:
+${verificationUrl}
+
+⚠️ Important: This link will expire in 24 hours.
+
+If you didn't create an account with Upfolio, you can safely ignore this email.
+
+---
+This email was sent by Upfolio
+  `;
+
+  return sendEmail({
+    to: email,
+    subject: "Verify Your Email - Upfolio",
+    html,
+    text,
+  });
+}
+
+/**
+ * Send email verification success notification
+ */
+export async function sendEmailVerifiedConfirmation(
+  email: string,
+  username: string,
+): Promise<{ success: boolean; error?: string }> {
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const dashboardUrl = `${baseUrl}/admin/dashboard`;
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Email Verified</title>
+      </head>
+      <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+          <h1 style="color: white; margin: 0; font-size: 28px;">Upfolio</h1>
+        </div>
+        
+        <div style="background: #ffffff; padding: 40px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+          <h2 style="color: #333; margin-top: 0;">Email Verified Successfully! ✓</h2>
+          
+          <p>Hi <strong>${username}</strong>,</p>
+          
+          <p>Great news! Your email address has been verified. Your account is now fully activated and ready to use.</p>
+          
+          <div style="background: #d4edda; border-left: 4px solid #28a745; padding: 15px; margin: 20px 0; border-radius: 4px;">
+            <p style="margin: 0; color: #155724; font-size: 14px;"><strong>✓ What's next?</strong> Start building your portfolio and showcasing your work!</p>
+          </div>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${dashboardUrl}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: 600;">Go to Dashboard</a>
+          </div>
+          
+          <p style="color: #666; font-size: 14px;">We're excited to see what you'll create with Upfolio!</p>
+          
+          <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+          
+          <p style="color: #999; font-size: 12px; text-align: center;">
+            This email was sent by Upfolio<br>
+            If you have questions, contact us at support@upfolio.app
+          </p>
+        </div>
+      </body>
+    </html>
+  `;
+
+  const text = `
+Email Verified Successfully!
+
+Hi ${username},
+
+Great news! Your email address has been verified. Your account is now fully activated and ready to use.
+
+✓ What's next? Start building your portfolio and showcasing your work!
+
+Visit your dashboard: ${dashboardUrl}
+
+We're excited to see what you'll create with Upfolio!
+
+---
+This email was sent by Upfolio
+  `;
+
+  return sendEmail({
+    to: email,
+    subject: "Email Verified - Upfolio",
+    html,
+    text,
+  });
+}

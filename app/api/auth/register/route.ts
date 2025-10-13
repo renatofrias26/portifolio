@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { sql } from "@vercel/postgres";
+import crypto from "crypto";
+import { sendVerificationEmail } from "@/lib/email";
 
 export async function POST(request: NextRequest) {
   try {
@@ -75,27 +77,66 @@ export async function POST(request: NextRequest) {
       isPublic: isPublic ?? true, // Default to true if not provided
     });
 
-    // Create user
+    // Generate email verification token
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+    // Create user (email_verified defaults to false)
     const result = await sql`
-      INSERT INTO users (email, password_hash, name, username, profile_data, is_public)
-      VALUES (${email}, ${passwordHash}, ${
-      name || null
-    }, ${username}, ${profileData}, ${isPublic ?? true})
+      INSERT INTO users (
+        email, 
+        password_hash, 
+        name, 
+        username, 
+        profile_data, 
+        is_public,
+        email_verified,
+        verification_token,
+        verification_token_expires
+      )
+      VALUES (
+        ${email}, 
+        ${passwordHash}, 
+        ${name || null}, 
+        ${username}, 
+        ${profileData}, 
+        ${isPublic ?? true},
+        false,
+        ${verificationToken},
+        ${verificationExpires.toISOString()}
+      )
       RETURNING id, email, name, username, created_at
     `;
 
     const newUser = result.rows[0];
 
+    // Send verification email
+    const emailResult = await sendVerificationEmail(
+      email,
+      verificationToken,
+      username,
+    );
+
+    if (!emailResult.success) {
+      console.error("Failed to send verification email:", emailResult.error);
+      // Don't fail registration if email fails, user can resend later
+    } else {
+      console.log(`Verification email sent to: ${email}`);
+    }
+
     return NextResponse.json(
       {
         success: true,
-        message: "User registered successfully",
+        message:
+          "User registered successfully. Please check your email to verify your account.",
+        emailSent: emailResult.success,
         user: {
           id: newUser.id,
           email: newUser.email,
           name: newUser.name,
           username: newUser.username,
           createdAt: newUser.created_at,
+          emailVerified: false,
         },
       },
       { status: 201 },
