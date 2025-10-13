@@ -223,7 +223,12 @@ export function JobAssistantWizard({
         }));
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Analysis failed");
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Failed to analyze job fit. Please try again.";
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setAnalyzingFit(false);
     }
@@ -279,7 +284,12 @@ export function JobAssistantWizard({
         setActiveTab("coverLetter");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to generate");
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Failed to generate documents. Please try again.";
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -346,6 +356,8 @@ export function JobAssistantWizard({
   const canGenerate =
     (state.jobUrl || state.jobDescription) &&
     (state.generateResume || state.generateCoverLetter);
+
+  const canAnalyze = state.jobUrl || state.jobDescription;
 
   return (
     <div className="glass rounded-2xl p-4 sm:p-6 relative">
@@ -745,7 +757,7 @@ export function JobAssistantWizard({
                   </div>
                   <button
                     onClick={handleAnalyzeFit}
-                    disabled={!canGenerate || analyzingFit}
+                    disabled={!canAnalyze || analyzingFit}
                     className={`
                       ${buttons.secondary}
                       disabled:opacity-50 disabled:cursor-not-allowed
