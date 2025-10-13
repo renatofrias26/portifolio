@@ -3,10 +3,9 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { parseResume } from "@/lib/resume-parser";
 import {
-  generateTailoredResume,
-  generateCoverLetter,
-  calculateTokenCost,
+  analyzeJobFit,
   extractJobInfo,
+  calculateTokenCost,
 } from "@/lib/job-assistant";
 import { fetchJobPosting, isValidUrl } from "@/lib/job-scraper";
 import {
@@ -16,11 +15,11 @@ import {
 } from "@/lib/db/queries";
 
 export const runtime = "nodejs";
-export const maxDuration = 60; // AI generation can take time
+export const maxDuration = 30; // Analysis is faster than full generation
 
 /**
- * Generate tailored resume and/or cover letter
- * POST /api/job-assistant/generate
+ * Analyze job fit for a candidate
+ * POST /api/job-assistant/analyze-fit
  */
 export async function POST(request: NextRequest) {
   try {
@@ -36,13 +35,10 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const resumeSource = formData.get("resumeSource") as string;
     const resumeFile = formData.get("resumeFile") as File | null;
-    const resumeVersion = formData.get("resumeVersion") as string | null;
     const jobUrl = formData.get("jobUrl") as string | null;
     const jobDescription = formData.get("jobDescription") as string | null;
     const jobTitleOverride = formData.get("jobTitle") as string | null;
     const companyNameOverride = formData.get("companyName") as string | null;
-    const generateResume = formData.get("generateResume") === "true";
-    const generateCL = formData.get("generateCoverLetter") === "true";
 
     // Validation
     if (
@@ -62,16 +58,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!generateResume && !generateCL) {
-      return NextResponse.json(
-        { error: "Select at least one document to generate" },
-        { status: 400 },
-      );
-    }
-
     // Check token balance
     const tokenBalance = await getUserTokenBalance(userId);
-    const tokenCost = calculateTokenCost(generateResume, generateCL);
+    const tokenCost = calculateTokenCost(false, false, true); // Only fit analysis
 
     if (tokenBalance.token_credits < tokenCost) {
       return NextResponse.json(
@@ -86,7 +75,6 @@ export async function POST(request: NextRequest) {
 
     // Step 1: Get resume data
     let resumeData;
-    let resumeVersionUsed = null;
 
     if (resumeSource === "existing") {
       const publishedResume = await getPublishedResume(userId);
@@ -100,7 +88,6 @@ export async function POST(request: NextRequest) {
         );
       }
       resumeData = publishedResume.data;
-      resumeVersionUsed = publishedResume.version;
     } else {
       // Upload case
       if (!resumeFile) {
@@ -145,126 +132,73 @@ export async function POST(request: NextRequest) {
         console.log("Successfully scraped job:", {
           title: scrapedJob.title,
           company: scrapedJob.company,
-          descriptionLength: scrapedJob.description.length,
         });
 
+        // Merge scraped data with overrides
         jobInfo = {
           title: jobTitleOverride || scrapedJob.title,
           company: companyNameOverride || scrapedJob.company,
           description: scrapedJob.description,
         };
-      } catch (error) {
-        console.error("URL scraping failed:", error);
-
-        // If we have manual job description, continue with that
-        if (jobDescription && jobDescription.trim()) {
-          console.log("Falling back to manual job description");
+      } catch (scrapeError) {
+        console.error("Job scraping failed:", scrapeError);
+        // Continue with manual data - don't fail the analysis
+        if (!jobInfo.description && jobDescription) {
           jobInfo.description = jobDescription;
-        } else {
-          // No fallback available - return error with helpful message
-          return NextResponse.json(
-            {
-              error:
-                "Failed to fetch job posting from URL. The website may be blocking automated access. Please paste the job description manually instead.",
-              details: error instanceof Error ? error.message : "Unknown error",
-            },
-            { status: 400 },
-          );
         }
       }
-    } else if (jobUrl && !isValidUrl(jobUrl)) {
-      // Invalid URL format
-      return NextResponse.json(
-        {
-          error:
-            "Invalid URL format. Please enter a valid job posting URL or paste the job description manually.",
-        },
-        { status: 400 },
-      );
     }
 
-    // Extract job info from description if not provided
+    // If still missing job info, try to extract from description
     if (
-      (!jobInfo.title || jobInfo.title === "Not specified") &&
-      jobInfo.description
+      (!jobInfo.title || !jobInfo.company) &&
+      (jobInfo.description || jobDescription)
     ) {
-      const extracted = await extractJobInfo(jobInfo.description);
-      jobInfo.title = jobTitleOverride || extracted.jobTitle;
-      jobInfo.company = companyNameOverride || extracted.companyName;
+      try {
+        const extracted = await extractJobInfo(
+          jobInfo.description || jobDescription || "",
+        );
+        if (!jobInfo.title) jobInfo.title = extracted.jobTitle;
+        if (!jobInfo.company) jobInfo.company = extracted.companyName;
+      } catch (extractError) {
+        console.error("Job info extraction failed:", extractError);
+        // Use fallbacks
+        if (!jobInfo.title) jobInfo.title = "Position";
+        if (!jobInfo.company) jobInfo.company = "Company";
+      }
     }
 
-    // Step 3: Generate documents with AI
-    const results: {
-      tailoredResume?: string;
-      coverLetter?: string;
-      resumeRecommendations?: string[];
-      resumeKeyChanges?: string[];
-      coverLetterRecommendations?: string[];
-      coverLetterKeyPoints?: string[];
-    } = {};
-
-    if (generateResume) {
-      const resumeResult = await generateTailoredResume(
-        resumeData,
-        jobInfo.description,
-        jobInfo.title,
-        jobInfo.company,
-      );
-      results.tailoredResume = resumeResult.resume;
-      results.resumeRecommendations = resumeResult.recommendations;
-      results.resumeKeyChanges = resumeResult.keyChanges;
-    }
-
-    if (generateCL) {
-      const coverLetterResult = await generateCoverLetter(
-        resumeData,
-        jobInfo.description,
-        jobInfo.title,
-        jobInfo.company,
-      );
-      results.coverLetter = coverLetterResult.coverLetter;
-      results.coverLetterRecommendations = coverLetterResult.recommendations;
-      results.coverLetterKeyPoints = coverLetterResult.keyPoints;
-    }
+    // Step 3: Analyze job fit
+    console.log("Analyzing job fit...");
+    const analysis = await analyzeJobFit(
+      resumeData,
+      jobInfo.description,
+      jobInfo.title,
+      jobInfo.company,
+    );
 
     // Step 4: Deduct tokens
-    const updatedBalance = await deductTokens(userId, tokenCost);
-    if (!updatedBalance) {
-      return NextResponse.json(
-        { error: "Failed to deduct tokens. Please try again." },
-        { status: 500 },
-      );
-    }
+    await deductTokens(userId, tokenCost);
 
-    // Step 5: Return results (NOT saved to DB yet)
+    // Step 5: Return analysis
     return NextResponse.json({
       success: true,
-      data: {
-        jobTitle: jobInfo.title,
-        companyName: jobInfo.company,
-        jobDescription: jobInfo.description,
-        jobUrl: jobUrl || undefined,
-        resumeSource,
-        resumeVersion: resumeVersionUsed,
-        resumeSnapshot: resumeData,
-        tailoredResume: results.tailoredResume,
-        coverLetter: results.coverLetter,
-        resumeRecommendations: results.resumeRecommendations,
-        resumeKeyChanges: results.resumeKeyChanges,
-        coverLetterRecommendations: results.coverLetterRecommendations,
-        coverLetterKeyPoints: results.coverLetterKeyPoints,
-        tokensUsed: tokenCost,
-        remainingCredits: updatedBalance.token_credits,
+      analysis,
+      jobInfo: {
+        title: jobInfo.title,
+        company: jobInfo.company,
       },
+      tokensUsed: tokenCost,
+      remainingCredits: tokenBalance.token_credits - tokenCost,
     });
   } catch (error) {
-    console.error("Error generating documents:", error);
+    console.error("Job fit analysis error:", error);
     return NextResponse.json(
       {
         error:
           error instanceof Error
             ? error.message
-            : "Failed to generate documents. Please try again.",
+            : "Failed to analyze job fit. Please try again.",
       },
       { status: 500 },
     );

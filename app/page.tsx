@@ -161,7 +161,7 @@ export default async function Home() {
             </p>
           </div>
 
-          <div className={layouts.grid3}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             {/* Feature 1: AI Chat */}
             <div
               className={`${cards.feature} bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border border-purple-200 dark:border-purple-800`}
@@ -195,11 +195,44 @@ export default async function Home() {
               </p>
             </div>
 
-            {/* Feature 2: Customization */}
+            {/* Feature 2: Job Assistant - NEW */}
             <div
               className={`${cards.feature} bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border border-blue-200 dark:border-blue-800`}
             >
               <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl flex items-center justify-center mb-4 sm:mb-5 md:mb-6 group-hover:scale-110 transition-transform duration-300">
+                <svg
+                  className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+              <h3
+                className={`${typography.h4} mb-3 sm:mb-4 text-gray-900 dark:text-white`}
+              >
+                AI Job Assistant
+              </h3>
+              <p
+                className={`${typography.body} text-gray-600 dark:text-gray-400 leading-relaxed`}
+              >
+                Track applications, generate tailored resumes and cover letters
+                with AI, and get instant job fit analysis. Your personal job
+                search companion.
+              </p>
+            </div>
+
+            {/* Feature 3: Customization */}
+            <div
+              className={`${cards.feature} bg-gradient-to-br from-cyan-50 to-purple-50 dark:from-cyan-900/20 dark:to-purple-900/20 border border-cyan-200 dark:border-cyan-800`}
+            >
+              <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-br from-cyan-600 to-purple-600 rounded-xl flex items-center justify-center mb-4 sm:mb-5 md:mb-6 group-hover:scale-110 transition-transform duration-300">
                 <svg
                   className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-white"
                   fill="none"
@@ -227,11 +260,11 @@ export default async function Home() {
               </p>
             </div>
 
-            {/* Feature 3: Easy Sharing */}
+            {/* Feature 4: Easy Sharing */}
             <div
-              className={`${cards.feature} bg-gradient-to-br from-cyan-50 to-purple-50 dark:from-cyan-900/20 dark:to-purple-900/20 border border-cyan-200 dark:border-cyan-800`}
+              className={`${cards.feature} bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-200 dark:border-purple-800`}
             >
-              <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-br from-cyan-600 to-purple-600 rounded-xl flex items-center justify-center mb-4 sm:mb-5 md:mb-6 group-hover:scale-110 transition-transform duration-300">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl flex items-center justify-center mb-4 sm:mb-5 md:mb-6 group-hover:scale-110 transition-transform duration-300">
                 <svg
                   className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-white"
                   fill="none"

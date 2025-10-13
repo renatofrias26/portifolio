@@ -16,10 +16,13 @@ import {
   X,
   Eye,
   Edit,
+  TrendingUp,
 } from "lucide-react";
 import { cards, buttons, spacing, typography, formInput } from "@/lib/styles";
 import { MarkdownEditor } from "./markdown-editor";
 import { ResumePreview } from "./resume-preview";
+import { JobFitScore } from "./job-fit-score";
+import type { JobFitAnalysis } from "@/lib/job-assistant";
 
 interface WizardState {
   resumeSource: "existing" | "upload";
@@ -42,6 +45,10 @@ interface GeneratedResults {
   resumeSnapshot: unknown;
   tailoredResume?: string;
   coverLetter?: string;
+  resumeRecommendations?: string[];
+  resumeKeyChanges?: string[];
+  coverLetterRecommendations?: string[];
+  coverLetterKeyPoints?: string[];
   tokensUsed: number;
   remainingCredits: number;
 }
@@ -70,9 +77,11 @@ export function JobAssistantWizard({
 
   const [loading, setLoading] = useState(false);
   const [loadingApp, setLoadingApp] = useState(false);
+  const [analyzingFit, setAnalyzingFit] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<GeneratedResults | null>(null);
+  const [fitAnalysis, setFitAnalysis] = useState<JobFitAnalysis | null>(null);
   const [activeTab, setActiveTab] = useState<"resume" | "coverLetter">(
     "resume",
   );
@@ -156,10 +165,62 @@ export function JobAssistantWizard({
       generateCoverLetter: true,
     });
     setResults(null);
+    setFitAnalysis(null);
     setEditedResume(null);
     setEditedCoverLetter(null);
     setError(null);
     setActiveTab("resume");
+  };
+
+  const handleAnalyzeFit = async () => {
+    setError(null);
+    setAnalyzingFit(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("resumeSource", state.resumeSource);
+      if (state.resumeFile) {
+        formData.append("resumeFile", state.resumeFile);
+      }
+      if (state.jobUrl) {
+        formData.append("jobUrl", state.jobUrl);
+      }
+      if (state.jobDescription) {
+        formData.append("jobDescription", state.jobDescription);
+      }
+      if (state.jobTitle) {
+        formData.append("jobTitle", state.jobTitle);
+      }
+      if (state.companyName) {
+        formData.append("companyName", state.companyName);
+      }
+
+      const response = await fetch("/api/job-assistant/analyze-fit", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to analyze job fit");
+      }
+
+      setFitAnalysis(data.analysis);
+
+      // Update job info if extracted
+      if (data.jobInfo) {
+        setState((prev) => ({
+          ...prev,
+          jobTitle: data.jobInfo.title || prev.jobTitle,
+          companyName: data.jobInfo.company || prev.companyName,
+        }));
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Analysis failed");
+    } finally {
+      setAnalyzingFit(false);
+    }
   };
 
   const handleGenerate = async () => {
@@ -623,8 +684,55 @@ export function JobAssistantWizard({
                 </div>
               </div>
 
+              {/* Job Fit Analysis Section */}
+              {!fitAnalysis && (
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mb-6">
+                  <div className="mb-4">
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2">
+                      Optional: Analyze Job Fit First
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Get an instant assessment of how well you match this job
+                      before generating documents (2 credits)
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleAnalyzeFit}
+                    disabled={!canGenerate || analyzingFit}
+                    className={`
+                      ${buttons.secondary}
+                      disabled:opacity-50 disabled:cursor-not-allowed
+                      flex items-center gap-2
+                    `}
+                  >
+                    {analyzingFit ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Analyzing Fit...
+                      </>
+                    ) : (
+                      <>
+                        <TrendingUp className="w-5 h-5" />
+                        Analyze Job Fit
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
+
+              {/* Display Fit Analysis Results */}
+              {fitAnalysis && (
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mb-6">
+                  <JobFitScore
+                    analysis={fitAnalysis}
+                    jobTitle={state.jobTitle || "Position"}
+                    companyName={state.companyName || "Company"}
+                  />
+                </div>
+              )}
+
               {/* Generate Button */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 border-t border-gray-200 dark:border-gray-700 pt-6">
                 <button
                   onClick={handleGenerate}
                   disabled={!canGenerate || loading}
@@ -684,6 +792,129 @@ export function JobAssistantWizard({
                   remaining
                 </p>
               </div>
+
+              {/* AI Recommendations Section */}
+              {((activeTab === "resume" &&
+                (results.resumeRecommendations?.length ||
+                  results.resumeKeyChanges?.length)) ||
+                (activeTab === "coverLetter" &&
+                  (results.coverLetterRecommendations?.length ||
+                    results.coverLetterKeyPoints?.length))) && (
+                <div className="mb-6 p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                  <div className="flex items-start gap-3">
+                    <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
+                        AI Strategy & Recommendations
+                      </h4>
+
+                      {activeTab === "resume" && (
+                        <>
+                          {results.resumeRecommendations &&
+                            results.resumeRecommendations.length > 0 && (
+                              <div className="mb-3">
+                                <p className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-1">
+                                  💡 Strategy:
+                                </p>
+                                <ul className="space-y-1">
+                                  {results.resumeRecommendations.map(
+                                    (rec, idx) => (
+                                      <li
+                                        key={idx}
+                                        className="text-sm text-blue-700 dark:text-blue-300 flex items-start gap-2"
+                                      >
+                                        <span className="text-blue-600 dark:text-blue-400 mt-0.5">
+                                          •
+                                        </span>
+                                        <span>{rec}</span>
+                                      </li>
+                                    ),
+                                  )}
+                                </ul>
+                              </div>
+                            )}
+
+                          {results.resumeKeyChanges &&
+                            results.resumeKeyChanges.length > 0 && (
+                              <div>
+                                <p className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-1">
+                                  🔧 Key Changes Made:
+                                </p>
+                                <ul className="space-y-1">
+                                  {results.resumeKeyChanges.map(
+                                    (change, idx) => (
+                                      <li
+                                        key={idx}
+                                        className="text-sm text-blue-700 dark:text-blue-300 flex items-start gap-2"
+                                      >
+                                        <span className="text-blue-600 dark:text-blue-400 mt-0.5">
+                                          •
+                                        </span>
+                                        <span>{change}</span>
+                                      </li>
+                                    ),
+                                  )}
+                                </ul>
+                              </div>
+                            )}
+                        </>
+                      )}
+
+                      {activeTab === "coverLetter" && (
+                        <>
+                          {results.coverLetterRecommendations &&
+                            results.coverLetterRecommendations.length > 0 && (
+                              <div className="mb-3">
+                                <p className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-1">
+                                  💡 Writing Strategy:
+                                </p>
+                                <ul className="space-y-1">
+                                  {results.coverLetterRecommendations.map(
+                                    (rec, idx) => (
+                                      <li
+                                        key={idx}
+                                        className="text-sm text-blue-700 dark:text-blue-300 flex items-start gap-2"
+                                      >
+                                        <span className="text-blue-600 dark:text-blue-400 mt-0.5">
+                                          •
+                                        </span>
+                                        <span>{rec}</span>
+                                      </li>
+                                    ),
+                                  )}
+                                </ul>
+                              </div>
+                            )}
+
+                          {results.coverLetterKeyPoints &&
+                            results.coverLetterKeyPoints.length > 0 && (
+                              <div>
+                                <p className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-1">
+                                  ✨ What Makes This Effective:
+                                </p>
+                                <ul className="space-y-1">
+                                  {results.coverLetterKeyPoints.map(
+                                    (point, idx) => (
+                                      <li
+                                        key={idx}
+                                        className="text-sm text-blue-700 dark:text-blue-300 flex items-start gap-2"
+                                      >
+                                        <span className="text-blue-600 dark:text-blue-400 mt-0.5">
+                                          •
+                                        </span>
+                                        <span>{point}</span>
+                                      </li>
+                                    ),
+                                  )}
+                                </ul>
+                              </div>
+                            )}
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Document Tabs */}
               <div className="mb-6 flex gap-2 border-b border-gray-200 dark:border-gray-700">
