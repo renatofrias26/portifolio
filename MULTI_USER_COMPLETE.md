@@ -1,8 +1,8 @@
-# 🎉 Multi-User Portfolio System - Complete!
+# 🎉 Upfolio Multi-User System - Complete!
 
 ## What We've Accomplished
 
-Your portfolio platform has been successfully upgraded to support **multiple users** with complete data isolation and individual portfolio management!
+Upfolio has been successfully upgraded to support **multiple users** with complete data isolation and individual portfolio management!
 
 ---
 

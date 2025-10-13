@@ -1,8 +1,8 @@
-# Multi-User Portfolio System - Implementation Summary
+# Upfolio Multi-User System - Implementation Summary
 
 ## ✅ What We've Built
 
-You now have a complete multi-user portfolio system where each user can:
+Upfolio is now a complete multi-user platform where each user can:
 
 1. **Create their own account** with a unique username
 2. **Upload and manage multiple resume versions**

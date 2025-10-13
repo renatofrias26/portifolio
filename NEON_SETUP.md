@@ -17,7 +17,7 @@ Neon is a serverless Postgres database that:
 2. Find **Neon** under "Marketplace Database Providers"
 3. Click **"Create"**
 4. Fill in:
-   - **Database Name**: `portfolio-db` (or your preference)
+   - **Database Name**: `upfolio-db` (or your preference)
    - **Region**: Sydney (closest to Australia) or your preferred region
 5. Click **"Create"**
 

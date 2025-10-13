@@ -361,7 +361,10 @@ export function JobAssistantWizard({
                           Copy the entire job description (Cmd/Ctrl+A, then
                           Cmd/Ctrl+C)
                         </li>
-                        <li>Paste it in the "Job Description" field below</li>
+                        <li>
+                          Paste it in the &quot;Job Description&quot; field
+                          below
+                        </li>
                         <li>Click Generate - works 100% of the time!</li>
                       </ol>
                     </div>

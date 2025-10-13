@@ -1,8 +1,8 @@
-# Quick Start Guide - Multi-User Portfolio System
+# Upfolio User Guide - Quick Start
 
 ## 🚀 Getting Started
 
-### 1. Create Your First User Account
+### 1. Create Your Account
 
 Visit the registration page:
 

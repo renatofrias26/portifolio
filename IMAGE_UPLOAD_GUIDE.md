@@ -1,8 +1,8 @@
-# How to Upload Your Profile Images
+# Upfolio - How to Upload Your Profile Images
 
 ## Where to Upload
 
-You can upload your **logo** and **profile image** directly from your **Admin Dashboard**:
+You can upload your **logo** and **profile image** directly from your **Upfolio Dashboard**:
 
 1. **Login** to your admin account at `/admin/login`
 2. Navigate to the **Profile** tab in your dashboard

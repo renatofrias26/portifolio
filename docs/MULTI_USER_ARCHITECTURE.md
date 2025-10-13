@@ -1,10 +1,10 @@
-# Multi-User Portfolio System
+# Upfolio Multi-User Architecture
 
-This document describes the multi-user architecture of the portfolio application.
+This document describes the multi-user architecture of Upfolio.
 
 ## Overview
 
-The system now supports multiple users, where each user can:
+The Upfolio platform supports multiple users, where each user can:
 
 - Create their own account with a unique username
 - Upload and manage their own resume versions

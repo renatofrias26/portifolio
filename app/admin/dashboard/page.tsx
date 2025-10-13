@@ -2,6 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { useEffect, useState, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -145,7 +146,7 @@ function DashboardContent() {
           <h2 className={`${typography.h3} mb-4`}>Quick Actions</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Job Assistant Card */}
-            <a
+            <Link
               href="/admin/job-assistant"
               className="glass rounded-xl p-6 hover:shadow-lg transition-all border border-transparent hover:border-purple-200 dark:hover:border-purple-800 group"
             >
@@ -163,7 +164,7 @@ function DashboardContent() {
                   </p>
                 </div>
               </div>
-            </a>
+            </Link>
 
             {/* View Portfolio Card */}
             <a

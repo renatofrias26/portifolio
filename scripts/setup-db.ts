@@ -7,7 +7,7 @@ config({ path: ".env.local" });
 
 async function setupDatabase() {
   try {
-    console.log("🔧 Setting up database...");
+    console.log("🔧 Setting up Upfolio database...");
 
     // Verify connection string is loaded
     if (!process.env.POSTGRES_URL) {
@@ -51,7 +51,7 @@ async function setupDatabase() {
     console.log("✅ Indexes created");
 
     // Create default admin user (you should change this password!)
-    const defaultEmail = "admin@portfolio.com";
+    const defaultEmail = "admin@upfolio.app";
     const defaultPassword = "changeme123";
     const hashedPassword = await bcrypt.hash(defaultPassword, 10);
 
@@ -75,7 +75,7 @@ async function setupDatabase() {
       console.log("ℹ️  Admin user already exists");
     }
 
-    console.log("\n✨ Database setup complete!");
+    console.log("\n✨ Upfolio database setup complete!");
   } catch (error) {
     console.error("❌ Error setting up database:", error);
     throw error;

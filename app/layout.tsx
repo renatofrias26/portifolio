@@ -26,7 +26,8 @@ export const metadata: Metadata = {
     "Portfolio builder",
     "Career portfolio",
     "AI resume parser",
-    "Portfolio platform",
+    "Upfolio",
+    "Job application assistant",
   ],
   authors: [{ name: "Upfolio" }],
   icons: {

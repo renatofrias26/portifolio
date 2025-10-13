@@ -264,7 +264,7 @@ export async function sendVerificationEmail(
           
           <p>Hi <strong>${username}</strong>,</p>
           
-          <p>Thank you for signing up! To complete your registration and start building your portfolio, please verify your email address.</p>
+          <p>Thank you for signing up! To complete your registration and start building your Upfolio portfolio, please verify your email address.</p>
           
           <div style="text-align: center; margin: 30px 0;">
             <a href="${verificationUrl}" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: 600;">Verify Email Address</a>
@@ -295,7 +295,7 @@ Welcome to Upfolio!
 
 Hi ${username},
 
-Thank you for signing up! To complete your registration and start building your portfolio, please verify your email address.
+Thank you for signing up! To complete your registration and start building your Upfolio portfolio, please verify your email address.
 
 Click the link below to verify your email:
 ${verificationUrl}
@@ -347,7 +347,7 @@ export async function sendEmailVerifiedConfirmation(
           <p>Great news! Your email address has been verified. Your account is now fully activated and ready to use.</p>
           
           <div style="background: #d4edda; border-left: 4px solid #28a745; padding: 15px; margin: 20px 0; border-radius: 4px;">
-            <p style="margin: 0; color: #155724; font-size: 14px;"><strong>✓ What's next?</strong> Start building your portfolio and showcasing your work!</p>
+            <p style="margin: 0; color: #155724; font-size: 14px;"><strong>✓ What's next?</strong> Start building your Upfolio portfolio and showcasing your work!</p>
           </div>
           
           <div style="text-align: center; margin: 30px 0;">
@@ -374,7 +374,7 @@ Hi ${username},
 
 Great news! Your email address has been verified. Your account is now fully activated and ready to use.
 
-✓ What's next? Start building your portfolio and showcasing your work!
+✓ What's next? Start building your Upfolio portfolio and showcasing your work!
 
 Visit your dashboard: ${dashboardUrl}
 
