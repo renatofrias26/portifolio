@@ -12,6 +12,8 @@ import {
   Loader2,
   Archive,
   ArchiveRestore,
+  Download,
+  MoreVertical,
 } from "lucide-react";
 import { PreviewModal } from "./preview-modal";
 import { EditModal } from "./edit-modal";
@@ -34,6 +36,7 @@ export function ResumeVersionsList() {
   const [previewVersionId, setPreviewVersionId] = useState<number | null>(null);
   const [editVersionId, setEditVersionId] = useState<number | null>(null);
   const [showArchived, setShowArchived] = useState(false);
+  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
 
   const fetchVersions = useCallback(async () => {
     try {
@@ -214,65 +217,134 @@ export function ResumeVersionsList() {
                     </p>
                   )}
                 </div>
+              </div>
 
+              <div className="flex items-center gap-2 flex-shrink-0">
+                {/* PDF View Action */}
                 {version.pdf_url && (
                   <a
                     href={version.pdf_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-sm text-purple-600 dark:text-purple-400 hover:underline mt-2"
+                    className="p-2 rounded-lg glass hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors group relative"
+                    title="View PDF in new tab"
                   >
-                    <ExternalLink className="w-4 h-4" />
-                    View PDF
+                    <ExternalLink className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs font-medium text-white bg-gray-900 dark:bg-gray-700 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                      View PDF
+                    </span>
                   </a>
                 )}
-              </div>
 
-              <div className="flex items-center gap-2 flex-shrink-0">
+                {/* Preview Button */}
                 <button
                   onClick={() => setPreviewVersionId(version.id)}
-                  className="p-2 rounded-lg glass hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
-                  title="Preview"
+                  className="p-2 rounded-lg glass hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors group relative"
+                  title="Preview portfolio"
                 >
                   <Eye className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs font-medium text-white bg-gray-900 dark:bg-gray-700 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                    Preview
+                  </span>
                 </button>
-                <button
-                  onClick={() => setEditVersionId(version.id)}
-                  className="p-2 rounded-lg glass hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors"
-                  title="Edit"
-                >
-                  <Edit className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                </button>
-
-                {/* Archive/Unarchive Button */}
-                {!version.is_published &&
-                  (version.is_archived ? (
-                    <button
-                      onClick={() => handleArchive(version.id, "unarchive")}
-                      className="p-2 rounded-lg glass hover:bg-orange-50 dark:hover:bg-orange-900/30 transition-colors"
-                      title="Unarchive"
-                    >
-                      <ArchiveRestore className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => handleArchive(version.id, "archive")}
-                      className="p-2 rounded-lg glass hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                      title="Archive"
-                    >
-                      <Archive className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                    </button>
-                  ))}
 
                 {/* Publish Button */}
                 {!version.is_published && !version.is_archived && (
                   <button
                     onClick={() => handlePublish(version.id)}
-                    className={`${buttons.medium} bg-gradient-to-r from-green-600 to-blue-500 text-white font-medium hover:shadow-lg transition-all rounded-lg`}
+                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-green-600 to-blue-500 text-white text-sm font-medium hover:shadow-lg transition-all group relative"
+                    title="Publish this version"
                   >
                     Publish
+                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs font-medium text-white bg-gray-900 dark:bg-gray-700 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                      Make Live
+                    </span>
                   </button>
                 )}
+
+                {/* More Actions Menu */}
+                <div className="relative">
+                  <button
+                    onClick={() =>
+                      setOpenMenuId(
+                        openMenuId === version.id ? null : version.id,
+                      )
+                    }
+                    className="p-2 rounded-lg glass hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group relative"
+                    title="More actions"
+                  >
+                    <MoreVertical className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs font-medium text-white bg-gray-900 dark:bg-gray-700 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                      More
+                    </span>
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {openMenuId === version.id && (
+                    <>
+                      {/* Backdrop to close menu */}
+                      <div
+                        className="fixed inset-0 z-10"
+                        onClick={() => setOpenMenuId(null)}
+                      />
+                      <div className="absolute right-0 mt-2 w-48 glass rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-20 overflow-hidden">
+                        {version.pdf_url && (
+                          <a
+                            href={version.pdf_url}
+                            download
+                            onClick={() => setOpenMenuId(null)}
+                            className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                          >
+                            <Download className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                            <span className="text-sm font-medium">
+                              Download PDF
+                            </span>
+                          </a>
+                        )}
+
+                        <button
+                          onClick={() => {
+                            setEditVersionId(version.id);
+                            setOpenMenuId(null);
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors"
+                        >
+                          <Edit className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                          <span className="text-sm font-medium">Edit</span>
+                        </button>
+
+                        {!version.is_published &&
+                          (version.is_archived ? (
+                            <button
+                              onClick={() => {
+                                handleArchive(version.id, "unarchive");
+                                setOpenMenuId(null);
+                              }}
+                              className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors"
+                            >
+                              <ArchiveRestore className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                              <span className="text-sm font-medium">
+                                Unarchive
+                              </span>
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                handleArchive(version.id, "archive");
+                                setOpenMenuId(null);
+                              }}
+                              className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                            >
+                              <Archive className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                              <span className="text-sm font-medium">
+                                Archive
+                              </span>
+                            </button>
+                          ))}
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </motion.div>

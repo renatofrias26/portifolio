@@ -74,13 +74,13 @@ export async function getAllResumeVersions(
   try {
     const result = includeArchived
       ? await sql`
-          SELECT id, version, is_published, is_archived, created_at, updated_at
+          SELECT id, version, is_published, is_archived, created_at, updated_at, pdf_url
           FROM resume_data
           WHERE user_id = ${userId}
           ORDER BY version DESC
         `
       : await sql`
-          SELECT id, version, is_published, is_archived, created_at, updated_at
+          SELECT id, version, is_published, is_archived, created_at, updated_at, pdf_url
           FROM resume_data
           WHERE user_id = ${userId} AND is_archived = false
           ORDER BY version DESC

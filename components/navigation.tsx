@@ -172,7 +172,9 @@ export function Navigation({
                 </button>
                 <a
                   href={pdfUrl || "/resume.pdf"}
-                  download
+                  download={pdfUrl ? true : undefined}
+                  target={pdfUrl ? "_blank" : undefined}
+                  rel={pdfUrl ? "noopener noreferrer" : undefined}
                   className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
                   aria-label="Download Resume PDF"
                 >
@@ -249,7 +251,9 @@ export function Navigation({
                 </button>
                 <a
                   href={pdfUrl || "/resume.pdf"}
-                  download
+                  download={pdfUrl ? true : undefined}
+                  target={pdfUrl ? "_blank" : undefined}
+                  rel={pdfUrl ? "noopener noreferrer" : undefined}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium hover:shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
                   aria-label="Download Resume PDF"
