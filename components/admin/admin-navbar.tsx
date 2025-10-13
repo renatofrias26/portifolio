@@ -63,7 +63,7 @@ export function AdminNavbar({
 
   return (
     <nav className="glass border-b border-gray-200 dark:border-gray-700">
-      <div className="container mx-auto px-6 py-4">
+      <div className="mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             {showBackButton && (

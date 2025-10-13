@@ -84,6 +84,7 @@ export interface PortfolioPageProps {
   showSkipToContent?: boolean;
   layout?: "default" | "compact" | "minimal"; // For future layout variations
   username?: string; // username slug for API calls
+  isOwner?: boolean; // Whether the viewer is the portfolio owner
 }
 
 /**
@@ -109,6 +110,7 @@ export function PortfolioPage({
   showFooter = true,
   showSkipToContent = true,
   username,
+  isOwner = false,
 }: PortfolioPageProps) {
   // When data is not provided, sections will use their default static data
   const usePropsData = !!data;
@@ -124,6 +126,7 @@ export function PortfolioPage({
             userCustomization?.userName ||
             (usePropsData ? data.personal?.name : undefined)
           }
+          isOwner={isOwner}
         />
       )}
 

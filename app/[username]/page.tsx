@@ -55,8 +55,9 @@ export default async function UserPortfolioPage({ params }: Props) {
   const ownerData = await getUserByUsername(username);
 
   // Check if the logged-in user is the owner
-  const isOwner =
-    session?.user?.id && ownerData?.id === parseInt(session.user.id);
+  const isOwner = Boolean(
+    session?.user?.id && ownerData?.id === parseInt(session.user.id),
+  );
 
   // Fetch user's published resume
   // If owner, use the owner query (ignores is_public, allows viewing private profiles)
@@ -96,6 +97,7 @@ export default async function UserPortfolioPage({ params }: Props) {
         data={portfolioData}
         userCustomization={userCustomization}
         username={username}
+        isOwner={isOwner}
       />
       {isPrivateView && (
         <div className="bg-yellow-100 fixed w-full bottom-0 dark:bg-yellow-900/30 border-b border-yellow-300 dark:border-yellow-700 px-4 py-3 text-center">

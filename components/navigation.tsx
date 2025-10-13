@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Download, Share2 } from "lucide-react";
+import { Menu, X, Download, Share2, Home, LayoutDashboard } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 const navItems = [
   { name: "About", href: "#about" },
@@ -18,13 +20,16 @@ interface NavigationProps {
   logoUrl?: string;
   pdfUrl?: string;
   userName?: string;
+  isOwner?: boolean;
 }
 
 export function Navigation({
   logoUrl,
   pdfUrl,
   userName,
+  isOwner = false,
 }: NavigationProps = {}) {
+  const { data: session } = useSession();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -115,32 +120,71 @@ export function Navigation({
         }`}
         aria-label="Main navigation"
       >
-        <div className="container mx-auto px-6 py-4">
+        <div className="mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <a href="#" className="flex items-center" aria-label="Home">
-              {logoUrl && logoUrl.trim() !== "" ? (
-                <Image
-                  src={logoUrl}
-                  alt="Logo"
-                  width={48}
-                  height={48}
-                  className="w-12 h-12 object-contain transition-transform hover:scale-110"
-                  priority
-                />
+            <div className="flex items-center gap-3">
+              {/* Back Navigation */}
+              {isOwner && session ? (
+                <Link
+                  href="/admin/dashboard"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg glass hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400"
+                  aria-label="Back to Dashboard"
+                  title="Back to Dashboard"
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  <span className="hidden sm:inline">Dashboard</span>
+                </Link>
+              ) : session ? (
+                <Link
+                  href="/admin/dashboard"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg glass hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400"
+                  aria-label="Go to Dashboard"
+                  title="Go to Dashboard"
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  <span className="hidden sm:inline">Dashboard</span>
+                </Link>
               ) : (
-                <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center text-white font-bold text-xl transition-transform hover:scale-110">
-                  {userName
-                    ? userName
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")
-                        .toUpperCase()
-                        .slice(0, 2)
-                    : "RF"}
-                </div>
+                <Link
+                  href="/"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg glass hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400"
+                  aria-label="Back to Home"
+                  title="Back to Home"
+                >
+                  <Home className="w-4 h-4" />
+                  <span className="hidden sm:inline">Home</span>
+                </Link>
               )}
-            </a>
+
+              <a
+                href="#"
+                className="flex items-center"
+                aria-label="Top of page"
+              >
+                {logoUrl && logoUrl.trim() !== "" ? (
+                  <Image
+                    src={logoUrl}
+                    alt="Logo"
+                    width={48}
+                    height={48}
+                    className="w-12 h-12 object-contain transition-transform hover:scale-110"
+                    priority
+                  />
+                ) : (
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center text-white font-bold text-xl transition-transform hover:scale-110">
+                    {userName
+                      ? userName
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                          .toUpperCase()
+                          .slice(0, 2)
+                      : "RF"}
+                  </div>
+                )}
+              </a>
+            </div>
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-6">
@@ -222,6 +266,38 @@ export function Navigation({
               className="absolute right-0 top-0 bottom-0 w-64 glass p-6 pt-20"
               aria-label="Mobile navigation"
             >
+              {/* Mobile Back Button */}
+              <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
+                {isOwner && session ? (
+                  <Link
+                    href="/admin/dashboard"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg glass hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >
+                    <LayoutDashboard className="w-4 h-4" />
+                    <span>Back to Dashboard</span>
+                  </Link>
+                ) : session ? (
+                  <Link
+                    href="/admin/dashboard"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg glass hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >
+                    <LayoutDashboard className="w-4 h-4" />
+                    <span>Go to Dashboard</span>
+                  </Link>
+                ) : (
+                  <Link
+                    href="/"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg glass hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >
+                    <Home className="w-4 h-4" />
+                    <span>Back to Home</span>
+                  </Link>
+                )}
+              </div>
+
               <ul className="flex flex-col gap-4" role="list">
                 {navItems.map((item) => (
                   <li key={item.name}>

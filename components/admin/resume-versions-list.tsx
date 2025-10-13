@@ -140,7 +140,7 @@ export function ResumeVersionsList() {
   return (
     <div className={spacing.subsection}>
       {/* Archive Toggle */}
-      <div className="flex items-center justify-between glass rounded-xl p-4 sm:p-6">
+      <div className="flex items-center justify-between glass rounded-xl p-4 sm:p-6 mb-4">
         <div className="flex items-center gap-3">
           <Archive className="w-5 h-5 text-gray-600 dark:text-gray-400" />
           <div>
@@ -171,7 +171,7 @@ export function ResumeVersionsList() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className={`glass rounded-xl p-6 border-2 ${
+            className={`glass rounded-xl mb-4 p-6 border-2 ${
               version.is_archived
                 ? "border-orange-300 dark:border-orange-700 bg-orange-50 dark:bg-orange-900/10 opacity-75"
                 : version.is_published
