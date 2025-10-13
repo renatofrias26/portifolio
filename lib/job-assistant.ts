@@ -6,6 +6,26 @@ const openai = new OpenAI({
 });
 
 // ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+/**
+ * Clean AI response content by removing markdown code blocks if present
+ */
+function cleanAIJsonResponse(content: string): string {
+  let cleaned = content.trim();
+
+  // Remove markdown code blocks (```json or ```)
+  if (cleaned.startsWith("```json")) {
+    cleaned = cleaned.replace(/^```json\s*\n?/, "").replace(/\n?```\s*$/, "");
+  } else if (cleaned.startsWith("```")) {
+    cleaned = cleaned.replace(/^```\s*\n?/, "").replace(/\n?```\s*$/, "");
+  }
+
+  return cleaned.trim();
+}
+
+// ============================================================================
 // STRUCTURED OUTPUT INTERFACES
 // ============================================================================
 
@@ -95,7 +115,7 @@ Think step-by-step, then generate the JSON response.`;
     });
 
     const content = response.choices[0].message.content || "{}";
-    const parsed = JSON.parse(content);
+    const parsed = JSON.parse(cleanAIJsonResponse(content));
 
     return {
       resume: parsed.resume || "",
@@ -167,7 +187,7 @@ Think step-by-step through what makes this candidate perfect for THIS role, then
     });
 
     const content = response.choices[0].message.content || "{}";
-    const parsed = JSON.parse(content);
+    const parsed = JSON.parse(cleanAIJsonResponse(content));
 
     return {
       coverLetter: parsed.coverLetter || "",
@@ -224,11 +244,11 @@ If you cannot find the information, use "Not specified" for missing fields.`;
       model: "gpt-4o-mini",
       messages: [{ role: "user", content: prompt }],
       temperature: 0.3,
-      max_tokens: 100,
+      max_tokens: 1000,
     });
 
     const content = response.choices[0].message.content || "{}";
-    const parsed = JSON.parse(content);
+    const parsed = JSON.parse(cleanAIJsonResponse(content));
 
     return {
       jobTitle: parsed.jobTitle || "Not specified",
@@ -294,7 +314,20 @@ Focus on:
     });
 
     const content = response.choices[0].message.content || "{}";
-    const parsed = JSON.parse(content);
+
+    // Clean the response - remove markdown code blocks if present
+    let cleanedContent = content.trim();
+    if (cleanedContent.startsWith("```json")) {
+      cleanedContent = cleanedContent
+        .replace(/^```json\s*\n?/, "")
+        .replace(/\n?```\s*$/, "");
+    } else if (cleanedContent.startsWith("```")) {
+      cleanedContent = cleanedContent
+        .replace(/^```\s*\n?/, "")
+        .replace(/\n?```\s*$/, "");
+    }
+
+    const parsed = JSON.parse(cleanedContent);
 
     return {
       overallScore: parsed.overallScore || 0,
