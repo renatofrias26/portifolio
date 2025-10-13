@@ -1,9 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sql } from "@vercel/postgres";
 import { sendEmailVerifiedConfirmation } from "@/lib/email";
+import { rateLimiters, getClientIdentifier } from "@/lib/rate-limiter";
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 5 attempts per 10 minutes per IP
+    const identifier = getClientIdentifier(request);
+    const rateLimit = await rateLimiters.emailVerificationVerify.check(
+      identifier,
+    );
+
+    if (!rateLimit.success) {
+      const resetTime = new Date(rateLimit.reset).toLocaleTimeString();
+      return NextResponse.json(
+        {
+          error: `Too many verification attempts. Please try again after ${resetTime}.`,
+        },
+        { status: 429 },
+      );
+    }
+
     const { token } = await request.json();
 
     // Validate token

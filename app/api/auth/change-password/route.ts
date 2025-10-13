@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { sql } from "@vercel/postgres";
 import bcrypt from "bcryptjs";
 import { sendPasswordChangedEmail } from "@/lib/email";
+import { rateLimiters, getClientIdentifier } from "@/lib/rate-limiter";
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,6 +12,20 @@ export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Rate limit: 5 attempts per hour per user
+    const identifier = getClientIdentifier(request, session.user.id);
+    const rateLimit = await rateLimiters.passwordChange.check(identifier);
+
+    if (!rateLimit.success) {
+      const resetTime = new Date(rateLimit.reset).toLocaleTimeString();
+      return NextResponse.json(
+        {
+          error: `Too many password change attempts. Please try again after ${resetTime}.`,
+        },
+        { status: 429 },
+      );
     }
 
     const { currentPassword, newPassword } = await request.json();

@@ -2,9 +2,24 @@ import { NextRequest, NextResponse } from "next/server";
 import { sql } from "@vercel/postgres";
 import bcrypt from "bcryptjs";
 import { sendPasswordChangedEmail } from "@/lib/email";
+import { rateLimiters, getClientIdentifier } from "@/lib/rate-limiter";
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 5 attempts per 10 minutes per IP
+    const identifier = getClientIdentifier(request);
+    const rateLimit = await rateLimiters.passwordResetVerify.check(identifier);
+
+    if (!rateLimit.success) {
+      const resetTime = new Date(rateLimit.reset).toLocaleTimeString();
+      return NextResponse.json(
+        {
+          error: `Too many password reset attempts. Please try again after ${resetTime}.`,
+        },
+        { status: 429 },
+      );
+    }
+
     const { token, password } = await request.json();
 
     // Validate inputs
@@ -64,7 +79,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: "Password reset successfully. You can now log in with your new password.",
+      message:
+        "Password reset successfully. You can now log in with your new password.",
     });
   } catch (error) {
     console.error("Error in reset-password:", error);

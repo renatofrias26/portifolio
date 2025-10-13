@@ -10,6 +10,7 @@ import { ImageUploader } from "@/components/admin/image-uploader";
 import { AdminNavbar } from "@/components/admin/admin-navbar";
 import ChangePasswordSection from "@/components/admin/change-password-section";
 import EmailVerificationBanner from "@/components/admin/email-verification-banner";
+import DeleteAccountSection from "@/components/admin/delete-account-section";
 
 interface UserProfile {
   id: number;
@@ -1096,6 +1097,9 @@ export default function ProfilePage() {
 
           {/* Password & Security */}
           <ChangePasswordSection />
+
+          {/* Delete Account - Danger Zone */}
+          <DeleteAccountSection />
 
           {/* Customization */}
           {profile && (

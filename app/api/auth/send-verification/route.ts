@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { sql } from "@vercel/postgres";
 import crypto from "crypto";
 import { sendVerificationEmail } from "@/lib/email";
+import { rateLimiters, getClientIdentifier } from "@/lib/rate-limiter";
 
 /**
  * Send or resend email verification link
@@ -19,6 +20,22 @@ export async function POST(request: NextRequest) {
     }
 
     const userId = parseInt(session.user.id);
+
+    // Rate limit: 1 request per 30 seconds per user
+    const identifier = getClientIdentifier(request, userId.toString());
+    const rateLimit = await rateLimiters.emailVerificationSend.check(
+      identifier,
+    );
+
+    if (!rateLimit.success) {
+      const resetTime = new Date(rateLimit.reset).toLocaleTimeString();
+      return NextResponse.json(
+        {
+          error: `Please wait before requesting another verification email. Try again after ${resetTime}.`,
+        },
+        { status: 429 },
+      );
+    }
 
     // Get user details
     const userResult = await sql`

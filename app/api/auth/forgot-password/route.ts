@@ -2,9 +2,24 @@ import { NextRequest, NextResponse } from "next/server";
 import { sql } from "@vercel/postgres";
 import crypto from "crypto";
 import { sendPasswordResetEmail } from "@/lib/email";
+import { rateLimiters, getClientIdentifier } from "@/lib/rate-limiter";
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 3 requests per 15 minutes per IP
+    const identifier = getClientIdentifier(request);
+    const rateLimit = await rateLimiters.passwordReset.check(identifier);
+
+    if (!rateLimit.success) {
+      const resetTime = new Date(rateLimit.reset).toLocaleTimeString();
+      return NextResponse.json(
+        {
+          error: `Too many password reset requests. Please try again after ${resetTime}.`,
+        },
+        { status: 429 },
+      );
+    }
+
     const { email } = await request.json();
 
     // Validate email

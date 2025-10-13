@@ -3,9 +3,24 @@ import bcrypt from "bcryptjs";
 import { sql } from "@vercel/postgres";
 import crypto from "crypto";
 import { sendVerificationEmail } from "@/lib/email";
+import { rateLimiters, getClientIdentifier } from "@/lib/rate-limiter";
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 3 registrations per hour per IP
+    const identifier = getClientIdentifier(request);
+    const rateLimit = await rateLimiters.registration.check(identifier);
+
+    if (!rateLimit.success) {
+      const resetTime = new Date(rateLimit.reset).toLocaleTimeString();
+      return NextResponse.json(
+        {
+          error: `Too many registration attempts. Please try again after ${resetTime}.`,
+        },
+        { status: 429 },
+      );
+    }
+
     const { email, password, name, username, isPublic, profileEnhancements } =
       await request.json();
 
