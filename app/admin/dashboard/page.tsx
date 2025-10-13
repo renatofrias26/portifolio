@@ -4,7 +4,13 @@ import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, FileText, CheckCircle, Sparkles } from "lucide-react";
+import {
+  Upload,
+  FileText,
+  CheckCircle,
+  Sparkles,
+  Briefcase,
+} from "lucide-react";
 import { ResumeUploader } from "@/components/admin/resume-uploader";
 import { ResumeVersionsList } from "@/components/admin/resume-versions-list";
 import { AdminNavbar } from "@/components/admin/admin-navbar";
@@ -133,6 +139,53 @@ function DashboardContent() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Quick Actions */}
+        <div className="mb-6 sm:mb-8">
+          <h2 className={`${typography.h3} mb-4`}>Quick Actions</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Job Assistant Card */}
+            <a
+              href="/admin/job-assistant"
+              className="glass rounded-xl p-6 hover:shadow-lg transition-all border border-transparent hover:border-purple-200 dark:hover:border-purple-800 group"
+            >
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Briefcase className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                    Job Assistant
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Generate tailored resumes and cover letters for job
+                    applications using AI
+                  </p>
+                </div>
+              </div>
+            </a>
+
+            {/* View Portfolio Card */}
+            <a
+              href={session.user.username ? `/${session.user.username}` : "/"}
+              className="glass rounded-xl p-6 hover:shadow-lg transition-all border border-transparent hover:border-blue-200 dark:hover:border-blue-800 group"
+            >
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br from-blue-600 to-cyan-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <FileText className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                    View Portfolio
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    See how your portfolio looks to visitors
+                  </p>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
 
         {/* Tabs */}
         <div

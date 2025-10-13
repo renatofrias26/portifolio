@@ -361,3 +361,205 @@ export async function updateUserProfile(
     throw error;
   }
 }
+
+// ============================================================================
+// JOB APPLICATION ASSISTANT QUERIES
+// ============================================================================
+
+/**
+ * Save a new job application
+ */
+export async function saveJobApplication(data: {
+  userId: number;
+  jobTitle: string;
+  companyName: string;
+  jobDescription: string;
+  jobUrl?: string;
+  resumeSource: "existing" | "upload";
+  resumeVersion?: number;
+  resumeSnapshot: Record<string, unknown>;
+  tailoredResume?: string;
+  coverLetter?: string;
+  tailoredResumeEdited?: string;
+  coverLetterEdited?: string;
+  isSaved: boolean;
+}) {
+  try {
+    const result = await sql`
+      INSERT INTO job_applications (
+        user_id, job_title, company_name, job_description, job_url,
+        resume_source, resume_version, resume_snapshot,
+        tailored_resume, cover_letter,
+        tailored_resume_edited, cover_letter_edited,
+        is_saved
+      ) VALUES (
+        ${data.userId}, ${data.jobTitle}, ${data.companyName}, 
+        ${data.jobDescription}, ${data.jobUrl || null},
+        ${data.resumeSource}, ${data.resumeVersion || null}, 
+        ${JSON.stringify(data.resumeSnapshot)},
+        ${data.tailoredResume || null}, ${data.coverLetter || null},
+        ${data.tailoredResumeEdited || null}, ${data.coverLetterEdited || null},
+        ${data.isSaved}
+      )
+      RETURNING id, created_at
+    `;
+    return result.rows[0];
+  } catch (error) {
+    console.error("Error saving job application:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get all saved job applications for a user
+ */
+export async function getJobApplicationHistory(
+  userId: number,
+  limit: number = 10,
+  offset: number = 0,
+) {
+  try {
+    const result = await sql`
+      SELECT 
+        id, 
+        job_title as "jobTitle", 
+        company_name as "companyName", 
+        job_url as "jobUrl", 
+        created_at as "createdAt",
+        CASE WHEN tailored_resume_edited IS NOT NULL THEN true
+             WHEN tailored_resume IS NOT NULL THEN true
+             ELSE false END as "hasResume",
+        CASE WHEN cover_letter_edited IS NOT NULL THEN true
+             WHEN cover_letter IS NOT NULL THEN true
+             ELSE false END as "hasCoverLetter"
+      FROM job_applications
+      WHERE user_id = ${userId} AND is_saved = true
+      ORDER BY created_at DESC
+      LIMIT ${limit} OFFSET ${offset}
+    `;
+
+    const countResult = await sql`
+      SELECT COUNT(*) as total
+      FROM job_applications
+      WHERE user_id = ${userId} AND is_saved = true
+    `;
+
+    return {
+      applications: result.rows,
+      total: parseInt(countResult.rows[0].total),
+    };
+  } catch (error) {
+    console.error("Error fetching job application history:", error);
+    return { applications: [], total: 0 };
+  }
+}
+
+/**
+ * Get a specific job application by ID
+ */
+export async function getJobApplicationById(
+  applicationId: number,
+  userId: number,
+) {
+  try {
+    const result = await sql`
+      SELECT 
+        id, job_title, company_name, job_description, job_url,
+        resume_source, resume_version, resume_snapshot,
+        COALESCE(tailored_resume_edited, tailored_resume) as tailored_resume,
+        COALESCE(cover_letter_edited, cover_letter) as cover_letter,
+        created_at, updated_at
+      FROM job_applications
+      WHERE id = ${applicationId} AND user_id = ${userId}
+    `;
+    return result.rows[0] || null;
+  } catch (error) {
+    console.error("Error fetching job application:", error);
+    return null;
+  }
+}
+
+/**
+ * Update a job application (for edits)
+ */
+export async function updateJobApplication(
+  applicationId: number,
+  userId: number,
+  updates: {
+    tailoredResumeEdited?: string;
+    coverLetterEdited?: string;
+  },
+) {
+  try {
+    const result = await sql`
+      UPDATE job_applications
+      SET 
+        tailored_resume_edited = ${updates.tailoredResumeEdited || null},
+        cover_letter_edited = ${updates.coverLetterEdited || null},
+        updated_at = NOW()
+      WHERE id = ${applicationId} AND user_id = ${userId}
+      RETURNING id
+    `;
+    return result.rows[0] || null;
+  } catch (error) {
+    console.error("Error updating job application:", error);
+    throw error;
+  }
+}
+
+/**
+ * Delete a job application
+ */
+export async function deleteJobApplication(
+  applicationId: number,
+  userId: number,
+) {
+  try {
+    const result = await sql`
+      DELETE FROM job_applications
+      WHERE id = ${applicationId} AND user_id = ${userId}
+      RETURNING id
+    `;
+    return result.rows[0] || null;
+  } catch (error) {
+    console.error("Error deleting job application:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get user's token balance
+ */
+export async function getUserTokenBalance(userId: number) {
+  try {
+    const result = await sql`
+      SELECT token_credits, tokens_used
+      FROM users
+      WHERE id = ${userId}
+    `;
+    return result.rows[0] || { token_credits: 0, tokens_used: 0 };
+  } catch (error) {
+    console.error("Error fetching token balance:", error);
+    return { token_credits: 0, tokens_used: 0 };
+  }
+}
+
+/**
+ * Deduct tokens from user's balance
+ */
+export async function deductTokens(userId: number, amount: number) {
+  try {
+    const result = await sql`
+      UPDATE users
+      SET 
+        token_credits = token_credits - ${amount},
+        tokens_used = tokens_used + ${amount}
+      WHERE id = ${userId} AND token_credits >= ${amount}
+      RETURNING token_credits, tokens_used
+    `;
+    return result.rows[0] || null;
+  } catch (error) {
+    console.error("Error deducting tokens:", error);
+    throw error;
+  }
+}

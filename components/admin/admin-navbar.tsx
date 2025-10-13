@@ -10,6 +10,7 @@ import {
   LogOut,
   LayoutDashboard,
   ArrowLeft,
+  Briefcase,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -21,7 +22,7 @@ interface AdminNavbarProps {
     email?: string | null;
     username?: string | null;
   };
-  currentPage?: "dashboard" | "profile";
+  currentPage?: "dashboard" | "profile" | "job-assistant";
 }
 
 export function AdminNavbar({
@@ -32,8 +33,14 @@ export function AdminNavbar({
   const [currentUsername, setCurrentUsername] = useState(user.username);
   const router = useRouter();
 
-  const title = currentPage === "profile" ? "Profile Settings" : "Dashboard";
-  const showBackButton = currentPage === "profile";
+  const title =
+    currentPage === "profile"
+      ? "Profile Settings"
+      : currentPage === "job-assistant"
+      ? "Job Assistant"
+      : "Dashboard";
+  const showBackButton =
+    currentPage === "profile" || currentPage === "job-assistant";
 
   // Fetch the current username when component mounts or when user prop changes
   useEffect(() => {
@@ -85,12 +92,10 @@ export function AdminNavbar({
                 className="w-8 h-8 hidden dark:block"
               />
             </div>
-            {/* Title - Only show on dashboard */}
-            {currentPage === "dashboard" && (
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                {title}
-              </h1>
-            )}
+            {/* Title */}
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+              {title}
+            </h1>
           </div>
 
           <div className="flex items-center gap-3">
@@ -158,6 +163,16 @@ export function AdminNavbar({
                           >
                             <LayoutDashboard className="w-4 h-4" />
                             Dashboard
+                          </Link>
+                        )}
+
+                        {currentPage !== "job-assistant" && (
+                          <Link
+                            href="/admin/job-assistant"
+                            className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                          >
+                            <Briefcase className="w-4 h-4" />
+                            Job Assistant
                           </Link>
                         )}
 

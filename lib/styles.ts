@@ -49,6 +49,10 @@ export const spacing = {
   formFields: "space-y-3 sm:space-y-4", // Vertical spacing between form fields
   formGrid: "gap-3 sm:gap-4", // Grid gap for form layouts
   buttonGroup: "flex gap-2 sm:gap-3", // Button group spacing
+
+  // Component spacing
+  component: "space-y-4 sm:space-y-6", // Internal spacing for components
+  tight: "space-y-2 sm:space-y-3", // Tight spacing for compact lists
 } as const;
 
 /**
@@ -155,6 +159,13 @@ export const cards = {
 
   // Glass effect cards
   glass: "glass rounded-2xl",
+
+  // Base card (for panels and containers)
+  base: "glass rounded-2xl p-4 sm:p-6",
+
+  // Interactive card (for clickable items)
+  interactive:
+    "glass rounded-xl p-3 sm:p-4 hover:shadow-lg transition-all duration-200",
 } as const;
 
 /**
