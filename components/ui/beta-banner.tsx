@@ -32,7 +32,7 @@ export function BetaBanner() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
-          className="relative bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 text-white"
+          className="fixed top-0 left-0 right-0 z-[70] bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 text-white"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
             <div className="flex items-center justify-between gap-4 flex-wrap">

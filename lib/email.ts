@@ -17,7 +17,9 @@ import { Resend } from "resend";
 import { sql } from "@vercel/postgres";
 import { getBaseUrl } from "./site-config";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(
+  process.env.RESEND_API_KEY || "placeholder-key-for-build",
+);
 
 interface SendEmailOptions {
   to: string;
