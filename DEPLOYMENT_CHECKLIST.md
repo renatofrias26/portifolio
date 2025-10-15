@@ -27,20 +27,22 @@ Use this checklist when deploying Upfolio to production with the new domain conf
 
 ### 2. Configure DNS Records
 
-For each domain, configure DNS according to `DOMAIN_SETUP_GUIDE.md`:
+For each domain, configure DNS according to values shown in **your Vercel dashboard** (Settings → Domains → Domain Name → DNS Records):
 
 #### upfolio.com.au
 
-- [ ] A record: `@` → `76.76.21.21`
-- [ ] CNAME: `www` → `cname.vercel-dns.com`
+- [ ] A record: `@` → (Copy exact value from Vercel - likely `216.198.79.1`)
+- [ ] CNAME: `www` → (Copy exact value from Vercel - likely `b0bfc53752a19587.vercel-dns-017.com`)
 
 #### upfolio.au
 
-- [ ] A record: `@` → `76.76.21.21`
+- [ ] A record: `@` → (Copy exact value from Vercel - likely `216.198.79.1`)
 
 #### upfolio.app
 
-- [ ] A record: `@` → `76.76.21.21`
+- [ ] A record: `@` → (Copy exact value from Vercel - likely `216.198.79.1`)
+
+**⚠️ Important:** See `DNS_VALUES_REFERENCE.md` for detailed instructions on where to find these values.
 
 ### 3. SSL Certificates
 
@@ -261,7 +263,7 @@ If critical issues arise:
 
 ---
 
-**Deployment Date**: ******\_\_\_\_******  
-**Deployed By**: ******\_\_\_\_******  
+**Deployment Date**: **\*\***\_\_\_\_**\*\***  
+**Deployed By**: **\*\***\_\_\_\_**\*\***  
 **Production URL**: https://upfolio.com.au  
 **Status**: ☐ Not Started ☐ In Progress ☐ Complete

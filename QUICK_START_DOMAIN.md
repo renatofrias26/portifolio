@@ -22,13 +22,25 @@
 
 ### Step 2: Configure DNS (5 minutes)
 
-For each domain registrar, add these records:
+For each domain registrar, add these records **exactly as shown in your Vercel dashboard**:
 
 **upfolio.com.au:**
 
 ```
 Type: A       Name: @     Value: 76.76.21.21
+```
+
+**www.upfolio.com.au:**
+
+```
 Type: CNAME   Name: www   Value: cname.vercel-dns.com
+```
+
+Or use the new recommended values from Vercel (as shown in your screenshot):
+
+```
+Type: A       Name: @     Value: 216.198.79.1
+Type: CNAME   Name: www   Value: b0bfc53752a19587.vercel-dns-017.com
 ```
 
 **upfolio.au:**
@@ -37,11 +49,17 @@ Type: CNAME   Name: www   Value: cname.vercel-dns.com
 Type: A       Name: @     Value: 76.76.21.21
 ```
 
+(Or use the new A record value from Vercel if shown: `216.198.79.1`)
+
 **upfolio.app:**
 
 ```
 Type: A       Name: @     Value: 76.76.21.21
 ```
+
+(Or use the new A record value from Vercel if shown: `216.198.79.1`)
+
+**⚠️ Important:** Always use the exact values shown in your Vercel dashboard, as they may change based on Vercel's infrastructure.
 
 ### Step 3: Update Environment Variable (1 minute)
 

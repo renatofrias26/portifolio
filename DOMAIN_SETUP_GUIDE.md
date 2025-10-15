@@ -35,9 +35,27 @@ In your Vercel project dashboard:
 
 ### 2. Configure DNS Records
 
-For each domain registrar, configure the following DNS records:
+**⚠️ IMPORTANT:** Always use the exact DNS values shown in your Vercel project dashboard (Settings → Domains → click domain name → DNS Records tab). Vercel provides specific values for your deployment.
+
+For each domain registrar, configure the DNS records **exactly as shown in Vercel**:
 
 #### upfolio.com.au (Primary Domain)
+
+**Current Vercel recommendations (as of your deployment):**
+
+```
+Type: A
+Name: @
+Value: 216.198.79.1
+TTL: Auto
+
+Type: CNAME
+Name: www
+Value: b0bfc53752a19587.vercel-dns-017.com
+TTL: Auto
+```
+
+**Alternative (older) values:**
 
 ```
 Type: A
@@ -56,7 +74,7 @@ TTL: Auto
 ```
 Type: A
 Name: @
-Value: 76.76.21.21
+Value: 216.198.79.1  (or 76.76.21.21 if Vercel shows this)
 TTL: Auto
 ```
 
@@ -65,11 +83,11 @@ TTL: Auto
 ```
 Type: A
 Name: @
-Value: 76.76.21.21
+Value: 216.198.79.1  (or 76.76.21.21 if Vercel shows this)
 TTL: Auto
 ```
 
-**Note**: Vercel's IP might change. Always check Vercel's current DNS settings in your project dashboard.
+**⚠️ Critical Note**: Vercel's DNS values are deployment-specific. The values above are based on your screenshot but may differ for each domain. Always copy the exact values from your Vercel dashboard → Domains → [domain name] → DNS Records tab.
 
 ### 3. Update Environment Variables
 

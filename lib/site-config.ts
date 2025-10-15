@@ -21,9 +21,16 @@ export const siteConfig = {
 
   // Contact information
   email: {
-    support: "support@upfolio.com.au",
-    legal: "legal@upfolio.com.au",
-    noreply: "noreply@upfolio.com.au",
+    // Temporarily using Resend's default domain
+    // TODO: Switch to custom domain after migrating to Cloudflare DNS
+    support: "Upfolio Support <onboarding@resend.dev>",
+    legal: "Upfolio Legal <onboarding@resend.dev>",
+    noreply: "Upfolio <onboarding@resend.dev>",
+    
+    // Custom domain versions (use after Cloudflare setup):
+    // support: "support@upfolio.com.au",
+    // legal: "legal@upfolio.com.au",
+    // noreply: "noreply@upfolio.com.au",
   },
 
   // Social links (to be added when ready)
