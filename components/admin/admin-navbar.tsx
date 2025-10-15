@@ -137,14 +137,14 @@ export function AdminNavbar({
                   <>
                     {/* Backdrop to close menu when clicking outside */}
                     <div
-                      className="fixed inset-0 z-40"
+                      className="fixed inset-0 z-[100]"
                       onClick={() => setIsMenuOpen(false)}
                     />
                     <motion.div
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="absolute right-0 mt-2 w-56 glass rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden z-50"
+                      className="absolute right-0 mt-2 w-56 glass rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden z-[110]"
                     >
                       <div className="py-2">
                         <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">

@@ -381,7 +381,7 @@ export function JobAssistantWizard({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm z-[100] flex items-center justify-center"
+            className="fixed inset-0 h-screen bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm z-[100] flex items-center justify-center"
             style={{ pointerEvents: loading ? "auto" : "none" }}
           >
             <div className="bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-2xl max-w-md">
