@@ -4,6 +4,7 @@ import { sql } from "@vercel/postgres";
 import crypto from "crypto";
 import { sendVerificationEmail } from "@/lib/email";
 import { rateLimiters, getClientIdentifier } from "@/lib/rate-limiter";
+import { logger, EventType } from "@/lib/logger";
 
 export async function POST(request: NextRequest) {
   try {
@@ -125,6 +126,18 @@ export async function POST(request: NextRequest) {
 
     const newUser = result.rows[0];
 
+    // Log successful user signup
+    logger.event(EventType.USER_SIGNUP, {
+      userId: newUser.id,
+      email: newUser.email,
+      username: newUser.username,
+      metadata: {
+        hasProfileEnhancements: !!profileEnhancements,
+        isPublic: isPublic ?? true,
+        timestamp: new Date().toISOString(),
+      },
+    });
+
     // Send verification email
     const emailResult = await sendVerificationEmail(
       email,
@@ -158,6 +171,15 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error("Error registering user:", error);
+
+    // Log registration error to Sentry
+    logger.error("User registration failed", {
+      error,
+      metadata: {
+        email: (await request.json()).email,
+      },
+    });
+
     return NextResponse.json(
       {
         error: "Failed to register user",
