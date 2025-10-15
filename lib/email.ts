@@ -13,9 +13,11 @@
  * 4. Add RESEND_API_KEY to .env.local
  */
 
-// Uncomment when you have Resend set up:
-// import { Resend } from 'resend';
-// const resend = new Resend(process.env.RESEND_API_KEY);
+import { Resend } from "resend";
+import { sql } from "@vercel/postgres";
+import { getBaseUrl } from "./site-config";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 interface SendEmailOptions {
   to: string;
@@ -95,7 +97,7 @@ export async function sendPasswordResetEmail(
   resetToken: string,
   username: string,
 ): Promise<{ success: boolean; error?: string }> {
-  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const baseUrl = getBaseUrl();
   const resetUrl = `${baseUrl}/admin/reset-password?token=${resetToken}`;
 
   const html = `
@@ -243,7 +245,7 @@ export async function sendVerificationEmail(
   verificationToken: string,
   username: string,
 ): Promise<{ success: boolean; error?: string }> {
-  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const baseUrl = getBaseUrl();
   const verificationUrl = `${baseUrl}/admin/verify-email?token=${verificationToken}`;
 
   const html = `
@@ -323,7 +325,7 @@ export async function sendEmailVerifiedConfirmation(
   email: string,
   username: string,
 ): Promise<{ success: boolean; error?: string }> {
-  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const baseUrl = getBaseUrl();
   const dashboardUrl = `${baseUrl}/admin/dashboard`;
 
   const html = `

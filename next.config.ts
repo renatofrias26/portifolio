@@ -1,4 +1,4 @@
-import {withSentryConfig} from "@sentry/nextjs";
+import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -11,6 +11,46 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
     ],
+  },
+  async redirects() {
+    return [
+      // Redirect upfolio.au to upfolio.com.au
+      {
+        source: "/:path*",
+        has: [
+          {
+            type: "host",
+            value: "upfolio.au",
+          },
+        ],
+        destination: "https://upfolio.com.au/:path*",
+        permanent: true,
+      },
+      // Redirect upfolio.app to upfolio.com.au
+      {
+        source: "/:path*",
+        has: [
+          {
+            type: "host",
+            value: "upfolio.app",
+          },
+        ],
+        destination: "https://upfolio.com.au/:path*",
+        permanent: true,
+      },
+      // Redirect www subdomain to main domain
+      {
+        source: "/:path*",
+        has: [
+          {
+            type: "host",
+            value: "www.upfolio.com.au",
+          },
+        ],
+        destination: "https://upfolio.com.au/:path*",
+        permanent: true,
+      },
+    ];
   },
 };
 

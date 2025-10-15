@@ -387,7 +387,7 @@ export default function TermsOfService() {
                 at:
               </p>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                Email: legal@upfolio.com
+                Email: legal@upfolio.com.au
               </p>
             </section>
 

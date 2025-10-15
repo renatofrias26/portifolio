@@ -5,6 +5,7 @@ import { ClientSessionProvider } from "@/components/client-session-provider";
 import { ToastProvider } from "@/components/ui/toast";
 import { ConfirmProvider } from "@/components/ui/confirm-dialog";
 import { BetaBanner } from "@/components/ui/beta-banner";
+import { siteConfig } from "@/lib/site-config";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -18,9 +19,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Upfolio - Upload. Share. Get hired.",
-  description:
-    "Create your professional portfolio in minutes with AI-powered resume parsing. Upload your resume, get a beautiful portfolio. Simple, powerful, effective.",
+  metadataBase: new URL(siteConfig.url),
+  title: `${siteConfig.name} - ${siteConfig.tagline}`,
+  description: siteConfig.description,
   keywords: [
     "AI portfolio",
     "Resume to portfolio",
@@ -31,8 +32,10 @@ export const metadata: Metadata = {
     "AI resume parser",
     "Upfolio",
     "Job application assistant",
+    "Australia",
+    "Australian portfolios",
   ],
-  authors: [{ name: "Upfolio" }],
+  authors: [{ name: siteConfig.name }],
   icons: {
     icon: [
       { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
@@ -43,11 +46,11 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
-    title: "Upfolio - Upload. Share. Get hired.",
-    description:
-      "Create your professional portfolio in minutes with AI-powered resume parsing.",
+    title: `${siteConfig.name} - ${siteConfig.tagline}`,
+    description: siteConfig.description,
     type: "website",
-    siteName: "Upfolio",
+    siteName: siteConfig.name,
+    url: siteConfig.url,
     images: ["/og-image.png"],
   },
   twitter: {
