@@ -125,6 +125,9 @@ export async function POST(request: NextRequest) {
       description: jobDescription || "",
     };
 
+    let scrapingFailed = false;
+    let scrapingErrorMessage = "";
+
     if (jobUrl && isValidUrl(jobUrl)) {
       try {
         console.log("Attempting to scrape job URL:", jobUrl);
@@ -134,18 +137,24 @@ export async function POST(request: NextRequest) {
           company: scrapedJob.company,
         });
 
-        // Merge scraped data with overrides
+        // Merge scraped data with overrides (manual input takes precedence)
         jobInfo = {
           title: jobTitleOverride || scrapedJob.title,
           company: companyNameOverride || scrapedJob.company,
-          description: scrapedJob.description,
+          description: scrapedJob.description || jobDescription || "",
         };
       } catch (scrapeError) {
-        console.error("Job scraping failed:", scrapeError);
-        // Continue with manual data - don't fail the analysis
-        if (!jobInfo.description && jobDescription) {
-          jobInfo.description = jobDescription;
+        // Log for debugging but don't fail - we can work with manual input
+        scrapingFailed = true;
+        if (scrapeError instanceof Error) {
+          scrapingErrorMessage = scrapeError.message;
+          console.log(
+            "Note: Could not auto-fetch job posting:",
+            scrapeError.message,
+          );
         }
+        // Keep the manual data that was already set in jobInfo
+        // No need to reassign - jobInfo already has jobDescription from initialization
       }
     }
 
@@ -190,6 +199,12 @@ export async function POST(request: NextRequest) {
       },
       tokensUsed: tokenCost,
       remainingCredits: tokenBalance.token_credits - tokenCost,
+      ...(scrapingFailed && {
+        warning:
+          scrapingErrorMessage ||
+          "Could not auto-fetch job posting from URL. Please ensure the job description is pasted below.",
+        scrapingFailed: true,
+      }),
     });
   } catch (error) {
     console.error("Job fit analysis error:", error);

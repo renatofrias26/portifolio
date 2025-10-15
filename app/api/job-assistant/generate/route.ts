@@ -138,6 +138,9 @@ export async function POST(request: NextRequest) {
       description: jobDescription || "",
     };
 
+    let scrapingFailed = false;
+    let scrapingErrorMessage = "";
+
     if (jobUrl && isValidUrl(jobUrl)) {
       try {
         console.log("Attempting to scrape job URL:", jobUrl);
@@ -151,10 +154,17 @@ export async function POST(request: NextRequest) {
         jobInfo = {
           title: jobTitleOverride || scrapedJob.title,
           company: companyNameOverride || scrapedJob.company,
-          description: scrapedJob.description,
+          description: scrapedJob.description || jobDescription || "",
         };
       } catch (error) {
-        console.error("URL scraping failed:", error);
+        scrapingFailed = true;
+        if (error instanceof Error) {
+          scrapingErrorMessage = error.message;
+        }
+        console.log(
+          "URL scraping failed:",
+          error instanceof Error ? error.message : "Unknown error",
+        );
 
         // If we have manual job description, continue with that
         if (jobDescription && jobDescription.trim()) {
@@ -256,6 +266,12 @@ export async function POST(request: NextRequest) {
         tokensUsed: tokenCost,
         remainingCredits: updatedBalance.token_credits,
       },
+      ...(scrapingFailed && {
+        warning:
+          scrapingErrorMessage ||
+          "Could not auto-fetch job posting from URL. Make sure the job description is pasted below.",
+        scrapingFailed: true,
+      }),
     });
   } catch (error) {
     console.error("Error generating documents:", error);

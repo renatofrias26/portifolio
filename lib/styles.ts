@@ -85,8 +85,8 @@ export const typography = {
 export const logoSizes = {
   // Registration/Login pages
   auth: {
-    width: "w-[120px] sm:w-[140px] md:w-[160px]",
-    imageWidth: 120,
+    width: "w-[80px]",
+    imageWidth: 80,
     imageHeight: 48,
     imageWidthSm: 160,
     imageHeightSm: 64,

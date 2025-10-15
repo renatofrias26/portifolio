@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { CheckCircle, AlertCircle, Lightbulb, TrendingUp } from "lucide-react";
 import { cards, typography, spacing } from "@/lib/styles";
 import type { JobFitAnalysis } from "@/lib/job-assistant";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface JobFitScoreProps {
   analysis: JobFitAnalysis;
@@ -121,7 +123,9 @@ export function JobFitScore({
             {fitLevel} Fit
           </span>
         </div>
-        <p className="text-sm text-gray-700 dark:text-gray-300">{keyInsights}</p>
+        <p className="text-sm text-gray-700 dark:text-gray-300">
+          {keyInsights}
+        </p>
       </div>
 
       {/* Strengths */}
@@ -142,7 +146,11 @@ export function JobFitScore({
                 <span className="text-green-600 dark:text-green-400 mt-0.5">
                   •
                 </span>
-                <span>{strength}</span>
+                <div className="prose prose-sm dark:prose-invert max-w-none prose-a:text-green-600 dark:prose-a:text-green-400 prose-a:underline">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {strength}
+                  </ReactMarkdown>
+                </div>
               </li>
             ))}
           </ul>
@@ -167,7 +175,11 @@ export function JobFitScore({
                 <span className="text-yellow-600 dark:text-yellow-400 mt-0.5">
                   •
                 </span>
-                <span>{gap}</span>
+                <div className="prose prose-sm dark:prose-invert max-w-none prose-a:text-yellow-600 dark:prose-a:text-yellow-400 prose-a:underline">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {gap}
+                  </ReactMarkdown>
+                </div>
               </li>
             ))}
           </ul>
@@ -192,7 +204,11 @@ export function JobFitScore({
                 <span className="text-purple-600 dark:text-purple-400 mt-0.5">
                   •
                 </span>
-                <span>{rec}</span>
+                <div className="prose prose-sm dark:prose-invert max-w-none prose-a:text-purple-600 dark:prose-a:text-purple-400 prose-a:underline">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {rec}
+                  </ReactMarkdown>
+                </div>
               </li>
             ))}
           </ul>

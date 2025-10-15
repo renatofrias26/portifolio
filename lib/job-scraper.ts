@@ -23,20 +23,27 @@ export async function fetchJobPosting(url: string): Promise<ScrapedJob> {
     const response = await fetch(url, {
       signal: controller.signal,
       headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        Accept:
-          "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.5",
+        "User-Agent": "Mozilla/5.0 (compatible; PortfolioBot/1.0)",
       },
     });
 
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      throw new Error(
-        `HTTP ${response.status}: ${response.statusText}. The website may be blocking automated access.`,
-      );
+      // Provide more helpful error messages based on status code
+      const statusMessages: Record<number, string> = {
+        403: "The website is blocking automated access. Please paste the job description manually below.",
+        404: "Job posting not found. The URL may be incorrect or the posting has been removed.",
+        401: "This job posting requires authentication. Please copy and paste the job description manually.",
+        429: "Too many requests. Please wait a moment and try again, or paste the job description manually.",
+        500: "The website encountered an error. Please try again or paste the job description manually.",
+      };
+
+      const message =
+        statusMessages[response.status] ||
+        `HTTP ${response.status}: ${response.statusText}. Please paste the job description manually.`;
+
+      throw new Error(message);
     }
 
     const contentType = response.headers.get("content-type");
@@ -53,6 +60,9 @@ export async function fetchJobPosting(url: string): Promise<ScrapedJob> {
     }
 
     const $ = cheerio.load(html);
+
+    // Remove unwanted elements globally (like chat API does)
+    $("script, style, nav, header, footer, iframe, noscript").remove();
 
     // Try platform-specific scrapers in order
     const scrapers = [
@@ -230,9 +240,12 @@ function scrapeWorkday($: cheerio.CheerioAPI, url: string): ScrapedJob {
 
 /**
  * Generic scraper for unknown platforms
- * Uses common HTML patterns
+ * Uses common HTML patterns similar to chat API approach
  */
 function scrapeGeneric($: cheerio.CheerioAPI, url: string): ScrapedJob {
+  // Remove unwanted elements (like chat API does)
+  $("script, style, nav, header, footer, iframe, noscript").remove();
+
   // Try to find title
   const title =
     $("h1").first().text().trim() ||
@@ -249,28 +262,38 @@ function scrapeGeneric($: cheerio.CheerioAPI, url: string): ScrapedJob {
     new URL(url).hostname.split(".")[0] ||
     "";
 
-  // Try to find description - look for longest text block
-  const descriptionSelectors = [
+  // Try to find description - use content selectors like chat API
+  const contentSelectors = [
+    "main",
+    "article",
+    '[role="main"]',
+    ".job-description",
+    ".job-details",
+    "#job-description",
+    ".description",
+    ".content",
     '[class*="description"]',
     '[class*="job-desc"]',
     '[id*="description"]',
     '[id*="job-desc"]',
-    "main article",
-    "main",
-    "article",
-    ".content",
   ];
 
   let description = "";
-  let maxLength = 0;
-
-  for (const selector of descriptionSelectors) {
-    const text = $(selector).text().trim();
-    if (text.length > maxLength) {
-      maxLength = text.length;
-      description = text;
+  for (const selector of contentSelectors) {
+    const content = $(selector).text().trim();
+    if (content.length > 200) {
+      description = content;
+      break;
     }
   }
+
+  // Fallback to body if no specific content found
+  if (!description) {
+    description = $("body").text();
+  }
+
+  // Clean up whitespace (like chat API)
+  description = description.replace(/\s+/g, " ").trim();
 
   // Try to find location
   const location =

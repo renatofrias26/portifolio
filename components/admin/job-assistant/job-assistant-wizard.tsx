@@ -26,6 +26,8 @@ import { AILoader } from "@/components/ui/ai-loader";
 import { useToast } from "@/components/ui/toast";
 import { useConfirm } from "@/components/ui/confirm-dialog";
 import type { JobFitAnalysis } from "@/lib/job-assistant";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface WizardState {
   resumeSource: "existing" | "upload";
@@ -214,6 +216,11 @@ export function JobAssistantWizard({
 
       setFitAnalysis(data.analysis);
 
+      // Show warning if URL scraping failed
+      if (data.scrapingFailed && data.warning) {
+        toast.warning(data.warning);
+      }
+
       // Update job info if extracted
       if (data.jobInfo) {
         setState((prev) => ({
@@ -276,6 +283,11 @@ export function JobAssistantWizard({
       setResults(data.data);
       setEditedResume(data.data.tailoredResume || null);
       setEditedCoverLetter(data.data.coverLetter || null);
+
+      // Show warning if URL scraping failed
+      if (data.scrapingFailed && data.warning) {
+        toast.warning(data.warning);
+      }
 
       // Switch to first available tab
       if (data.data.tailoredResume) {
@@ -609,12 +621,12 @@ export function JobAssistantWizard({
                       platforms
                     </p>
                     <p className="text-gray-500 dark:text-gray-500">
-                      ✗ May not work: LinkedIn (login required), sites with
-                      heavy anti-bot protection
+                      ✗ May not work: LinkedIn (login required), sites blocking
+                      automated access (403 errors)
                     </p>
                     <p className="text-amber-600 dark:text-amber-400 font-medium">
-                      → If URL fails, just paste the job description below
-                      instead
+                      💡 If the URL doesn&apos;t work, paste the job description
+                      manually below
                     </p>
                   </div>
                 </div>
@@ -885,7 +897,13 @@ export function JobAssistantWizard({
                                         <span className="text-blue-600 dark:text-blue-400 mt-0.5">
                                           •
                                         </span>
-                                        <span>{rec}</span>
+                                        <div className="prose prose-sm dark:prose-invert max-w-none prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:underline">
+                                          <ReactMarkdown
+                                            remarkPlugins={[remarkGfm]}
+                                          >
+                                            {rec}
+                                          </ReactMarkdown>
+                                        </div>
                                       </li>
                                     ),
                                   )}
@@ -909,7 +927,13 @@ export function JobAssistantWizard({
                                         <span className="text-blue-600 dark:text-blue-400 mt-0.5">
                                           •
                                         </span>
-                                        <span>{change}</span>
+                                        <div className="prose prose-sm dark:prose-invert max-w-none prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:underline">
+                                          <ReactMarkdown
+                                            remarkPlugins={[remarkGfm]}
+                                          >
+                                            {change}
+                                          </ReactMarkdown>
+                                        </div>
                                       </li>
                                     ),
                                   )}
@@ -937,7 +961,13 @@ export function JobAssistantWizard({
                                         <span className="text-blue-600 dark:text-blue-400 mt-0.5">
                                           •
                                         </span>
-                                        <span>{rec}</span>
+                                        <div className="prose prose-sm dark:prose-invert max-w-none prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:underline">
+                                          <ReactMarkdown
+                                            remarkPlugins={[remarkGfm]}
+                                          >
+                                            {rec}
+                                          </ReactMarkdown>
+                                        </div>
                                       </li>
                                     ),
                                   )}
@@ -961,7 +991,13 @@ export function JobAssistantWizard({
                                         <span className="text-blue-600 dark:text-blue-400 mt-0.5">
                                           •
                                         </span>
-                                        <span>{point}</span>
+                                        <div className="prose prose-sm dark:prose-invert max-w-none prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:underline">
+                                          <ReactMarkdown
+                                            remarkPlugins={[remarkGfm]}
+                                          >
+                                            {point}
+                                          </ReactMarkdown>
+                                        </div>
                                       </li>
                                     ),
                                   )}
