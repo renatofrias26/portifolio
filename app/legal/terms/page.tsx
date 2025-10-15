@@ -59,6 +59,29 @@ export default function TermsOfService() {
                 </li>
                 <li>Customize and share their professional portfolios</li>
                 <li>Connect with potential employers and job opportunities</li>
+                <li>Access AI-powered job application assistance tools</li>
+              </ul>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3 mt-4">
+                2.1 Beta Status
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                Upfolio is currently in active development (beta). During this
+                period:
+              </p>
+              <ul className="list-disc pl-6 text-gray-700 dark:text-gray-300 space-y-2 mb-4">
+                <li>
+                  New users receive 500 free credits to explore all platform
+                  features
+                </li>
+                <li>
+                  Features, functionality, and user interfaces may change
+                  without notice
+                </li>
+                <li>
+                  The Service may experience occasional downtime, bugs, or
+                  performance issues
+                </li>
+                <li>We actively collect feedback to improve the platform</li>
               </ul>
             </section>
 
@@ -176,7 +199,53 @@ export default function TermsOfService() {
 
             <section className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                7. Prohibited Activities
+                7. Pricing and Payment
+              </h2>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                7.1 Beta Credits
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                During the beta period, all new users receive 500 free credits
+                to use AI-powered features including job fit analysis, tailored
+                resume generation, and cover letter creation.
+              </p>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                7.2 Future Pricing
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <strong className="text-gray-900 dark:text-white">
+                  Upfolio reserves the right to introduce paid features,
+                  subscription plans, or credit pricing at any time.
+                </strong>{" "}
+                We will provide reasonable advance notice before implementing
+                any pricing changes that affect existing users. Changes may
+                include but are not limited to:
+              </p>
+              <ul className="list-disc pl-6 text-gray-700 dark:text-gray-300 space-y-2 mb-4">
+                <li>
+                  Introduction of paid subscription tiers with different feature
+                  access
+                </li>
+                <li>Credit packages available for purchase</li>
+                <li>Premium features requiring additional payment</li>
+                <li>Changes to credit costs for specific features</li>
+                <li>Limitations on free tier usage</li>
+              </ul>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                7.3 Grandfathering and Transitions
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                While we will make reasonable efforts to grandfather early beta
+                users into favorable pricing when transitioning to paid plans,
+                we make no guarantee of ongoing free access to all features.
+                Users will be notified at least 30 days before any pricing
+                changes that would affect their account.
+              </p>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                8. Prohibited Activities
               </h2>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 You agree not to:
@@ -202,7 +271,7 @@ export default function TermsOfService() {
 
             <section className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                8. Intellectual Property
+                9. Intellectual Property
               </h2>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 The Service, including its design, features, graphics, and
@@ -215,7 +284,7 @@ export default function TermsOfService() {
 
             <section className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                9. Disclaimer of Warranties
+                10. Disclaimer of Warranties
               </h2>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 THE SERVICE IS PROVIDED &quot;AS IS&quot; WITHOUT WARRANTIES OF
@@ -223,11 +292,35 @@ export default function TermsOfService() {
                 SERVICE WILL BE UNINTERRUPTED, SECURE, OR ERROR-FREE. WE DO NOT
                 GUARANTEE ANY EMPLOYMENT OUTCOMES FROM USING THE SERVICE.
               </p>
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                <strong className="text-gray-900 dark:text-white">
+                  BETA DISCLAIMER:
+                </strong>{" "}
+                As the Service is currently in beta development, you acknowledge
+                and accept that:
+              </p>
+              <ul className="list-disc pl-6 text-gray-700 dark:text-gray-300 space-y-2 mb-4">
+                <li>
+                  Features may be incomplete, experimental, or subject to change
+                </li>
+                <li>
+                  Data loss, service interruptions, or errors may occur without
+                  notice
+                </li>
+                <li>
+                  AI-generated content may contain inaccuracies or require
+                  manual review
+                </li>
+                <li>
+                  Performance and reliability may not meet production-level
+                  standards
+                </li>
+              </ul>
             </section>
 
             <section className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                10. Limitation of Liability
+                11. Limitation of Liability
               </h2>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 TO THE MAXIMUM EXTENT PERMITTED BY LAW, UPFOLIO SHALL NOT BE
@@ -240,7 +333,7 @@ export default function TermsOfService() {
 
             <section className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                11. Indemnification
+                12. Indemnification
               </h2>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 You agree to indemnify and hold harmless Upfolio from any
@@ -252,7 +345,7 @@ export default function TermsOfService() {
 
             <section className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                12. Modifications to Terms
+                13. Modifications to Terms
               </h2>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 We reserve the right to modify these Terms at any time. We will
@@ -264,7 +357,7 @@ export default function TermsOfService() {
 
             <section className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                13. Termination
+                14. Termination
               </h2>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 You may terminate your account at any time through your account
@@ -276,7 +369,7 @@ export default function TermsOfService() {
 
             <section className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                14. Governing Law
+                15. Governing Law
               </h2>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 These Terms shall be governed by and construed in accordance
@@ -287,7 +380,7 @@ export default function TermsOfService() {
 
             <section className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                15. Contact Information
+                16. Contact Information
               </h2>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 If you have any questions about these Terms, please contact us

@@ -14,6 +14,7 @@ import {
 import { ResumeUploader } from "@/components/admin/resume-uploader";
 import { ResumeVersionsList } from "@/components/admin/resume-versions-list";
 import { AdminNavbar } from "@/components/admin/admin-navbar";
+import { CreditsInfoCard } from "@/components/ui/credits-info-card";
 import { containerPadding, typography, buttons, spacing } from "@/lib/styles";
 import type { Session } from "next-auth";
 
@@ -78,6 +79,27 @@ export function DashboardClient({ session }: { session: Session }) {
   const [refreshKey, setRefreshKey] = useState(0);
   const [showWelcome, setShowWelcome] = useState(false);
   const [isUploadingGuest, setIsUploadingGuest] = useState(false);
+  const [tokenBalance, setTokenBalance] = useState<{
+    token_credits: number;
+    tokens_used: number;
+  } | null>(null);
+
+  // Fetch token balance
+  useEffect(() => {
+    const fetchTokenBalance = async () => {
+      try {
+        const response = await fetch("/api/user/token-balance");
+        if (response.ok) {
+          const data = await response.json();
+          setTokenBalance(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch token balance:", error);
+      }
+    };
+
+    fetchTokenBalance();
+  }, [refreshKey]);
 
   const handleUploadSuccess = () => {
     // Switch to versions tab and refresh the list
@@ -263,6 +285,16 @@ export function DashboardClient({ session }: { session: Session }) {
             </div>
           )}
         </motion.div>
+
+        {/* Beta Credits - Bottom of Page */}
+        {tokenBalance && (
+          <div className="mt-6 sm:mt-8">
+            <CreditsInfoCard
+              remainingCredits={tokenBalance.token_credits}
+              tokensUsed={tokenBalance.tokens_used}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ClientSessionProvider } from "@/components/client-session-provider";
 import { ToastProvider } from "@/components/ui/toast";
 import { ConfirmProvider } from "@/components/ui/confirm-dialog";
+import { BetaBanner } from "@/components/ui/beta-banner";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -88,6 +89,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <BetaBanner />
         <ToastProvider>
           <ConfirmProvider>
             <ClientSessionProvider>{children}</ClientSessionProvider>
